@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>CdC - Lista de Membros</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/cdc.css"></head>
+</head>
+<body>
+
+    <div class="container">
+        <table class="full_width">
+            <tr>
+                <td>
+                    <h1 class="my-4">Lista de membros - {{ total_results }}</h1>
+                </td>
+                <td class="align_right">
+                    <a href="../"><img src="/cdc_logo.jpg" style="float:right;width:15%;height:15%;" alt="Casa do Caminho"></a>
+                </td>
+            </tr>
+        </table>
+
+        <form class="form-inline" method="get">
+            <div class="form-check form-switch mb-4">
+                <input class="form-check-input" type="checkbox" id="only_due_missing" name="only_due_missing" onclick="toggleOnlyMissing()">
+                <label class="form-check-label" for="only_due_missing">Apenas membros com quotas em atraso</label>
+            </div>
+            <div class="form-check form-switch mb-4">
+                <input class="form-check-input" type="checkbox" id="only_active_members" name="only_active_members" onclick="toggleOnlyMissing()">
+                <label class="form-check-label" for="only_active_members">Apenas membros activos</label>
+            </div>
+            <input class="form-text" type="text" size="40" id="search_text" name="search_text" placeholder="Pesquise por qualquer texto">
+            <button class="btn btn-primary mb-2" type="submit">Pesquisar</button>
+        </form>
+
+        <table class="table table-striped table-bordered">
+            <thead class="table-dark">
+                <tr>
+                    <th class="align_right">ID</th>
+                    <th>Inicio</th>
+                    <th>Activo</th>
+                    <th>Nome</th>
+                    <th class="align_right">Meses em atraso</th>
+                    <th class="align_right">Valor em atraso</th>
+                    <th class="align_right">Meses pagos</th>
+                    <th class="align_right">Valor pago</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for member in members %}
+                    <tr>
+                        <td class="align_right"><a href="{{ member.member_id }}/show">{{ member.member_id }}</a></td>
+                        <td>{{ member.start_date }}</td>
+                        <td>{{ member.is_active }}</td>
+                        <td>{{ member.name }}</td>
+                        <td class="align_right">{{ member.total_months_missing }}</td>
+                        <td class="align_right">{{ member.total_amount_missing }} €</td>
+                        <td class="align_right">{{ member.total_months_paid }}</td>
+                        <td class="align_right">{{ member.total_amount_paid }} €</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        function toggleOnlyMissing() {
+            const checkbox_due_missing = document.getElementById('only_due_missing');
+            const checkbox_active_members = document.getElementById('only_active_members');
+            const searchText = document.getElementById('search_text').value;
+            const urlParams = new URLSearchParams(window.location.search);
+            if (checkbox_due_missing.checked) {
+                urlParams.set('only_due_missing', 'on');
+            } else {
+                urlParams.delete('only_due_missing');
+            }
+            if (checkbox_active_members.checked) {
+                urlParams.set('only_active_members', 'on');
+            } else {
+                urlParams.delete('only_active_members');
+            }
+            if (searchText.length > 0) {
+                urlParams.set('search_text', searchText);
+            } else {
+                urlParams.delete('search_text');
+            }
+            window.location.search = urlParams.toString();
+        }
+
+        window.onload = function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const onlyDueMissing = urlParams.get('only_due_missing') === 'on';
+            const onlyActiveMembers = urlParams.get('only_active_members') === 'on';
+            const searchText = urlParams.get('search_text');
+            document.getElementById('only_due_missing').checked = (onlyDueMissing) ? 'on' : null;
+            document.getElementById('only_active_members').checked = (onlyActiveMembers) ? 'on' : null;
+            document.getElementById('search_text').value = searchText;
+        }
+    </script>
+
+</body>
+</html>
