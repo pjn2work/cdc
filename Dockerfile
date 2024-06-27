@@ -5,7 +5,8 @@ FROM python:3.12-slim
 WORKDIR /cdc
 
 # Copy the current directory contents into the container at /cdc
-COPY . /cdc
+COPY app /cdc/app
+COPY requirements.txt /cdc
 
 # Install any needed packages specified in requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt

@@ -6,6 +6,7 @@ from sqlalchemy.orm import Session
 from typing import List, Tuple
 from . import models, schemas
 from ..utils import get_now, get_today_year_month_str, format_year_month
+from .. import logit
 
 
 def _get_member_due_payment_missing_stats(db: Session, member_id: int) -> Tuple[List[str], int]:
@@ -295,7 +296,7 @@ def _make_due_payment_for_non_active_members(db: Session, id_year_month: str, da
     now = get_now()
     try:
         for member in _member_list:
-            print(f"Creating 0.0€ Due Payment for member={member.member_id} for {id_year_month} month.")
+            logit(f"Creating 0.0€ Due Payment for member={member.member_id} for {id_year_month} month.")
             mdp = models.MemberDuesPayment(
                 member_id=member.member_id,
                 id_year_month=id_year_month,
@@ -336,7 +337,7 @@ def _make_due_payment_for_new_member(db: Session, member: models.Member):
 
 
 def _make_due_payment_for_member(db: Session, id_year_month: str, member: models.Member):
-    print(f"Creating missing {member.amount}€ Due Payment for member={member.member_id} for {id_year_month} month.")
+    logit(f"Creating missing {member.amount}€ Due Payment for member={member.member_id} for {id_year_month} month.")
     mdp = models.MemberDuesPayment(
         member_id=member.member_id,
         id_year_month=id_year_month,
