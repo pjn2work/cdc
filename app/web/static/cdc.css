@@ -1,0 +1,77 @@
+body {
+    padding: 10px;
+    padding-top: 0px;
+}
+
+.table th, .table td {
+    vertical-align: middle;
+}
+
+.align_right {
+    text-align: right;
+}
+.align_center {
+    text-align: center;
+}
+.full_width {
+    width: 100%;
+}
+.menu_button {
+    height: 55px;
+    width: 200px;
+    vertical-align: middle;
+    text-align: center;
+}
+
+.input_edit {
+    padding: 5px;
+    width: 100%;
+    vertical-align: middle;
+    font-family: Verdana, "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 20px;
+}
+
+.label-text {
+    padding: 5px;
+    padding-left: 10px;
+    width: 100%;
+    background-color: rgb(255, 200, 33);
+    color: #4a3d15;
+    vertical-align: middle;
+    font-family: "Gill Sans MT", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-weight: bold;
+    font-size: 11pt;
+    margin-bottom: 0px;
+}
+.data-text {
+    padding: 5px;
+    width: 100%;
+    background-color: #faf8f2;
+    color: #0f0505;
+    vertical-align: middle;
+    font-family: Tahoma, "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-weight: normal;
+    font-size: 12pt;
+    border: 1px solid #ffc821;
+    margin-bottom: 17px;
+}
+
+
+.Main-Text:hover + .Extra-Text {
+    display: block;
+}
+.Extra-Text {
+    background-color: #FFFFFF;
+    width: 80px;
+    border: 1px solid #cd1f2d;
+    padding: 3px;
+    text-align: center;
+    font-size: 12pt;
+    display: none;
+    z-index: 1;
+    position: absolute;
+}
+
+.padding-5 {
+    padding: 5px;
+}

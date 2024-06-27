@@ -1,0 +1,10 @@
+fastapi == 0.111.*
+starlette == 0.37.*
+uvicorn == 0.29.*
+sqlalchemy == 2.0.*
+pydantic == 2.7.*
+dash == 2.17.*
+dash-table == 5.0.*
+dash-bootstrap-components == 1.6.*
+psycopg2-binary == 2.9.*
+pandas == 2.2.*
