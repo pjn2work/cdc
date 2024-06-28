@@ -1,6 +1,7 @@
 body {
     padding: 10px;
     padding-top: 0px;
+    font-family: Montserrat, Verdana, Arial, sans-serif;
 }
 
 .table th, .table td {
@@ -27,7 +28,7 @@ body {
     padding: 5px;
     width: 100%;
     vertical-align: middle;
-    font-family: Verdana, "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-family: Montserrat, Verdana, "Helvetica Neue", Helvetica, Arial, sans-serif;
     font-size: 20px;
 }
 
@@ -38,7 +39,7 @@ body {
     background-color: rgb(255, 200, 33);
     color: #4a3d15;
     vertical-align: middle;
-    font-family: "Gill Sans MT", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-family: Montserrat, "Gill Sans MT", "Helvetica Neue", Helvetica, Arial, sans-serif;
     font-weight: bold;
     font-size: 11pt;
     margin-bottom: 0px;
@@ -49,7 +50,7 @@ body {
     background-color: #faf8f2;
     color: #0f0505;
     vertical-align: middle;
-    font-family: Tahoma, "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-family: Montserrat, Tahoma, "Helvetica Neue", Helvetica, Arial, sans-serif;
     font-weight: normal;
     font-size: 12pt;
     border: 1px solid #ffc821;
