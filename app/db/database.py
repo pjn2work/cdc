@@ -4,7 +4,7 @@ from sqlalchemy.orm import sessionmaker, Session
 from fastapi import Depends
 
 
-DATABASE_URL = "sqlite:///./data.spsql"  # TODO Use Docker volume for this path
+DATABASE_URL = "sqlite:///data/data.spsql"  # TODO Use Docker volume for this path
 
 engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False}, echo=False)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)

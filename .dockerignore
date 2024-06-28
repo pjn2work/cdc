@@ -31,12 +31,12 @@ MANIFEST
 # Environments
 .venv
 .env
+.git
 
 # PyCharm
 .idea
 
 # DB
-data/
 data.*
 *.spsql
 *.log

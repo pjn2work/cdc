@@ -12,15 +12,15 @@ from .web.members import router as web_members_router
 from .web.member_due_payment import router as web_member_due_payment_router
 from .web.dues_payments import router as web_dues_payments_router
 from .dash_app.dash_app import app as dashboard1
-
+from . import logit, logging
 
 @asynccontextmanager
 async def lifespan(_: FastAPI):
     init_db()
-    print("--- CdC Ready! ---")
+    logit("--- CdC Ready! ---", level=logging.WARNING)
     yield
     get_db().close()
-    print("--- CdC Closed! ---")
+    logit("--- CdC Closed! ---", level=logging.WARNING)
 
 
 app = FastAPI(lifespan=lifespan, debug=False)

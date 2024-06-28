@@ -83,9 +83,10 @@ def edit_member(request: Request, member_id: int, db: Session = DB_SESSION):
 
 
 @router.post("/{member_id}/update", response_class=HTMLResponse)
-def update_member(member_id: int,
-                  member_update: schemas.members.MemberUpdate,
-                  db: Session = DB_SESSION):
+async def update_member(request: Request, member_id: int, db: Session = DB_SESSION):
+    data = await request.form()
+    member_update: schemas.members.MemberUpdate = schemas.members.MemberUpdate(**data)
+
     db_member = crud.get_member_by_id(db, member_id=member_id)
     _ = crud.update_member(db, db_member=db_member, member_update=member_update)
     return RedirectResponse(url=f"show", status_code=303)
