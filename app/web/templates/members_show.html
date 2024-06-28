@@ -20,7 +20,7 @@
 
         <div class="card">
             <div class="card-body">
-                <div class="row mb-3">
+                <div class="row mb-0">
                     <div class="col-md-2">
                         <label class="form-label label-text align_center">Activo</label>
                         <p class="form-control-plaintext data-text align_center">{{ member.is_active }}</p>
@@ -53,8 +53,10 @@
                         <label class="form-label label-text">Email</label>
                         <p class="form-control-plaintext data-text">{{ member.email }}</p>
 
+                        <hr>
+
                         <p class="align_center">
-                            <form class="form-inline" method="get" action="edit">
+                            <form class="form-inline" method="get" action="update">
                                 <button class="btn btn-primary mb-1" type="submit">Editar membro</button>
                             </form>
                         </p>
@@ -78,7 +80,6 @@
                                 <input class="form-text" type="checkbox" id="is_active" name="is_active" {% if not member.is_active %}checked{% endif %} style="opacity:0; position:absolute; left:-999px;">
                             </form>
                         </p>
-
                     </div>
                 </div>
             </div>

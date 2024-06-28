@@ -7,6 +7,7 @@ WORKDIR /cdc
 # Copy the current directory contents into the container at /cdc
 COPY app /cdc/app
 COPY requirements.txt /cdc
+RUN mkdir -p data/
 
 # Install any needed packages specified in requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
