@@ -74,7 +74,7 @@
                     <td class="align_left">{{ row["name"] }}</td>
                     <td class="align_right">{{ row["total"] }} €</td>
                     {% for col in columns %}
-                        <td class="align_right">{{ row[col] }} €</td>
+                        <td class="align_right">{% if row[col] %}{{ row[col] }} €{% endif %}</td>
                     {%  endfor %}
                 </tr>
             {% endfor %}
@@ -101,7 +101,7 @@
                     <td class="align_left">{{ row["name"] }}</td>
                     <td class="align_right">{{ row["total"] }} €</td>
                     {% for col in columns %}
-                        <td class="align_right">{{ row[col] }} €</td>
+                        <td class="align_right">{% if row[col] %}{{ row[col] }} €{% endif %}</td>
                     {%  endfor %}
                 </tr>
             {% endfor %}
