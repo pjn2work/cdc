@@ -4,7 +4,7 @@ import pandas as pd
 from io import BytesIO
 from fastapi import HTTPException
 from fastapi.responses import StreamingResponse
-from sqlalchemy import func, or_, and_, case
+from sqlalchemy import func, or_, and_, case as case_
 from sqlalchemy.orm import Session
 from typing import List, Tuple
 from . import models, schemas
@@ -397,7 +397,11 @@ def pay_member_due_payment(db: Session, tid:int):
     return mdp
 
 
-def get_df_pivot_table_dues_paied_for_all_members(db: Session, months: List[str], month_cases: List, is_paied: bool) -> pd.DataFrame:
+def get_df_pivot_table_dues_paied_for_all_members(
+        db: Session,
+        months: List[str],
+        month_cases: List,
+        is_paied: bool) -> pd.DataFrame:
     # Construct the query
     query = db.query(
         models.Member.member_id,
@@ -429,18 +433,18 @@ def get_df_pivot_table_dues_paied_for_all_members(db: Session, months: List[str]
     # Create DataFrame with wanted columns
     df = pd.DataFrame(data)
     df = df[["member_id", "name", "total"] + months]
-    df = df.set_index("member_id", inplace=False).sort_index(inplace=False)
+    df = df.sort_values(by=["member_id"], inplace=False)
 
     return df
 
 
-def pivot_table_dues_paied_for_all_members(db: Session, since: str = None, until: str = None) -> StreamingResponse:
+def pivot_table_dues_paied_for_all_members(db: Session, since: str = None, until: str = None):
     # Define the months you are interested in
     months_query = db.query(models.DuesPayment.id_year_month).order_by(models.DuesPayment.id_year_month)
-    if since is not None:
+    if since:
         since = format_year_month(since)
         months_query = months_query.filter(models.DuesPayment.date_ym >= since)
-    if until is not None:
+    if until:
         until = format_year_month(until)
         months_query = months_query.filter(models.DuesPayment.date_ym <= until)
     months = [str(id_year_month[0]) for id_year_month in months_query.all()]
@@ -448,7 +452,7 @@ def pivot_table_dues_paied_for_all_members(db: Session, since: str = None, until
     # Build the case statements for each month
     month_cases = [
         func.sum(
-            case(
+            case_(
             (models.MemberDuesPayment.id_year_month == id_year_month, models.MemberDuesPayment.amount), else_=0
             )
         ).label(id_year_month)
@@ -463,12 +467,12 @@ def pivot_table_dues_paied_for_all_members(db: Session, since: str = None, until
     # Save the DataFrame to an Excel file
     output = BytesIO()
     with pd.ExcelWriter(output, engine="openpyxl") as writer:
-        df_paied.to_excel(writer, index=True, sheet_name="Quotas pagas")
-        df_missing.to_excel(writer, index=True, sheet_name="Quotas em atraso")
+        df_paied.to_excel(writer, index=False, sheet_name="Quotas pagas")
+        df_missing.to_excel(writer, index=False, sheet_name="Quotas em atraso")
     output.seek(0)
 
     # Send the Excel file as a response
-    return StreamingResponse(
+    return df_paied, df_missing, StreamingResponse(
         output,
         media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
         headers={"Content-Disposition": f"attachment; filename={filename}"}
