@@ -3,15 +3,21 @@ from sqlalchemy.orm import Session
 from starlette.responses import HTMLResponse, RedirectResponse
 
 from . import templates
-from ..db import crud, DB_SESSION
+from ..db import crud, DB_SESSION, schemas
 
 
 router = APIRouter()
 
 
 @router.post("/{tid}", response_class=HTMLResponse)
-def pay_member_due_payment(tid: int, db: Session = DB_SESSION):
-    mdp = crud.pay_member_due_payment(db, tid=tid)
+async def pay_member_due_payment(
+        request: Request,
+        tid: int,
+        db: Session = DB_SESSION):
+    data = await request.form()
+    mdpc: schemas.member_due_payment.MemberDuesPaymentCreate = schemas.member_due_payment.MemberDuesPaymentCreate(**data)
+
+    mdp = crud.pay_member_due_payment(db, tid=tid, mdpc=mdpc)
     return RedirectResponse(url=f"../members/{mdp.member_id}/show", status_code=303)
 
 

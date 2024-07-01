@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="pt">
 <head>
-    <title>CdC - Editar Membro</title>
+    <title>CdC - Editar Associado</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="/cdc.css"></head>
 <body>
@@ -9,7 +9,7 @@
         <table class="full_width">
             <tr>
                 <td>
-                    <h1 class="my-4">Membro {{ member.member_id }}</h1>
+                    <h1 class="my-4">Associado {{ member.member_id }}</h1>
                 </td>
                 <td class="align_right">
                     <a href="../"><img src="/cdc_logo.jpg" style="float:right;width:15%;height:15%;" alt="Casa do Caminho"></a>
@@ -40,11 +40,11 @@
                     </div>
                     <div class="col-md-10">
                         <label class="form-label label-text">Nome</label>
-                        <p class="form-control-plaintext data-text"><input class="form-text input_edit" type="text" id="name" name="name" placeholder="10.0" value="{{ member.name }}"></p>
+                        <p class="form-control-plaintext data-text"><input class="form-text input_edit" type="text" id="name" name="name" placeholder="10.0" value="{{ member.name }}" required></p>
                         <label class="form-label label-text">Contacto</label>
-                        <p class="form-control-plaintext data-text"><input class="form-text input_edit" type="text" id="tlf" name="tlf" placeholder="10.0" value="{{ member.tlf }}"></p>
+                        <p class="form-control-plaintext data-text"><input class="form-text input_edit" type="text" id="tlf" name="tlf" placeholder="10.0" value="{{ member.tlf }}" required></p>
                         <label class="form-label label-text">Email</label>
-                        <p class="form-control-plaintext data-text"><input class="form-text input_edit" type="email" id="email" name="email" placeholder="10.0" value="{{ member.email }}"></p>
+                        <p class="form-control-plaintext data-text"><input class="form-text input_edit" type="email" id="email" name="email" placeholder="10.0" value="{{ member.email }}" required></p>
                         <hr>
                         <p class="align_center"><button class="btn btn-primary mb-2" type="submit">Salvar alterações</button></p>
                     </div>

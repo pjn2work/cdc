@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="pt">
 <head>
-    <title>CdC - Criar Membro</title>
+    <title>CdC - Criar Associado</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="/cdc.css">
 </head>
@@ -10,7 +10,7 @@
         <table class="full_width">
             <tr>
                 <td>
-                    <h1 class="my-4">Criar novo membro</h1>
+                    <h1 class="my-4">Criar novo Associado</h1>
                 </td>
                 <td class="align_right">
                     <a href="../"><img src="/cdc_logo.jpg" style="float:right;width:15%;height:15%;" alt="Casa do Caminho"></a>
@@ -22,27 +22,27 @@
             <table class="full_width table table-bordered">
                 <tr>
                     <td class="label-text align_right">Data Inicio</td>
-                    <td><input class="form-text" type="date" size="10" id="start_date" name="start_date" placeholder="2024-06-01" value="{{ today }}"></td>
+                    <td><input class="form-text" type="date" size="10" id="start_date" name="start_date" placeholder="2024-06-01" value="{{ today }}" required></td>
                 </tr>
                 <tr>
                     <td class="label-text align_right">Valor de quota</td>
-                    <td><input class="form-text" type="number" size="4" id="amount" name="amount"> €</td>
+                    <td><input class="form-text" type="number" size="4" id="amount" name="amount" required> €</td>
                 </tr>
                 <tr>
                     <td class="label-text align_right">Nome</td>
-                    <td><input class="form-text" type="text" size="120" id="name" name="name" placeholder="Nome complecto"></td>
+                    <td><input class="form-text" type="text" size="120" id="name" name="name" placeholder="Nome complecto" required></td>
                 </tr>
                 <tr>
                     <td class="label-text align_right">Contacto telefónico</td>
-                    <td><input class="form-text" type="text" size="10" id="tlf" name="tlf" placeholder="Telemóvel"></td>
+                    <td><input class="form-text" type="text" size="10" id="tlf" name="tlf" placeholder="Telemóvel" required></td>
                 </tr>
                 <tr>
                     <td class="label-text align_right">Email</td>
-                    <td><input class="form-text" type="text" size="120" id="email" name="email" placeholder="email@domain.com"></td>
+                    <td><input class="form-text" type="text" size="120" id="email" name="email" placeholder="email@domain.com" required></td>
                 </tr>
                 <tr>
                     <td class="align_center" colspan="2">
-                        <button class="btn btn-primary mb-2" type="submit">Criar novo membro</button>
+                        <button class="btn btn-primary mb-2" type="submit">Criar novo Associado</button>
                     </td>
                 </tr>
             </table>

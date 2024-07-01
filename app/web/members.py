@@ -49,7 +49,8 @@ def show_member(request: Request, member_id: int, db: Session = DB_SESSION):
     return templates.TemplateResponse("members_show.html", {
         "request": request,
         "member": member,
-        "this_month": get_today_year_month_str()
+        "this_month": get_today_year_month_str(),
+        "today": get_today()
     })
 
 

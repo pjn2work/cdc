@@ -22,5 +22,8 @@ def get_member_due_payment(tid: int, db: Session = DB_SESSION):
     response_model=schemas.member_due_payment.MemberDuesPayment,
     status_code=status.HTTP_200_OK
 )
-def pay_member_due_payment(tid: int, db: Session = DB_SESSION):
-    return crud.pay_member_due_payment(db, tid=tid)
+def pay_member_due_payment(
+        tid: int,
+        mdpc: schemas.member_due_payment.MemberDuesPaymentCreate,
+        db: Session = DB_SESSION):
+    return crud.pay_member_due_payment(db, tid=tid, mdpc=mdpc)

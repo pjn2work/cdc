@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="pt">
 <head>
-    <title>CdC - Lista de Membros</title>
+    <title>CdC - Lista de Associados</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="/cdc.css"></head>
 </head>
@@ -11,7 +11,7 @@
         <table class="full_width">
             <tr>
                 <td>
-                    <h1 class="my-4">Lista de membros - {{ total_results }}</h1>
+                    <h1 class="my-4">Lista de Associados - {{ total_results }}</h1>
                 </td>
                 <td class="align_right">
                     <a href="../"><img src="/cdc_logo.jpg" style="float:right;width:15%;height:15%;" alt="Casa do Caminho"></a>
@@ -22,11 +22,11 @@
         <form class="form-inline" method="get">
             <div class="form-check form-switch mb-4">
                 <input class="form-check-input" type="checkbox" id="only_due_missing" name="only_due_missing" onclick="toggleOnlyMissing()">
-                <label class="form-check-label" for="only_due_missing">Apenas membros com quotas em atraso</label>
+                <label class="form-check-label" for="only_due_missing">Apenas associados com quotas em atraso</label>
             </div>
             <div class="form-check form-switch mb-4">
                 <input class="form-check-input" type="checkbox" id="only_active_members" name="only_active_members" onclick="toggleOnlyMissing()">
-                <label class="form-check-label" for="only_active_members">Apenas membros activos</label>
+                <label class="form-check-label" for="only_active_members">Apenas associados activos</label>
             </div>
             <input class="form-text" type="text" size="40" id="search_text" name="search_text" placeholder="Pesquise por qualquer texto">
             <button class="btn btn-primary mb-2" type="submit">Pesquisar</button>

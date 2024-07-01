@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, Float, String, Boolean, ForeignKey, UniqueConstraint, DateTime
+from sqlalchemy import Column, Integer, Float, String, Boolean, ForeignKey, UniqueConstraint, DateTime, Date
 from sqlalchemy.orm import relationship
 from ..database import Base
 
@@ -13,7 +13,8 @@ class MemberDuesPayment(Base):
     is_paid = Column(Boolean, default=False)
     is_member_active = Column(Boolean, default=True)
     amount = Column(Float)
-    pay_date_time = Column(DateTime)
+    pay_date = Column(Date)
+    pay_update_time = Column(DateTime)
 
     dues_payment = relationship("DuesPayment", back_populates="member_due_payment")
     member = relationship("Member", back_populates="member_due_payment")
