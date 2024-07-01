@@ -1,67 +1,51 @@
-<!DOCTYPE html>
-<html lang="pt">
-<head>
-    <title>CdC - Lista de Associados</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="/cdc.css"></head>
-</head>
-<body>
+{% extends "base.html" %}
+{% block title %}Lista de Associados{% endblock %}
+{% block page_header %}Lista de Associados - {{ total_results }}{% endblock %}
+{% block content_in_div %}
+    <form class="form-inline" method="get">
+        <div class="form-check form-switch mb-4">
+            <input class="form-check-input" type="checkbox" id="only_due_missing" name="only_due_missing" onclick="toggleOnlyMissing()">
+            <label class="form-check-label" for="only_due_missing">Apenas associados com quotas em atraso</label>
+        </div>
+        <div class="form-check form-switch mb-4">
+            <input class="form-check-input" type="checkbox" id="only_active_members" name="only_active_members" onclick="toggleOnlyMissing()">
+            <label class="form-check-label" for="only_active_members">Apenas associados activos</label>
+        </div>
+        <input class="form-text" type="text" size="40" id="search_text" name="search_text" placeholder="Pesquise por qualquer texto">
+        <button class="btn btn-primary mb-2" type="submit">Pesquisar</button>
+    </form>
 
-    <div class="container">
-        <table class="full_width">
+    <table class="table table-striped table-bordered">
+        <thead class="table-dark">
             <tr>
-                <td>
-                    <h1 class="my-4">Lista de Associados - {{ total_results }}</h1>
-                </td>
-                <td class="align_right">
-                    <a href="../"><img src="/cdc_logo.jpg" style="float:right;width:15%;height:15%;" alt="Casa do Caminho"></a>
-                </td>
+                <th class="align_right">ID</th>
+                <th>Inicio</th>
+                <th>Activo</th>
+                <th>Nome</th>
+                <th class="align_right">Meses em atraso</th>
+                <th class="align_right">Valor em atraso</th>
+                <th class="align_right">Meses pagos</th>
+                <th class="align_right">Valor pago</th>
             </tr>
-        </table>
-
-        <form class="form-inline" method="get">
-            <div class="form-check form-switch mb-4">
-                <input class="form-check-input" type="checkbox" id="only_due_missing" name="only_due_missing" onclick="toggleOnlyMissing()">
-                <label class="form-check-label" for="only_due_missing">Apenas associados com quotas em atraso</label>
-            </div>
-            <div class="form-check form-switch mb-4">
-                <input class="form-check-input" type="checkbox" id="only_active_members" name="only_active_members" onclick="toggleOnlyMissing()">
-                <label class="form-check-label" for="only_active_members">Apenas associados activos</label>
-            </div>
-            <input class="form-text" type="text" size="40" id="search_text" name="search_text" placeholder="Pesquise por qualquer texto">
-            <button class="btn btn-primary mb-2" type="submit">Pesquisar</button>
-        </form>
-
-        <table class="table table-striped table-bordered">
-            <thead class="table-dark">
+        </thead>
+        <tbody>
+            {% for member in members %}
                 <tr>
-                    <th class="align_right">ID</th>
-                    <th>Inicio</th>
-                    <th>Activo</th>
-                    <th>Nome</th>
-                    <th class="align_right">Meses em atraso</th>
-                    <th class="align_right">Valor em atraso</th>
-                    <th class="align_right">Meses pagos</th>
-                    <th class="align_right">Valor pago</th>
+                    <td class="align_right"><a href="{{ member.member_id }}/show">{{ member.member_id }}</a></td>
+                    <td>{{ member.start_date }}</td>
+                    <td>{{ member.is_active }}</td>
+                    <td>{{ member.name }}</td>
+                    <td class="align_right">{{ member.total_months_missing }}</td>
+                    <td class="align_right">{{ member.total_amount_missing }} €</td>
+                    <td class="align_right">{{ member.total_months_paid }}</td>
+                    <td class="align_right">{{ member.total_amount_paid }} €</td>
                 </tr>
-            </thead>
-            <tbody>
-                {% for member in members %}
-                    <tr>
-                        <td class="align_right"><a href="{{ member.member_id }}/show">{{ member.member_id }}</a></td>
-                        <td>{{ member.start_date }}</td>
-                        <td>{{ member.is_active }}</td>
-                        <td>{{ member.name }}</td>
-                        <td class="align_right">{{ member.total_months_missing }}</td>
-                        <td class="align_right">{{ member.total_amount_missing }} €</td>
-                        <td class="align_right">{{ member.total_months_paid }}</td>
-                        <td class="align_right">{{ member.total_amount_paid }} €</td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
 
+{% block content_out_div %}
     <script>
         function toggleOnlyMissing() {
             const checkbox_due_missing = document.getElementById('only_due_missing');
@@ -96,6 +80,4 @@
             document.getElementById('search_text').value = searchText;
         }
     </script>
-
-</body>
-</html>
+{% endblock %}
