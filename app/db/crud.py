@@ -58,6 +58,7 @@ def _get_all_members(db: Session,
             models.Member.name.ilike(f"%{search_text}%"),
             models.Member.tlf.ilike(f"%{search_text}%"),
             models.Member.email.ilike(f"%{search_text}%"),
+            models.Member.notes.ilike(f"%{search_text}%"),
         ))
 
     return _dbq.offset(skip).limit(limit).all()

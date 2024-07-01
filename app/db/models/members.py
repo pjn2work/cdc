@@ -13,6 +13,7 @@ class MemberAbs(Base):
     name = Column(String, index=True)
     tlf = Column(String)
     email = Column(String, default="")
+    notes = Column(String, default="")
 
     total_months_missing = Column(Integer, default=0)
     total_amount_missing = Column(Float, default=0.0)
