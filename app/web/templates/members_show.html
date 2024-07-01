@@ -2,72 +2,69 @@
 {% block title %}Ver Associado{% endblock %}
 {% block page_header %}Associado {{ member.member_id }}{% endblock %}
 {% block content_in_div %}
-    <div class="card">
-        <div class="card-body">
-            <div class="row mb-0">
-                <div class="col-md-2">
-                    <label class="form-label label-text align_center">Activo</label>
-                    <p class="form-control-plaintext data-text align_center">{{ member.is_active }}</p>
-                    <label class="form-label label-text align_center">Data de início</label>
-                    <p class="form-control-plaintext data-text align_center">{{ member.start_date }}</p>
-                    <label class="form-label label-text align_center">Quota Mensal</label>
-                    <p class="form-control-plaintext data-text align_center">{{ member.amount }} €</p>
-
-                    <label class="form-label label-text align_center Main-Text">
-                        Meses em atraso
-                    </label>
-                    <div class="Extra-Text">
-                        {% for mm in member.months_missing %}
-                        <span>{{ mm }}<br></span>
-                        {% endfor %}
+        <div class="card">
+            <div class="card-body">
+                <div class="row mb-0">
+                    <div class="col-md-2">
+                        <label class="form-label label-text align_center">Activo</label>
+                        <p class="form-control-plaintext data-text align_center">{{ member.is_active }}</p>
+                        <label class="form-label label-text align_center">Data de início</label>
+                        <p class="form-control-plaintext data-text align_center">{{ member.start_date }}</p>
+                        <label class="form-label label-text align_center">Quota Mensal</label>
+                        <p class="form-control-plaintext data-text align_center">{{ member.amount }} €</p>
+                        <label class="form-label label-text align_center Main-Text">Meses em atraso</label>
+                        <div class="Extra-Text">
+                            {%- for mm in member.months_missing %}
+                            <span>{{ mm }}<br></span>
+                            {%- endfor %}
+                        </div>
+                        <p class="form-control-plaintext data-text align_center">{{ member.total_months_missing }}</p>
+                        <label class="form-label label-text">Valor em atraso</label>
+                        <p class="form-control-plaintext data-text align_center">{{ member.total_amount_missing }} €</p>
+                        <label class="form-label label-text">Meses pagos</label>
+                        <p class="form-control-plaintext data-text align_center">{{ member.total_months_paid }}</p>
+                        <label class="form-label label-text">Valor pago</label>
+                        <p class="form-control-plaintext data-text align_center">{{ member.total_amount_paid }} €</p>
                     </div>
-                    <p class="form-control-plaintext data-text align_center">{{ member.total_months_missing }}</p>
-                    <label class="form-label label-text">Valor em atraso</label>
-                    <p class="form-control-plaintext data-text align_center">{{ member.total_amount_missing }} €</p>
-                    <label class="form-label label-text">Meses pagos</label>
-                    <p class="form-control-plaintext data-text align_center">{{ member.total_months_paid }}</p>
-                    <label class="form-label label-text">Valor pago</label>
-                    <p class="form-control-plaintext data-text align_center">{{ member.total_amount_paid }} €</p>
-                </div>
-                <div class="col-md-10">
-                    <label class="form-label label-text">Nome</label>
-                    <p class="form-control-plaintext data-text">{{ member.name }}</p>
-                    <label class="form-label label-text">Contacto</label>
-                    <p class="form-control-plaintext data-text">{{ member.tlf }}</p>
-                    <label class="form-label label-text">Email</label>
-                    <p class="form-control-plaintext data-text">{{ member.email }}</p>
+                    <div class="col-md-10">
+                        <label class="form-label label-text">Nome</label>
+                        <p class="form-control-plaintext data-text">{{ member.name }}</p>
+                        <label class="form-label label-text">Contacto</label>
+                        <p class="form-control-plaintext data-text">{{ member.tlf }}</p>
+                        <label class="form-label label-text">Email</label>
+                        <p class="form-control-plaintext data-text">{{ member.email }}</p>
 
-                    <hr>
+                        <hr>
 
-                    <p class="align_center">
-                        <form class="form-inline" method="get" action="update">
-                            <button class="btn btn-primary mb-1" type="submit">Editar Associado</button>
-                        </form>
-                    </p>
-                    {% if member.is_active %}
-                    <p class="align_center">
-                        <form class="form-inline" method="post" action="amount">
-                            <button class="btn btn-primary mb-1" type="submit">Alterar valor da quota desde</button>
-                            <input class="form-text" type="month" size="5" id="since" name="since" placeholder="{{ this_month }}" value="{{ this_month }}">
-                            para
-                            <input class="form-text" type="text" size="3" id="amount" name="amount" placeholder="{{ member.amount }}" value="{{ member.amount }}">€
-                        </form>
-                    </p>
-                    {% endif %}
+                        <p class="align_center">
+                            <form class="form-inline" method="get" action="update">
+                                <button class="btn btn-primary mb-1" type="submit">Editar Associado</button>
+                            </form>
+                        </p>
+                        {% if member.is_active %}
+                        <p class="align_center">
+                            <form class="form-inline" method="post" action="amount">
+                                <button class="btn btn-primary mb-1" type="submit">Alterar valor da quota desde</button>
+                                <input class="form-text" type="month" size="5" id="since" name="since" placeholder="{{ this_month }}" value="{{ this_month }}">
+                                para
+                                <input class="form-text" type="text" size="3" id="amount" name="amount" placeholder="{{ member.amount }}" value="{{ member.amount }}">€
+                            </form>
+                        </p>
+                        {% endif %}
 
-                    <p class="align_center">
-                        <form class="form-inline" method="post" action="active">
-                            <button class="btn btn-primary mb-1" type="submit">
-                                {% if member.is_active %}Desa{% else %}A{% endif %}ctivar Associado desde
-                            </button>
-                            <input class="form-text" type="month" size="5" id="since" name="since" placeholder="{{ this_month }}" value="{{ this_month }}">
-                            <input class="hidden" type="checkbox" id="is_active" name="is_active" {% if not member.is_active %}checked{% endif %}>
-                        </form>
-                    </p>
+                        <p class="align_center">
+                            <form class="form-inline" method="post" action="active">
+                                <button class="btn btn-primary mb-1" type="submit">
+                                    {% if member.is_active %}Desa{% else %}A{% endif %}ctivar Associado desde
+                                </button>
+                                <input class="form-text" type="month" size="5" id="since" name="since" placeholder="{{ this_month }}" value="{{ this_month }}">
+                                <input class="hidden" type="checkbox" id="is_active" name="is_active" {% if not member.is_active %}checked{% endif %}>
+                            </form>
+                        </p>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
 {% endblock %}
 
 {% block content_out_div %}
@@ -87,25 +84,25 @@
             </tr>
         </thead>
         <tbody>
-            {% for mdp in member.member_due_payment %}
-                <tr>
-                    <td class="align_right">{{ mdp.tid }}</td>
-                    <td class="align_center">{{ mdp.id_year_month }}</td>
-                    {% if mdp.is_paid %}
-                        {% if mdp.is_member_active %}
-                        <td class="green align_center">pago</td>
-                        {% else %}
-                        <td class="align_center">---</td>
-                        {% endif %}
-                    {% else %}
-                        <td class="red align_center"><button onclick="pay_member_due({{ mdp.tid }})">Pagar</button></td>
-                    {% endif %}
-                    <td class="align_right">{{ mdp.amount }} €</td>
-                    <td class="align_center">{{ mdp.is_member_active }}</td>
-                    <td>{{ mdp.pay_date|default("", True) }}</td>
-                    <td>{{ mdp.pay_update_time }}</td>
-                </tr>
-            {% endfor %}
+        {%- for mdp in member.member_due_payment %}
+            <tr>
+                <td class="align_right">{{ mdp.tid }}</td>
+                <td class="align_center">{{ mdp.id_year_month }}</td>
+                {%- if mdp.is_paid %}
+                    {%- if mdp.is_member_active %}
+                <td class="green align_center">pago</td>
+                    {%- else %}
+                <td class="align_center">---</td>
+                    {%- endif %}
+                {%- else %}
+                <td class="red align_center"><button onclick="pay_member_due({{ mdp.tid }})">Pagar</button></td>
+                {%- endif %}
+                <td class="align_right">{{ mdp.amount }} €</td>
+                <td class="align_center">{{ mdp.is_member_active }}</td>
+                <td>{{ mdp.pay_date|default("", True) }}</td>
+                <td>{{ mdp.pay_update_time }}</td>
+            </tr>
+        {%- endfor %}
         </tbody>
     </table>
 
@@ -120,12 +117,10 @@
                 <th class="align_center">Desde</th>
                 <th class="align_center">Associado Activo</th>
                 <th class="align_right">Quota</th>
-
                 <th class="align_right">Meses em atraso</th>
                 <th class="align_right">Valor em atraso</th>
                 <th class="align_right">Meses pagos</th>
                 <th class="align_right">Valor pago</th>
-
                 <th>Nome</th>
                 <th>Contacto</th>
                 <th>Email</th>
@@ -139,12 +134,10 @@
                 <td class="align_center">{{ mh.since }}</td>
                 <td class="align_center">{{ mh.is_active }}</td>
                 <td class="align_right">{{ mh.amount }} €</td>
-
                 <td class="align_right">{{ mh.total_months_missing }}</td>
                 <td class="align_right">{{ mh.total_amount_missing }} €</td>
                 <td class="align_right">{{ mh.total_months_paid }}</td>
                 <td class="align_right">{{ mh.total_amount_paid }} €</td>
-
                 <td>{{ mh.name }}</td>
                 <td>{{ mh.tlf }}</td>
                 <td>{{ mh.email }}</td>

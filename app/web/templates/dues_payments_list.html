@@ -2,58 +2,58 @@
 {% block title %}Lista de Quotas{% endblock %}
 {% block page_header %}Lista de quotas - {{ total_results }}{% endblock %}
 {% block content_in_div %}
-    <div class="card">
-        <div class="card-body">
+        <div class="card">
+            <div class="card-body">
 
-            <table>
-                <tr>
-                    <td style="width: 30%">
+                <table>
+                    <tr>
+                        <td style="width: 30%">
 
-                        <form method="get">
-                        <table>
-                            <tr>
-                                <td class="padding-5"><label class="form-check-label" for="since">Filtrar por data desde</label></td>
-                                <td class="padding-5"><input class="form-text" type="month" size="10" id="since" name="since" placeholder="2024-01" value="{{ since }}"></td>
-                            </tr><tr>
-                                <td class="padding-5"><label class="form-check-label" for="until">Filtrar por data até</label></td>
-                                <td class="padding-5"><input class="form-text" type="month" size="10" id="until" name="until" placeholder="2024-12" value="{{ until }}"></td>
-                            </tr>
-                            <tr>
-                                <td class="padding-5"><button class="btn btn-primary mb-2" type="submit">Filtrar por datas</button></td>
-                            </tr>
-                        </table>
-                        </form>
+                            <form method="get">
+                            <table>
+                                <tr>
+                                    <td class="padding-5"><label class="form-check-label" for="since">Filtrar por data desde</label></td>
+                                    <td class="padding-5"><input class="form-text" type="month" size="10" id="since" name="since" placeholder="2024-01" value="{{ since }}"></td>
+                                </tr><tr>
+                                    <td class="padding-5"><label class="form-check-label" for="until">Filtrar por data até</label></td>
+                                    <td class="padding-5"><input class="form-text" type="month" size="10" id="until" name="until" placeholder="2024-12" value="{{ until }}"></td>
+                                </tr>
+                                <tr>
+                                    <td class="padding-5"><button class="btn btn-primary mb-2" type="submit">Filtrar por datas</button></td>
+                                </tr>
+                            </table>
+                            </form>
 
-                    </td><td style="width: 40%">
-                    </td><td class="align_right" style="width: 30%">
+                        </td><td style="width: 40%">
+                        </td><td class="align_right" style="width: 30%">
 
-                        <form action="create" method="post">
-                            <label class="form-check-label" for="id_year_month">Criar nova quota mensal</label>
-                            <input class="form-text" type="month" size="10" id="id_year_month" name="id_year_month" placeholder="2024-12" value="{{ this_month }}">
-                            <br><br>
-                            <button class="btn btn-primary mb-2" type="submit">Criar nova quota mensal</button>
-                        </form>
+                            <form action="create" method="post">
+                                <label class="form-check-label" for="id_year_month">Criar nova quota mensal</label>
+                                <input class="form-text" type="month" size="10" id="id_year_month" name="id_year_month" placeholder="2024-12" value="{{ this_month }}">
+                                <br><br>
+                                <button class="btn btn-primary mb-2" type="submit">Criar nova quota mensal</button>
+                            </form>
 
-                    </td>
-                </tr>
-            </table>
+                        </td>
+                    </tr>
+                </table>
 
-            <div class="row mb-1">
-                <div class="col-md-12">
-                    <table class="table table-striped table-bordered">
-                        <thead class="table-dark">
-                            <tr>
-                                <th class="align_right">Data</th>
-                                <th class="align_right">Ano</th>
-                                <th class="align_right">Mês</th>
-                                <th class="align_right">Total recebido</th>
-                                <th class="align_right">Associados pagaram</th>
-                                <th class="align_right">Total em atraso</th>
-                                <th class="align_right">Associados em atraso</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for dp in dues_payments_list|reverse %}
+                <div class="row mb-1">
+                    <div class="col-md-12">
+                        <table class="table table-striped table-bordered">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th class="align_right">Data</th>
+                                    <th class="align_right">Ano</th>
+                                    <th class="align_right">Mês</th>
+                                    <th class="align_right">Total recebido</th>
+                                    <th class="align_right">Associados pagaram</th>
+                                    <th class="align_right">Total em atraso</th>
+                                    <th class="align_right">Associados em atraso</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            {%- for dp in dues_payments_list|reverse %}
                                 <tr>
                                     <td class="align_right"><a href="{{ dp.id_year_month }}/show">{{ dp.id_year_month }}</a></td>
                                     <td class="align_right">{{ dp.year }}</td>
@@ -63,11 +63,11 @@
                                     <td class="align_right">{{ dp.total_amount_missing|default(0, True) }} €</td>
                                     <td class="align_right">{{ dp.total_members_missing|default(0, True) }}</td>
                                 </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
+                            {%- endfor %}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
 {% endblock %}
