@@ -157,7 +157,7 @@ def update_member_active(db: Session, db_member: models.Member, member_update: s
                 mdp.is_paid = False
                 mdp.is_member_active = True
                 mdp.amount = db_member.amount
-                mdp.pay_date_time = now
+                mdp.pay_update_time = now
 
                 db.add(mdp)
         else:
@@ -177,7 +177,7 @@ def update_member_active(db: Session, db_member: models.Member, member_update: s
                     mdp.is_paid = True
                     mdp.is_member_active = False
                     mdp.amount = 0.0
-                    mdp.pay_date_time = now
+                    mdp.pay_update_time = now
 
                     db.add(mdp)
 
@@ -306,7 +306,7 @@ def _make_due_payment_for_non_active_members(db: Session, id_year_month: str, da
                 amount=0.0,
                 is_paid=True,
                 is_member_active=False,
-                pay_date_time=now
+                pay_update_time=now
             )
             db.add(mdp)
         db.commit()
@@ -347,7 +347,7 @@ def _make_due_payment_for_member(db: Session, id_year_month: str, member: models
         amount=member.amount,
         is_paid=False,
         is_member_active=True,
-        pay_date_time=get_now()
+        pay_update_time=get_now()
     )
     db.add(mdp)
 
@@ -364,7 +364,7 @@ def get_member_due_payment(db: Session, tid: int) -> models.MemberDuesPayment:
     return mdp
 
 
-def pay_member_due_payment(db: Session, tid:int):
+def pay_member_due_payment(db: Session, tid:int, mdpc: schemas.member_due_payment.MemberDuesPaymentCreate):
     mdp = db.get(models.MemberDuesPayment, tid)
     if mdp is None:
         raise ValueError(f"MemberDuesPayment={tid} not found.")
@@ -377,7 +377,8 @@ def pay_member_due_payment(db: Session, tid:int):
 
     try:
         mdp.is_paid = True
-        mdp.pay_date_time = get_now()  # mdpu.pay_date_time
+        mdp.pay_date = mdpc.pay_date
+        mdp.pay_update_time = get_now()
         db.add(mdp)
 
         # update member stats

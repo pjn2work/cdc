@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="pt">
 <head>
-    <title>CdC - Ver Membro</title>
+    <title>CdC - Ver Associado</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="/cdc.css"></head>
 </head>
@@ -10,7 +10,7 @@
         <table class="full_width">
             <tr>
                 <td>
-                    <h1 class="my-4">Membro {{ member.member_id }}</h1>
+                    <h1 class="my-4">Associado {{ member.member_id }}</h1>
                 </td>
                 <td class="align_right">
                     <a href="../"><img src="/cdc_logo.jpg" style="float:right;width:15%;height:15%;" alt="Casa do Caminho"></a>
@@ -57,7 +57,7 @@
 
                         <p class="align_center">
                             <form class="form-inline" method="get" action="update">
-                                <button class="btn btn-primary mb-1" type="submit">Editar membro</button>
+                                <button class="btn btn-primary mb-1" type="submit">Editar Associado</button>
                             </form>
                         </p>
                         {% if member.is_active %}
@@ -74,7 +74,7 @@
                         <p class="align_center">
                             <form class="form-inline" method="post" action="active">
                                 <button class="btn btn-primary mb-1" type="submit">
-                                    {% if member.is_active %}Desa{% else %}A{% endif %}ctivar membro desde
+                                    {% if member.is_active %}Desa{% else %}A{% endif %}ctivar Associado desde
                                 </button>
                                 <input class="form-text" type="month" size="5" id="since" name="since" placeholder="{{ this_month }}" value="{{ this_month }}">
                                 <input class="hidden" type="checkbox" id="is_active" name="is_active" {% if not member.is_active %}checked{% endif %}>
@@ -96,7 +96,8 @@
                 <th class="align_center">Mensalidade</th>
                 <th class="align_center">Pagamento</th>
                 <th class="align_right">Quota</th>
-                <th class="align_center">Membro Activo</th>
+                <th class="align_center">Associado Activo</th>
+                <th>Data de pagamento</th>
                 <th>Data de actualização</th>
             </tr>
         </thead>
@@ -112,15 +113,12 @@
                         <td class="align_center">---</td>
                         {% endif %}
                     {% else %}
-                        <td class="red align_center">
-                            <form class="form-inline" method="post" action="../../member_due_payment/{{ mdp.tid }}">
-                            <button type="submit">Pagar</button>
-                            </form>
-                        </td>
+                        <td class="red align_center"><button onclick="pay_member_due({{ mdp.tid }})">Pagar</button></td>
                     {% endif %}
                     <td class="align_right">{{ mdp.amount }} €</td>
                     <td class="align_center">{{ mdp.is_member_active }}</td>
-                    <td>{{ mdp.pay_date_time }}</td>
+                    <td>{{ mdp.pay_date|default("", True) }}</td>
+                    <td>{{ mdp.pay_update_time }}</td>
                 </tr>
             {% endfor %}
         </tbody>
@@ -128,14 +126,14 @@
 
     <br><hr><br>
 
-    <h5 class="card-title">Lista de histórico de alterações de membro</h5>
+    <h5 class="card-title">Lista de histórico de alterações do Associado</h5>
     <table class="table table-striped table-bordered">
         <thead class="table-secondary">
             <tr>
                 <th class="align_right">ID</th>
                 <th>Actualizado a</th>
                 <th class="align_center">Desde</th>
-                <th class="align_center">Membro Activo</th>
+                <th class="align_center">Associado Activo</th>
                 <th class="align_right">Quota</th>
 
                 <th class="align_right">Meses em atraso</th>
@@ -169,6 +167,9 @@
         {% endfor %}
         </tbody>
     </table>
+
+
+    {% extends 'member_due_payment_form.html' %}
 
 </body>
 </html>

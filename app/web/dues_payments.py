@@ -4,7 +4,7 @@ from starlette.responses import HTMLResponse, RedirectResponse
 
 from . import templates
 from ..db import crud, schemas, DB_SESSION
-from ..utils import get_today_year_month_str
+from ..utils import get_today_year_month_str, get_today
 
 router = APIRouter()
 
@@ -29,7 +29,8 @@ def get_due_payment(request: Request, id_year_month: str, db: Session = DB_SESSI
     dp = crud.get_due_payment_year_month_stats(db, id_year_month=id_year_month)
     return templates.TemplateResponse("dues_payments_show.html", {
         "request": request,
-        "dp": dp
+        "dp": dp,
+        "today": get_today()
     })
 
 
