@@ -6,7 +6,7 @@ from fastapi import HTTPException
 from fastapi.responses import StreamingResponse
 from sqlalchemy import func, or_, and_, case as case_
 from sqlalchemy.orm import Session
-from typing import List, Tuple
+from typing import List, Tuple, Union
 from . import models, schemas
 from ..utils import get_now, get_today_year_month_str, format_year_month
 from .. import logit
@@ -44,10 +44,11 @@ def get_member(db: Session, member_id: int) -> models.Member:
     return member
 
 
-def _get_all_members(db: Session,
-                     active_members: bool = None,
-                     search_text: str = None,
-                     skip: int = 0, limit: int = 1000) -> List[models.Member]:
+def _get_all_members(
+        db: Session,
+        active_members: bool = None,
+        search_text: str = None,
+        skip: int = 0, limit: int = 1000) -> List[models.Member]:
     _dbq = db.query(models.Member)
 
     if active_members is not None:
@@ -64,11 +65,12 @@ def _get_all_members(db: Session,
     return _dbq.offset(skip).limit(limit).all()
 
 
-def get_members_list(db: Session,
-                     skip: int = 0, limit: int = 1000,
-                     only_due_missing: bool = None,
-                     only_active_members: bool = None,
-                     search_text: str = "") -> List[models.Member]:
+def get_members_list(
+        db: Session,
+        skip: int = 0, limit: int = 1000,
+        only_due_missing: bool = None,
+        only_active_members: bool = None,
+        search_text: str = "") -> List[models.Member]:
     _all_members_filtered = _get_all_members(db, only_active_members, search_text, skip=skip, limit=limit)
 
     if only_due_missing is None:
@@ -114,7 +116,10 @@ def create_member(db: Session, member: schemas.members.MemberCreate) -> models.M
     return db_member
 
 
-def update_member(db: Session, db_member: models.Member, member_update: schemas.members.MemberUpdate) -> models.Member:
+def update_member(
+        db: Session,
+        db_member: models.Member,
+        member_update: schemas.members.MemberUpdate) -> models.Member:
     update_data = member_update.dict(exclude_unset=True)
     for key, value in update_data.items():
         setattr(db_member, key, value)
@@ -132,7 +137,10 @@ def update_member(db: Session, db_member: models.Member, member_update: schemas.
     return db_member
 
 
-def update_member_active(db: Session, db_member: models.Member, member_update: schemas.members.MemberUpdateActive) -> models.Member:
+def update_member_active(
+        db: Session,
+        db_member: models.Member,
+        member_update: schemas.members.MemberUpdateActive) -> models.Member:
     since = member_update.since
     now = get_now()
 
@@ -191,7 +199,10 @@ def update_member_active(db: Session, db_member: models.Member, member_update: s
     return db_member
 
 
-def update_member_amount(db: Session, db_member: models.Member, member_update: schemas.members.MemberUpdateAmount) -> models.Member:
+def update_member_amount(
+        db: Session,
+        db_member: models.Member,
+        member_update: schemas.members.MemberUpdateAmount) -> models.Member:
     if not db_member.is_active:
         raise HTTPException(status_code=400, detail=f"Member={db_member.member_id} is not active.")
 
@@ -258,7 +269,11 @@ def get_due_payment_year_month_stats(db: Session, id_year_month: str) -> schemas
     return _calc_dues_payment_stats(db, _dp)
 
 
-def get_dues_payment_year_month_stats_list(db: Session, since: str = None, until: str = None) -> List[schemas.dues_payments.DuesPaymentStats]:
+def get_dues_payment_year_month_stats_list(
+        db: Session,
+        since: str = None,
+        until: str = None
+) -> List[schemas.dues_payments.DuesPaymentStats]:
     _dp_list = db.query(models.DuesPayment)
     if since:
         since = format_year_month(since)
@@ -293,7 +308,7 @@ def create_dues_payment_year_month(db: Session, dues_payment: schemas.dues_payme
     return db_dues_payment
 
 
-def _make_due_payment_for_non_active_members(db: Session, id_year_month: str, date_ym: datetime.date):
+def _make_due_payment_for_non_active_members(db: Session, id_year_month: str, date_ym: datetime.date) -> None:
     _member_list = db.query(models.Member).filter_by(is_active=False).filter(
         models.Member.start_date <= date_ym
     ).all()
@@ -316,7 +331,7 @@ def _make_due_payment_for_non_active_members(db: Session, id_year_month: str, da
         raise
 
 
-def _make_due_payment_for_active_members(db: Session, id_year_month: str, date_ym: datetime.date):
+def _make_due_payment_for_active_members(db: Session, id_year_month: str, date_ym: datetime.date) -> None:
     _member_list = db.query(models.Member).filter_by(is_active=True).filter(
         models.Member.start_date <= date_ym
     ).all()
@@ -329,7 +344,7 @@ def _make_due_payment_for_active_members(db: Session, id_year_month: str, date_y
         raise
 
 
-def _make_due_payment_for_new_member(db: Session, member: models.Member):
+def _make_due_payment_for_new_member(db: Session, member: models.Member) -> None:
     _dp_list = db.query(models.DuesPayment).filter(models.DuesPayment.date_ym >= member.start_date).all()
     try:
         for _dp in _dp_list:
@@ -340,7 +355,7 @@ def _make_due_payment_for_new_member(db: Session, member: models.Member):
         raise
 
 
-def _make_due_payment_for_member(db: Session, id_year_month: str, member: models.Member):
+def _make_due_payment_for_member(db: Session, id_year_month: str, member: models.Member) -> None:
     logit(f"Creating missing {member.amount}€ Due Payment for member={member.member_id} for {id_year_month} month.")
     mdp = models.MemberDuesPayment(
         member_id=member.member_id,
@@ -365,7 +380,11 @@ def get_member_due_payment(db: Session, tid: int) -> models.MemberDuesPayment:
     return mdp
 
 
-def pay_member_due_payment(db: Session, tid:int, mdpc: schemas.member_due_payment.MemberDuesPaymentCreate):
+def pay_member_due_payment(
+        db: Session,
+        tid:int,
+        mdpc: schemas.member_due_payment.MemberDuesPaymentCreate
+) -> models.MemberDuesPayment:
     mdp = db.get(models.MemberDuesPayment, tid)
     if mdp is None:
         raise ValueError(f"MemberDuesPayment={tid} not found.")
@@ -403,7 +422,7 @@ def get_df_pivot_table_dues_paied_for_all_members(
         db: Session,
         months: List[str],
         month_cases: List,
-        is_paied: bool) -> pd.DataFrame:
+        is_paied: bool) -> Union[pd.DataFrame, None]:
     # Construct the query
     query = db.query(
         models.Member.member_id,
@@ -420,6 +439,8 @@ def get_df_pivot_table_dues_paied_for_all_members(
 
     # Execute the query and fetch the results
     results = query.all()
+    if not results:
+        return None
 
     # Convert results to a DataFrame
     multiplier = 1 if is_paied else -1
@@ -440,7 +461,12 @@ def get_df_pivot_table_dues_paied_for_all_members(
     return df
 
 
-def pivot_table_dues_paied_for_all_members(db: Session, since: str = None, until: str = None):
+def pivot_table_dues_paied_for_all_members(
+        db: Session,
+        since: str = None,
+        until: str = None,
+        just_download: bool = False,
+) -> Union[Tuple[pd.DataFrame, pd.DataFrame], StreamingResponse]:
     # Define the months you are interested in
     months_query = db.query(models.DuesPayment.id_year_month).order_by(models.DuesPayment.id_year_month)
     if since:
@@ -464,21 +490,87 @@ def pivot_table_dues_paied_for_all_members(db: Session, since: str = None, until
     df_paied = get_df_pivot_table_dues_paied_for_all_members(db, months=months, month_cases=month_cases, is_paied=True)
     df_missing = get_df_pivot_table_dues_paied_for_all_members(db, months=months, month_cases=month_cases, is_paied=False)
 
-    filename = f"CdC Membros Quotas de {since or months[0]} a {until or months[-1]}.xlsx"
+    if just_download:
+        filename = f"CdC Membros Quotas de {since or months[0]} a {until or months[-1]}.xlsx"
 
-    # Save the DataFrame to an Excel file
-    output = BytesIO()
-    with pd.ExcelWriter(output, engine="openpyxl") as writer:
-        df_paied.to_excel(writer, index=False, sheet_name="Quotas pagas")
-        df_missing.to_excel(writer, index=False, sheet_name="Quotas em atraso")
-    output.seek(0)
+        # Save the DataFrame to an Excel file
+        output = BytesIO()
+        with pd.ExcelWriter(output, engine="openpyxl") as writer:
+            if df_paied is not None:
+                df_paied.to_excel(writer, index=False, sheet_name="Quotas pagas")
+            if df_missing is not None:
+                df_missing.to_excel(writer, index=False, sheet_name="Quotas em atraso")
+        output.seek(0)
 
-    # Send the Excel file as a response
-    return df_paied, df_missing, StreamingResponse(
-        output,
-        media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        headers={"Content-Disposition": f"attachment; filename={filename}"}
+        # Send the Excel file as a response
+        return StreamingResponse(
+            output,
+            media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            headers={"Content-Disposition": f"attachment; filename={filename}"}
+        )
+
+    return df_paied, df_missing
+
+
+def list_member_dues_payments_order_by_pay_date(
+        db: Session,
+        since: str = None,
+        until: str = None,
+        just_download: bool = False,
+) -> Union[List[models.MemberDuesPayment], StreamingResponse]:
+    # Query between months for paied dues
+    months_query = db.query(
+        models.MemberDuesPayment
+    ).filter_by(
+        is_paid=True,
+        is_member_active=True
+    ).order_by(
+        models.MemberDuesPayment.pay_date.desc()
     )
+    if since:
+        since = format_year_month(since)
+        months_query = months_query.filter(models.DuesPayment.date_ym >= since)
+    if until:
+        until = format_year_month(until)
+        months_query = months_query.filter(models.DuesPayment.date_ym <= until)
+
+    mdp_list: List[models.MemberDuesPayment] = months_query.all()
+    if not mdp_list:
+        return []
+
+    # Create pandas Dataframe
+    if just_download:
+        _data = [
+            {
+                "member_id": mdp.member_id,
+                "name": mdp.member.name,
+                "id_year_month": mdp.id_year_month,
+                "amount": mdp.amount,
+                "pay_date": mdp.pay_date,
+                "pay_update_time": mdp.pay_update_time,
+            }
+            for mdp in mdp_list
+        ]
+        _df = pd.DataFrame(_data)
+        since = since or _df['id_year_month'].min()
+        until = until or _df['id_year_month'].max()
+
+        # Create file
+        filename = f"CdC Lista de pagamento de Quotas de {since} a {until}.xlsx"
+
+        # Save the DataFrame to an Excel file
+        _output = BytesIO()
+        with pd.ExcelWriter(_output, engine="openpyxl") as writer:
+            _df.to_excel(writer, index=False, sheet_name="Quotas pagas")
+        _output.seek(0)
+
+        return StreamingResponse(
+            _output,
+            media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            headers={"Content-Disposition": f"attachment; filename={filename}"}
+        )
+
+    return mdp_list
 
 
 def _get_fields(d: dict) -> dict:
