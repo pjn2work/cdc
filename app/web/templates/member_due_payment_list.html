@@ -2,6 +2,7 @@
 {% block title %}Lista pagamento Quotas{% endblock %}
 {% block page_header %}Lista de pagamentos de quotas - {{ total }}{% endblock %}
 {% set form_action = "" %}
+{% set by_month = True %}
 {% block content_in_div %}
 {% include "_form_filter_between_dates.html" %}
 {%- endblock %}
@@ -10,7 +11,7 @@
     <table class="table table-striped table-bordered">
         <thead class="table-dark">
             <tr>
-                <th class="align_right">ID</th>
+                <th class="align_right">Membro ID</th>
                 <th class="align_left">Nome</th>
                 <th class="align_center">Mensalidade</th>
                 <th class="align_right">Valor pago</th>

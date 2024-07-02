@@ -1,7 +1,11 @@
+import pandas as pd
+
+from io import BytesIO
 from fastapi import HTTPException
+from fastapi.responses import StreamingResponse
 from sqlalchemy import or_
 from sqlalchemy.orm import Session
-from typing import List
+from typing import List, Union
 
 from . import models, schemas
 from ..utils import get_now, get_today_year_month_str
@@ -244,6 +248,63 @@ def post_member_donation(db: Session, member_id: int, member_donation: schemas.m
 
     db_member = get_member_by_id(db, member_id)
     return db_member
+
+
+def list_member_donations_order_by_pay_date(
+        db: Session,
+        since: str = None,
+        until: str = None,
+        just_download: bool = False,
+) -> Union[List[models.MemberDonation], StreamingResponse]:
+    # Query between months for paied dues
+    months_query = db.query(
+        models.MemberDonation
+    ).order_by(
+        models.MemberDonation.pay_date.desc(),
+        models.MemberDonation.member_id,
+        models.MemberDonation.pay_update_time.desc(),
+    )
+    if since:
+        months_query = months_query.filter(models.MemberDonation.pay_date >= since)
+    if until:
+        months_query = months_query.filter(models.MemberDonation.pay_date <= until)
+
+    md_list: List[models.MemberDonation] = months_query.all()
+    if not md_list:
+        return []
+
+    # Create pandas Dataframe
+    if just_download:
+        _data = [
+            {
+                "Membro ID": md.member_id,
+                "Nome": md.member.name,
+                "Valor": md.amount,
+                "Data Pagamento": md.pay_date,
+                "Data Actualização": md.pay_update_time,
+            }
+            for md in md_list
+        ]
+        _df = pd.DataFrame(_data)
+        since = since or _df['Data Pagamento'].min()
+        until = until or _df['Data Pagamento'].max()
+
+        # Create file
+        filename = f"CdC Lista de donativos de {since} a {until}.xlsx"
+
+        # Save the DataFrame to an Excel file
+        _output = BytesIO()
+        with pd.ExcelWriter(_output, engine="openpyxl") as writer:
+            _df.to_excel(writer, index=False, sheet_name="Donativos")
+        _output.seek(0)
+
+        return StreamingResponse(
+            _output,
+            media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            headers={"Content-Disposition": f"attachment; filename={filename}"}
+        )
+
+    return md_list
 
 
 def _get_fields(d: dict) -> dict:

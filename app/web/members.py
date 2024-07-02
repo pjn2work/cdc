@@ -105,3 +105,26 @@ async def post_member_donation(request: Request, member_id: int, db: Session = D
 
     _ = crud_member.post_member_donation(db, member_id=member_id, member_donation=member_donation)
     return RedirectResponse(url=f"show", status_code=303)
+
+
+@router.get("/donations", response_class=HTMLResponse)
+async def get_members_donations(
+        request: Request,
+        since: str = None,
+        until: str = None,
+        just_download: bool = False,
+        do_filter: bool = False,
+        db: Session = DB_SESSION):
+    if do_filter:
+        md_list = crud_member.list_member_donations_order_by_pay_date(db, since=since, until=until, just_download=just_download)
+
+        if just_download:
+            return md_list
+    else:
+        md_list = []
+
+    return templates.TemplateResponse("member_donations_list.html", {
+        "request": request,
+        "md_list": md_list,
+        "total": len(md_list),
+    })

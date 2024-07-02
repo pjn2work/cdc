@@ -211,24 +211,25 @@ def get_df_pivot_table_dues_paied_for_all_members(
         models.Member.member_id
     )
 
-    # Execute the query and fetch the results
     results = query.all()
+    if results:
+        # Convert results to a DataFrame
+        multiplier = 1 if is_paied else -1
+        data = [
+            {id_year_month: getattr(row, id_year_month) * multiplier for id_year_month in months}
+            for row in results
+        ]
+        for i, row in enumerate(results):
+            data[i]["ID"] = row.member_id
+            data[i]["Nome"] = row.name
+            data[i]["Total"] = sum(row[2:]) * multiplier
 
-    # Convert results to a DataFrame
-    multiplier = 1 if is_paied else -1
-    data = [
-        {id_year_month: getattr(row, id_year_month) * multiplier for id_year_month in months}
-        for row in results
-    ]
-    for i, row in enumerate(results):
-        data[i]["ID"] = row.member_id
-        data[i]["Nome"] = row.name
-        data[i]["Total"] = sum(row[2:]) * multiplier
-
-    # Create DataFrame with wanted columns
-    df = pd.DataFrame(data)
-    df = df[["ID", "Nome", "Total"] + months]
-    df = df.sort_values(by=["ID"], inplace=False)
+        # Create DataFrame with wanted columns
+        df = pd.DataFrame(data)
+        df = df[["ID", "Nome", "Total"] + months]
+        df = df.sort_values(by=["ID"], inplace=False)
+    else:
+        df = pd.DataFrame(columns=["ID", "Nome", "Total"])
 
     return df
 
@@ -297,7 +298,9 @@ def list_member_dues_payments_order_by_pay_date(
         is_paid=True,
         is_member_active=True
     ).order_by(
-        models.MemberDuesPayment.pay_date.desc()
+        models.MemberDuesPayment.pay_date.desc(),
+        models.MemberDuesPayment.member_id,
+        models.MemberDuesPayment.pay_update_time.desc(),
     )
     if since:
         since = format_year_month(since)
@@ -324,8 +327,8 @@ def list_member_dues_payments_order_by_pay_date(
             for mdp in mdp_list
         ]
         _df = pd.DataFrame(_data)
-        since = since or _df['id_year_month'].min()
-        until = until or _df['id_year_month'].max()
+        since = since or _df['Quota'].min()
+        until = until or _df['Quota'].max()
 
         # Create file
         filename = f"CdC Lista de pagamento de Quotas de {since} a {until}.xlsx"
