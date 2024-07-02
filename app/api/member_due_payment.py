@@ -2,7 +2,7 @@ from fastapi import APIRouter
 from sqlalchemy.orm import Session
 from starlette import status
 
-from ..db import crud, schemas, DB_SESSION
+from ..db import crud_dues_payments, schemas, DB_SESSION
 
 
 router = APIRouter()
@@ -14,7 +14,7 @@ router = APIRouter()
     status_code=status.HTTP_200_OK
 )
 def get_member_due_payment(tid: int, db: Session = DB_SESSION):
-    return crud.get_member_due_payment(db, tid=tid)
+    return crud_dues_payments.get_member_due_payment(db, tid=tid)
 
 
 @router.put(
@@ -26,4 +26,4 @@ def pay_member_due_payment(
         tid: int,
         mdpc: schemas.member_due_payment.MemberDuesPaymentCreate,
         db: Session = DB_SESSION):
-    return crud.pay_member_due_payment(db, tid=tid, mdpc=mdpc)
+    return crud_dues_payments.pay_member_due_payment(db, tid=tid, mdpc=mdpc)

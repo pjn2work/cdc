@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from starlette.responses import HTMLResponse, RedirectResponse
 
 from . import templates
-from ..db import crud, DB_SESSION, schemas
+from ..db import crud_dues_payments, schemas, DB_SESSION
 
 
 router = APIRouter()
@@ -19,7 +19,7 @@ async def list_member_dues_payments_order_by_pay_date(
         db: Session = DB_SESSION):
 
     if do_filter:
-        mdp_list = crud.list_member_dues_payments_order_by_pay_date(db, since=since, until=until, just_download=just_download)
+        mdp_list = crud_dues_payments.list_member_dues_payments_order_by_pay_date(db, since=since, until=until, just_download=just_download)
 
         if just_download:
             return mdp_list
@@ -41,7 +41,7 @@ async def pay_member_due_payment(
     data = await request.form()
     mdpc: schemas.member_due_payment.MemberDuesPaymentCreate = schemas.member_due_payment.MemberDuesPaymentCreate(**data)
 
-    mdp = crud.pay_member_due_payment(db, tid=tid, mdpc=mdpc)
+    mdp = crud_dues_payments.pay_member_due_payment(db, tid=tid, mdpc=mdpc)
     return RedirectResponse(url=f"../members/{mdp.member_id}/show", status_code=303)
 
 
@@ -55,7 +55,7 @@ def table_dues_paied_for_all_members(
         db: Session = DB_SESSION):
 
     if do_filter:
-        result = crud.pivot_table_dues_paied_for_all_members(db, since=since, until=until, just_download=just_download)
+        result = crud_dues_payments.pivot_table_dues_paied_for_all_members(db, since=since, until=until, just_download=just_download)
 
         if just_download:
             return result

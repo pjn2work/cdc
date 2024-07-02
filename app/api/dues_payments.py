@@ -3,7 +3,7 @@ from fastapi import APIRouter
 from sqlalchemy.orm import Session
 from starlette import status
 
-from ..db import crud, schemas, DB_SESSION
+from ..db import crud_dues_payments, schemas, DB_SESSION
 
 router = APIRouter()
 
@@ -15,7 +15,7 @@ router = APIRouter()
 )
 def create_dues_payment_year_month(dues_payment: schemas.dues_payments.DuesPaymentCreate,
                                    db: Session = DB_SESSION):
-    return crud.create_dues_payment_year_month(db=db, dues_payment=dues_payment)
+    return crud_dues_payments.create_dues_payment_year_month(db=db, dues_payment=dues_payment)
 
 
 @router.get(
@@ -26,7 +26,7 @@ def create_dues_payment_year_month(dues_payment: schemas.dues_payments.DuesPayme
 def list_dues_payment_year_month_stats(since: str = None,
                                        until: str = None,
                                        db: Session = DB_SESSION):
-    return crud.get_dues_payment_year_month_stats_list(db=db, since=since, until=until)
+    return crud_dues_payments.get_dues_payment_year_month_stats_list(db=db, since=since, until=until)
 
 
 @router.get(
@@ -35,4 +35,4 @@ def list_dues_payment_year_month_stats(since: str = None,
     status_code=status.HTTP_200_OK
 )
 def get_dues_payment_year_month_stats(id_year_month: str, db: Session = DB_SESSION):
-    return crud.get_due_payment_year_month_stats(db=db, id_year_month=id_year_month)
+    return crud_dues_payments.get_due_payment_year_month_stats(db=db, id_year_month=id_year_month)

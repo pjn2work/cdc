@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from starlette.responses import HTMLResponse, RedirectResponse
 
 from . import templates
-from ..db import crud, schemas, DB_SESSION
+from ..db import crud_dues_payments, schemas, DB_SESSION
 from ..utils import get_today_year_month_str, get_today
 
 router = APIRouter()
@@ -14,7 +14,7 @@ def list_dues_payments(request: Request,
                        since: str = None,
                        until: str = None,
                        db: Session = DB_SESSION):
-    dp_list = crud.get_dues_payment_year_month_stats_list(db, since=since, until=until)
+    dp_list = crud_dues_payments.get_dues_payment_year_month_stats_list(db, since=since, until=until)
     return templates.TemplateResponse("dues_payments_list.html", {
         "request": request,
         "dues_payments_list": dp_list,
@@ -26,7 +26,7 @@ def list_dues_payments(request: Request,
 
 @router.get("/{id_year_month}/show", response_class=HTMLResponse)
 def get_due_payment(request: Request, id_year_month: str, db: Session = DB_SESSION):
-    dp = crud.get_due_payment_year_month_stats(db, id_year_month=id_year_month)
+    dp = crud_dues_payments.get_due_payment_year_month_stats(db, id_year_month=id_year_month)
     return templates.TemplateResponse("dues_payments_show.html", {
         "request": request,
         "dp": dp,
@@ -39,5 +39,5 @@ async def create_due_payment_submit(request: Request, db: Session = DB_SESSION):
     data = await request.form()
     dues_payment: schemas.dues_payments.DuesPaymentCreate = schemas.dues_payments.DuesPaymentCreate(**data)
 
-    dp = crud.create_dues_payment_year_month(db=db, dues_payment=dues_payment)
+    dp = crud_dues_payments.create_dues_payment_year_month(db=db, dues_payment=dues_payment)
     return RedirectResponse(url=f"{dp.id_year_month}/show", status_code=303)
