@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}Lista pagamento Quotas{% endblock %}
+{% block page_header %}Lista de pagamentos de quotas - {{ total }}{% endblock %}
+{% set form_action = "" %}
+{% block content_in_div %}
+{% include "_form_filter_between_dates.html" %}
+{%- endblock %}
+{% block content_out_div %}
+    <br>
+    <table class="table table-striped table-bordered">
+        <thead class="table-dark">
+            <tr>
+                <th class="align_right">ID</th>
+                <th class="align_left">Nome</th>
+                <th class="align_center">Mensalidade</th>
+                <th class="align_right">Valor pago</th>
+                <th class="align_left">Data de pagamento</th>
+                <th class="align_left">Data de actualização</th>
+            </tr>
+        </thead>
+        <tbody>
+        {%- for mdp in mdp_list %}
+            <tr>
+                <td class="align_right"><a href="../members/{{ mdp.member_id }}/show">{{ mdp.member_id }}</a></td>
+                <td class="align_left">{{ mdp.member.name }}</td>
+                <td class="align_center">{{ mdp.id_year_month }}</td>
+                <td class="align_right">{{ mdp.amount }} €</td>
+                <td class="align_left">{{ mdp.pay_date }}</td>
+                <td class="align_left">{{ mdp.pay_update_time }}</td>
+            </tr>
+        {%- endfor %}
+        </tbody>
+    </table>
+{% endblock %}

@@ -33,6 +33,8 @@
                         <p class="form-control-plaintext data-text">{{ member.tlf }}</p>
                         <label class="form-label label-text">Email</label>
                         <p class="form-control-plaintext data-text">{{ member.email }}</p>
+                        <label class="form-label label-text">Notas</label>
+                        <textarea class="form-control-plaintext data-text" disabled rows="3" cols="120">{{ member.notes }}</textarea>
 
                         <hr>
 
@@ -117,8 +119,8 @@
                 <th class="align_center">Desde</th>
                 <th class="align_center">Associado Activo</th>
                 <th class="align_right">Quota</th>
-                <th class="align_right">Meses em atraso</th>
-                <th class="align_right">Valor em atraso</th>
+                <th class="align_right">Meses em dívida</th>
+                <th class="align_right">Valor em dívida</th>
                 <th class="align_right">Meses pagos</th>
                 <th class="align_right">Valor pago</th>
                 <th>Nome</th>
@@ -146,5 +148,5 @@
         </tbody>
     </table>
 
-    {% include 'member_due_payment_form.html' %}
+    {% include '_form_member_due_payment_pay_date.html' %}
 {% endblock %}

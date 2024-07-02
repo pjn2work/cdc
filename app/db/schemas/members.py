@@ -12,6 +12,7 @@ class MemberBase(BaseModel):
     name: str = Field(min_length=3, max_length=100, examples=["Pedro Nunes"])
     tlf: str = Field(min_length=9, max_length=13, examples=["912000678"])
     email: Optional[EmailStr] = Field(examples=["pedro@gmail.com"])
+    notes: str = Field(default="", examples=["IT member"])
 
 
 class MemberBaseStats(MemberBase):
@@ -29,6 +30,7 @@ class MemberUpdate(BaseModel):
     name: Optional[str] = Field(min_length=3, max_length=100, default=None)
     tlf: Optional[str] = Field(min_length=9, max_length=13, default=None)
     email: Optional[EmailStr] = Field(min_length=8, max_length=100, default=None)
+    notes: Optional[str] = Field(default=None)
 
 
 class MemberUpdateActive(BaseModel):

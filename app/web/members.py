@@ -15,8 +15,13 @@ def list_members(request: Request,
                  only_due_missing: bool = None,
                  only_active_members: bool = None,
                  search_text: str = "",
+                 do_filter: bool = False,
                  db: Session = DB_SESSION):
-    members = crud.get_members_list(db, only_due_missing=only_due_missing, only_active_members=only_active_members, search_text=search_text)
+    if do_filter:
+        members = crud.get_members_list(db, only_due_missing=only_due_missing, only_active_members=only_active_members, search_text=search_text)
+    else:
+        members = []
+
     return templates.TemplateResponse("members_list.html", {
         "request": request,
         "members": members,
