@@ -61,17 +61,13 @@ def table_dues_paied_for_all_members(
             return result
 
         df_paied, df_missing = result
-        if df_paied:
-            columns = [
-                col
-                for col in df_paied.columns
-                if col not in ("member_id", "name", "total")
-            ]
-            df_paied = df_paied.to_dict(orient="records")
-            df_missing = df_missing.to_dict(orient="records")
-        else:
-            df_paied, df_missing = [{}], [{}]
-            columns = []
+        columns = [
+            col
+            for col in df_paied.columns
+            if col not in ("member_id", "name", "total")
+        ]
+        df_paied = df_paied.to_dict(orient="records")
+        df_missing = df_missing.to_dict(orient="records")
     else:
         df_paied, df_missing = [{}], [{}]
         columns = []

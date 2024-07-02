@@ -422,7 +422,7 @@ def get_df_pivot_table_dues_paied_for_all_members(
         db: Session,
         months: List[str],
         month_cases: List,
-        is_paied: bool) -> Union[pd.DataFrame, None]:
+        is_paied: bool) -> pd.DataFrame:
     # Construct the query
     query = db.query(
         models.Member.member_id,
@@ -439,8 +439,6 @@ def get_df_pivot_table_dues_paied_for_all_members(
 
     # Execute the query and fetch the results
     results = query.all()
-    if not results:
-        return None
 
     # Convert results to a DataFrame
     multiplier = 1 if is_paied else -1
