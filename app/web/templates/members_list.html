@@ -3,6 +3,7 @@
 {% block page_header %}Lista de Associados - {{ total_results }}{% endblock %}
 {% block content_in_div %}
     <form class="form-inline" method="get">
+        <input class="hidden" type="checkbox" id="do_filter" name="do_filter" checked>
         <div class="form-check form-switch mb-4">
             <input class="form-check-input" type="checkbox" id="only_due_missing" name="only_due_missing" onclick="toggleOnlyMissing()">
             <label class="form-check-label" for="only_due_missing">Apenas associados com quotas em atraso</label>
@@ -52,6 +53,7 @@
             const checkbox_active_members = document.getElementById('only_active_members');
             const searchText = document.getElementById('search_text').value;
             const urlParams = new URLSearchParams(window.location.search);
+            urlParams.set('do_filter', 'on');
             if (checkbox_due_missing.checked) {
                 urlParams.set('only_due_missing', 'on');
             } else {

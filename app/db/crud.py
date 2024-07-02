@@ -447,14 +447,14 @@ def get_df_pivot_table_dues_paied_for_all_members(
         for row in results
     ]
     for i, row in enumerate(results):
-        data[i]["member_id"] = row.member_id
-        data[i]["name"] = row.name
-        data[i]["total"] = sum(row[2:]) * multiplier
+        data[i]["ID"] = row.member_id
+        data[i]["Nome"] = row.name
+        data[i]["Total"] = sum(row[2:]) * multiplier
 
     # Create DataFrame with wanted columns
     df = pd.DataFrame(data)
-    df = df[["member_id", "name", "total"] + months]
-    df = df.sort_values(by=["member_id"], inplace=False)
+    df = df[["ID", "Nome", "Total"] + months]
+    df = df.sort_values(by=["ID"], inplace=False)
 
     return df
 
@@ -540,12 +540,12 @@ def list_member_dues_payments_order_by_pay_date(
     if just_download:
         _data = [
             {
-                "member_id": mdp.member_id,
-                "name": mdp.member.name,
-                "id_year_month": mdp.id_year_month,
-                "amount": mdp.amount,
-                "pay_date": mdp.pay_date,
-                "pay_update_time": mdp.pay_update_time,
+                "ID": mdp.member_id,
+                "Nome": mdp.member.name,
+                "Quota": mdp.id_year_month,
+                "Valor": mdp.amount,
+                "Data Pagamento": mdp.pay_date,
+                "Data Actualização": mdp.pay_update_time,
             }
             for mdp in mdp_list
         ]

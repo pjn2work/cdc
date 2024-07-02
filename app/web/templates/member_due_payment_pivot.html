@@ -16,7 +16,6 @@
             <tr>
                 <th class="align_right">ID</th>
                 <th class="align_left">Nome</th>
-                <th class="align_right">Total</th>
                 {%- for col in columns %}
                 <th class="align_center">{{ col }}</th>
                 {%-  endfor %}
@@ -25,9 +24,8 @@
         <tbody>
         {%- for row in df %}
             <tr>
-                <td class="align_right"><a href="../members/{{ row["member_id"] }}/show">{{ row["member_id"] }}</a></td>
-                <td class="align_left">{{ row["name"] }}</td>
-                <td class="align_right">{{ row["total"] }} €</td>
+                <td class="align_right"><a href="../members/{{ row["member_id"] }}/show">{{ row["ID"] }}</a></td>
+                <td class="align_left">{{ row["Nome"] }}</td>
                 {%- for col in columns %}
                 <td class="align_right">{% if row[col] %}{{ row[col] }} €{% endif %}</td>
                 {%-  endfor %}
