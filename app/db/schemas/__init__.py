@@ -1,1 +1,1 @@
-from . import dues_payments, members, member_due_payment
+from . import dues_payments, members, member_due_payment, member_donations

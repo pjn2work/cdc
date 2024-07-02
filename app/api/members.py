@@ -75,3 +75,14 @@ def update_member_amount(member_id: int,
                          db: Session = DB_SESSION):
     db_member = crud_member.get_member_by_id(db, member_id=member_id)
     return crud_member.update_member_amount(db, db_member=db_member, member_update=member_update)
+
+
+@router.post(
+    path="/{member_id}/donation",
+    response_model=schemas.members.Member,
+    status_code = status.HTTP_200_OK
+)
+def post_member_donation(member_id: int,
+                         member_donation: schemas.member_donations.MemberDonationCreate,
+                         db: Session = DB_SESSION):
+    return crud_member.post_member_donation(db, member_id=member_id, member_donation=member_donation)

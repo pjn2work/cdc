@@ -231,5 +231,20 @@ def _create_member_history(db: Session, member: models.Member) -> schemas.member
     return db_member_history
 
 
+def post_member_donation(db: Session, member_id: int, member_donation: schemas.member_donations.MemberDonationCreate):
+    db_member_donation = models.MemberDonation(member_id=member_id, **member_donation.model_dump())
+    db_member_donation.pay_update_time = get_now()
+    try:
+        db.add(db_member_donation)
+        db.commit()
+        db.refresh(db_member_donation)
+    except:
+        db.rollback()
+        raise
+
+    db_member = get_member_by_id(db, member_id)
+    return db_member
+
+
 def _get_fields(d: dict) -> dict:
     return {k: v for k, v in d.items() if not k.startswith("_")}

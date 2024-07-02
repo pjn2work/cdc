@@ -47,9 +47,9 @@
                         <p class="align_center">
                             <form class="form-inline" method="post" action="amount">
                                 <button class="btn btn-primary mb-1" type="submit">Alterar valor da quota desde</button>
-                                <input class="form-text" type="month" size="5" id="since" name="since" placeholder="{{ this_month }}" value="{{ this_month }}">
+                                <input class="form-text" type="month" size="5" id="since" name="since" placeholder="{{ this_month }}" value="{{ this_month }}" required>
                                 para
-                                <input class="form-text" type="text" size="3" id="amount" name="amount" placeholder="{{ member.amount }}" value="{{ member.amount }}">€
+                                <input class="form-text" type="text" size="4" id="amount" name="amount" placeholder="{{ member.amount }}" value="{{ member.amount }}" required>€
                             </form>
                         </p>
                         {% endif %}
@@ -59,8 +59,17 @@
                                 <button class="btn btn-primary mb-1" type="submit">
                                     {% if member.is_active %}Desa{% else %}A{% endif %}ctivar Associado desde
                                 </button>
-                                <input class="form-text" type="month" size="5" id="since" name="since" placeholder="{{ this_month }}" value="{{ this_month }}">
+                                <input class="form-text" type="month" size="5" id="since" name="since" placeholder="{{ this_month }}" value="{{ this_month }}" required>
                                 <input class="hidden" type="checkbox" id="is_active" name="is_active" {% if not member.is_active %}checked{% endif %}>
+                            </form>
+                        </p>
+
+                        <p class="align_center">
+                            <form class="form-inline" method="post" action="donation">
+                                <button class="btn btn-primary mb-1" type="submit">Registar donativo feito no dia</button>
+                                <input class="form-text" type="date" size="5" id="pay_date" name="pay_date" placeholder="{{ today }}" value="{{ today }}" required>
+                                no valor de
+                                <input class="form-text" type="text" size="4" id="amount" name="amount" placeholder="" value="" required>€
                             </form>
                         </p>
                     </div>
@@ -103,6 +112,30 @@
                 <td class="align_center">{{ mdp.is_member_active }}</td>
                 <td>{{ mdp.pay_date|default("", True) }}</td>
                 <td>{{ mdp.pay_update_time }}</td>
+            </tr>
+        {%- endfor %}
+        </tbody>
+    </table>
+
+    <br><hr><br>
+
+    <h5 class="card-title">Lista de donativos</h5>
+    <table class="table table-striped table-bordered">
+        <thead class="table-dark">
+            <tr>
+                <th class="align_right">ID</th>
+                <th class="align_right">Donativo</th>
+                <th>Data de pagamento</th>
+                <th>Data de actualização</th>
+            </tr>
+        </thead>
+        <tbody>
+        {%- for md in member.member_donations %}
+            <tr>
+                <td class="align_right">{{ md.tid }}</td>
+                <td class="align_right">{{ md.amount }} €</td>
+                <td>{{ md.pay_date }}</td>
+                <td>{{ md.pay_update_time }}</td>
             </tr>
         {%- endfor %}
         </tbody>

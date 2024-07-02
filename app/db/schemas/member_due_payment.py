@@ -1,6 +1,6 @@
 from typing import Optional
 from pydantic import BaseModel, Field
-from ...utils import datetime, date
+from ...utils import datetime, date, get_today
 
 
 class MemberDuesPaymentBase(BaseModel):
@@ -11,7 +11,7 @@ class MemberDuesPaymentBase(BaseModel):
 
 
 class MemberDuesPaymentCreate(BaseModel):
-    pay_date: date = Field(default_factory=date.today)
+    pay_date: date = Field(default_factory=get_today)
 
 
 class MemberDuesPayment(MemberDuesPaymentBase):

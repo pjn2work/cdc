@@ -27,6 +27,7 @@ class Member(MemberAbs):
 
     member_history = relationship("MemberHistory", back_populates="member")
     member_due_payment = relationship("MemberDuesPayment", back_populates="member")
+    member_donations = relationship("MemberDonation", back_populates="member")
 
 
 class MemberHistory(MemberAbs):
