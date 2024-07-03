@@ -1,8 +1,11 @@
 from typing import List, Optional
+
 from pydantic import BaseModel, Field, EmailStr
-from ...utils import get_today, get_now, datetime, date, get_today_year_month_str
-from .member_due_payment import MemberDuesPayment
+
 from .member_donations import MemberDonation
+from .member_due_payment import MemberDuesPayment
+from .member_items import MemberItems
+from ...utils import get_today, get_now, datetime, date, get_today_year_month_str
 
 
 class MemberBase(BaseModel):
@@ -67,6 +70,7 @@ class Member(MemberBaseStats):
     member_history: List[MemberHistory] = []
     member_due_payment: List[MemberDuesPayment] = []
     member_donations: List[MemberDonation] = []
+    member_items: List[MemberItems] = []
 
     class Config:
         orm_mode: True

@@ -1,5 +1,6 @@
 from sqlalchemy import Column, Integer, Float, Boolean, String, ForeignKey, Date, DateTime
 from sqlalchemy.orm import relationship
+
 from ..database import Base
 
 
@@ -28,6 +29,7 @@ class Member(MemberAbs):
     member_history = relationship("MemberHistory", back_populates="member")
     member_due_payment = relationship("MemberDuesPayment", back_populates="member")
     member_donations = relationship("MemberDonation", back_populates="member")
+    member_items = relationship("MemberItems", back_populates="member")
 
 
 class MemberHistory(MemberAbs):
