@@ -70,6 +70,8 @@
                                 <input class="form-text" type="date" size="5" id="pay_date" name="pay_date" placeholder="{{ today }}" value="{{ today }}" required>
                                 no valor de
                                 <input class="form-text" type="text" size="4" id="amount" name="amount" placeholder="" value="" required>€
+                                pagamento em dinheiro?
+                                <input class="form-text" type="checkbox" id="is_cash" name="is_cash">
                             </form>
                         </p>
                     </div>
@@ -89,6 +91,7 @@
                 <th class="align_center">Mensalidade</th>
                 <th class="align_center">Pagamento</th>
                 <th class="align_right">Quota</th>
+                <th class="align_center">VD</th>
                 <th class="align_center">Associado Activo</th>
                 <th>Data de pagamento</th>
                 <th>Data de actualização</th>
@@ -109,6 +112,7 @@
                 <td class="red align_center"><button onclick="pay_member_due({{ mdp.tid }})">Pagar</button></td>
                 {%- endif %}
                 <td class="align_right">{{ mdp.amount }} €</td>
+                <td class="align_center">{{ mdp.is_cash }}</td>
                 <td class="align_center">{{ mdp.is_member_active }}</td>
                 <td>{{ mdp.pay_date|default("", True) }}</td>
                 <td>{{ mdp.pay_update_time }}</td>
@@ -125,6 +129,7 @@
             <tr>
                 <th class="align_right">ID</th>
                 <th class="align_right">Donativo</th>
+                <th class="align_center">VD</th>
                 <th>Data de pagamento</th>
                 <th>Data de actualização</th>
             </tr>
@@ -134,6 +139,7 @@
             <tr>
                 <td class="align_right">{{ md.tid }}</td>
                 <td class="align_right">{{ md.amount }} €</td>
+                <td class="align_center">{{ md.is_cash }}</td>
                 <td>{{ md.pay_date }}</td>
                 <td>{{ md.pay_update_time }}</td>
             </tr>

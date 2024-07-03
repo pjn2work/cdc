@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, Float, ForeignKey, DateTime, Date
+from sqlalchemy import Column, Integer, Float, ForeignKey, DateTime, Date, Boolean
 from sqlalchemy.orm import relationship
 
 from ..database import Base
@@ -10,6 +10,7 @@ class MemberDonation(Base):
 
     member_id = Column(Integer, ForeignKey("members.member_id"), index=True)
     amount = Column(Float)
+    is_cash = Column(Boolean)
     pay_date = Column(Date)
     pay_update_time = Column(DateTime)
 

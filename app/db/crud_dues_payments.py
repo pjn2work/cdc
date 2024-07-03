@@ -172,6 +172,7 @@ def pay_member_due_payment(
 
     try:
         mdp.is_paid = True
+        mdp.is_cash = mdpc.is_cash
         mdp.pay_date = mdpc.pay_date
         mdp.pay_update_time = get_now()
         db.add(mdp)
