@@ -1,7 +1,6 @@
-from typing import Union
 from datetime import datetime, date
-from pytz import timezone
 
+from pytz import timezone
 
 TZ = timezone("Europe/Lisbon")
 
@@ -22,7 +21,7 @@ def get_today_year_month_str():
     return format_year_month(get_today())
 
 
-def format_year_month(ym: Union[str, date]) -> str:
+def format_year_month(ym: str | date) -> str:
     if isinstance(ym, date):
         return ym.strftime("%Y-%m")
 

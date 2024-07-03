@@ -1,15 +1,16 @@
 import datetime
-import pandas as pd
-
 from io import BytesIO
+from typing import List, Tuple
+
+import pandas as pd
 from fastapi import HTTPException
 from fastapi.responses import StreamingResponse
 from sqlalchemy import func, and_, case as case_
 from sqlalchemy.orm import Session
-from typing import List, Tuple, Union
+
 from . import models, schemas
-from ..utils import get_now, get_today_year_month_str, format_year_month
 from .. import logit
+from ..utils import get_now, get_today_year_month_str, format_year_month
 
 
 def get_member_due_payment_missing_stats(db: Session, member_id: int) -> Tuple[List[str], int]:
@@ -239,7 +240,7 @@ def pivot_table_dues_paied_for_all_members(
         since: str = None,
         until: str = None,
         just_download: bool = False,
-) -> Union[Tuple[pd.DataFrame, pd.DataFrame], StreamingResponse]:
+) -> Tuple[pd.DataFrame, pd.DataFrame] | StreamingResponse:
     # Define the months you are interested in
     months_query = db.query(models.DuesPayment.id_year_month).order_by(models.DuesPayment.id_year_month)
     if since:
@@ -290,7 +291,7 @@ def list_member_dues_payments_order_by_pay_date(
         since: str = None,
         until: str = None,
         just_download: bool = False,
-) -> Union[List[models.MemberDuesPayment], StreamingResponse]:
+) -> List[models.MemberDuesPayment] | StreamingResponse:
     # Query between months for paied dues
     months_query = db.query(
         models.MemberDuesPayment

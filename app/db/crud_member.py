@@ -1,15 +1,15 @@
-import pandas as pd
-
 from io import BytesIO
+from typing import List
+
+import pandas as pd
 from fastapi import HTTPException
 from fastapi.responses import StreamingResponse
 from sqlalchemy import or_
 from sqlalchemy.orm import Session
-from typing import List, Union
 
 from . import models, schemas
-from ..utils import get_now, get_today_year_month_str
 from .crud_dues_payments import get_member_due_payment_missing_stats, make_due_payment_for_new_member
+from ..utils import get_now, get_today_year_month_str
 
 
 def get_member_by_id(db: Session, member_id: int) -> models.Member:
@@ -255,7 +255,7 @@ def list_member_donations_order_by_pay_date(
         since: str = None,
         until: str = None,
         just_download: bool = False,
-) -> Union[List[models.MemberDonation], StreamingResponse]:
+) -> List[models.MemberDonation] | StreamingResponse:
     # Query between months for paied dues
     months_query = db.query(
         models.MemberDonation
