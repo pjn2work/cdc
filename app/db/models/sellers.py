@@ -4,7 +4,7 @@ from sqlalchemy.orm import relationship
 from ..database import Base
 
 
-class Sellers(Base):
+class Seller(Base):
     __tablename__ = "sellers"
     seller_id = Column(Integer, primary_key=True, autoincrement=True, index=True)
 

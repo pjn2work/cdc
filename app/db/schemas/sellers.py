@@ -27,8 +27,6 @@ class SellerUpdate(BaseModel):
 class Seller(SellerBase):
     seller_id: int
 
-    seller_items: List[SellerItems] = []
-
     class Config:
         orm_mode: True
 

@@ -7,7 +7,7 @@ from .seller_items import SellerItems
 from ...utils import date, datetime
 
 
-class ItemsBase(BaseModel):
+class ItemBase(BaseModel):
     seller_id: int
     item_id: int
     ea_id: int
@@ -18,7 +18,7 @@ class ItemsBase(BaseModel):
     sell_date: date
 
 
-class ItemsUpdate(BaseModel):
+class ItemUpdate(BaseModel):
     seller_id: Optional[int] = Field(default=None)
     item_id: Optional[int] = Field(default=None)
     ea_id: Optional[int] = Field(default=None)
@@ -29,11 +29,11 @@ class ItemsUpdate(BaseModel):
     sell_date: Optional[date] = Field(default=None)
 
 
-class ItemsCreate(ItemsBase):
+class ItemCreate(ItemBase):
     pass
 
 
-class Items(ItemsBase):
+class Item(ItemBase):
     item_id: int
     row_update_time: datetime
 
@@ -41,7 +41,7 @@ class Items(ItemsBase):
         orm_mode: True
 
 
-class ItemsView(Items):
+class ItemView(Item):
     seller_items: List[SellerItems] = []
     member_items: List[MemberItems] = []
 
@@ -53,28 +53,26 @@ class ItemsView(Items):
 # ----------------------------------------------------------
 
 
-class CategoriesBase(BaseModel):
+class CategoryBase(BaseModel):
     name: str = Field(min_length=2, max_length=100, examples=["books"])
     notes: str = Field(default="", examples=["default category"])
 
 
-class CategoriesUpdate(BaseModel):
+class CategoryUpdate(BaseModel):
     name: Optional[str] = Field(min_length=2, max_length=100, default=None)
     notes: Optional[str] = Field(default=None)
 
 
-class CategoriesCreate(CategoriesBase):
+class CategoryCreate(CategoryBase):
     pass
 
 
-class Categories(CategoriesBase):
+class Category(CategoryBase):
     category_id: int
     row_update_time: datetime
-
-    items: List[Items] = []
 
     class Config:
         orm_mode: True
 
-class CategoriesView(Categories):
-    items: List[Items] = []
+class CategoryView(Category):
+    items: List[Item] = []

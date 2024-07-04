@@ -16,7 +16,7 @@ class SellerItemsBase(BaseModel):
     sell_date: date
 
 
-class SellerUpdate(BaseModel):
+class SellerItemsUpdate(BaseModel):
     seller_id: Optional[int] = Field(default=None)
     item_id: Optional[int] = Field(default=None)
     ea_id: Optional[int] = Field(default=None)

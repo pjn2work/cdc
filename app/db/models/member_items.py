@@ -19,4 +19,4 @@ class MemberItems(Base):
     row_update_time = Column(DateTime)
 
     member = relationship("Member", back_populates="member_items")
-    items = relationship("Items", back_populates="member_items")
+    items = relationship("Item", back_populates="member_items")

@@ -18,6 +18,6 @@ class SellerItems(Base):
     sell_date = Column(Date)
     row_update_time = Column(DateTime)
 
-    sellers = relationship("Sellers", back_populates="seller_items")
-    items = relationship("Items", back_populates="seller_items")
+    sellers = relationship("Seller", back_populates="seller_items")
+    items = relationship("Item", back_populates="seller_items")
     expense_accounts = relationship("ExpenseAccount", back_populates="seller_items")

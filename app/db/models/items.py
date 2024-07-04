@@ -4,7 +4,7 @@ from sqlalchemy.orm import relationship
 from ..database import Base
 
 
-class Categories(Base):
+class Category(Base):
     __tablename__ = "categories"
     category_id = Column(Integer, primary_key=True, autoincrement=True, index=True)
 
@@ -12,10 +12,10 @@ class Categories(Base):
     notes = Column(String, default="")
     row_update_time = Column(DateTime)
 
-    items = relationship("Items", back_populates="categories")
+    items = relationship("Item", back_populates="categories")
 
 
-class Items(Base):
+class Item(Base):
     __tablename__ = "items"
     __table_args__ = (UniqueConstraint("category_id", "name", name="uix_2"), )
     item_id = Column(Integer, primary_key=True, autoincrement=True, index=True)
@@ -27,6 +27,6 @@ class Items(Base):
     notes = Column(String, default="")
     row_update_time = Column(DateTime)
 
-    categories = relationship("Categories", back_populates="items")
+    categories = relationship("Category", back_populates="items")
     seller_items = relationship("SellerItems", back_populates="items")
     member_items = relationship("MemberItems", back_populates="items")
