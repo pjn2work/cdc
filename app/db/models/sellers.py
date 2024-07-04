@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String
+from sqlalchemy import Column, Integer, String, DateTime
 from sqlalchemy.orm import relationship
 
 from ..database import Base
@@ -14,3 +14,17 @@ class Sellers(Base):
     notes = Column(String, default="")
 
     seller_items = relationship("SellerItems", back_populates="sellers")
+
+
+# ----------------------------------------------------------
+
+
+class ExpenseAccount(Base):
+    __tablename__ = "expense_accounts"
+    ea_id = Column(Integer, primary_key=True, autoincrement=True, index=True)
+
+    name = Column(String, index=True)
+    notes = Column(String, default="")
+    row_update_time = Column(DateTime)
+
+    seller_items = relationship("SellerItems", back_populates="expense_accounts")

@@ -4,5 +4,5 @@ from .member_donations import MemberDonation
 from .member_due_payment import MemberDuesPayment
 from .member_items import MemberItems
 from .members import Member, MemberHistory
-from .seller_items import SellerItems, ExpenseAccount
-from .sellers import Sellers
+from .seller_items import SellerItems
+from .sellers import Sellers, ExpenseAccount
