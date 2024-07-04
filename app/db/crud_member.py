@@ -290,7 +290,7 @@ def list_member_donations_order_by_pay_date(
         until = until or _df['Data Pagamento'].max()
 
         # Create file
-        filename = f"CdC Lista de donativos de {since} a {until}.xlsx"
+        filename = f"CECC Lista de donativos de {since} a {until}.xlsx"
 
         # Save the DataFrame to an Excel file
         _output = BytesIO()

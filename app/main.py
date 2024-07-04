@@ -1,26 +1,26 @@
 from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
-from fastapi.middleware.wsgi import WSGIMiddleware
 from starlette.staticfiles import StaticFiles
 
-from .db import init_db, get_db
-from .web.index import router as web_index
-from .api.dues_payments import router as dues_payments_router
-from .api.members import router as members_router
-from .api.member_due_payment import router as member_due_payment_router
-from .web.members import router as web_members_router
-from .web.member_due_payment import router as web_member_due_payment_router
-from .web.dues_payments import router as web_dues_payments_router
-from .dash_app.dash_app import app as dashboard1
 from . import logit, logging
+from .api.dues_payments import router as dues_payments_router
+from .api.member_due_payment import router as member_due_payment_router
+from .api.members import router as members_router
+from .db import init_db, get_db
+from .web.dues_payments import router as web_dues_payments_router
+from .web.index import router as web_index
+from .web.member_due_payment import router as web_member_due_payment_router
+from .web.members import router as web_members_router
+
 
 @asynccontextmanager
 async def lifespan(_: FastAPI):
     init_db()
-    logit("--- CdC Ready! ---", level=logging.WARNING)
+    logit("--- CECC Ready! ---", level=logging.WARNING)
     yield
     get_db().close()
-    logit("--- CdC Closed! ---", level=logging.WARNING)
+    logit("--- CECC Closed! ---", level=logging.WARNING)
 
 
 app = FastAPI(lifespan=lifespan, debug=False)

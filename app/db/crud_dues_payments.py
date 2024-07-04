@@ -266,7 +266,7 @@ def pivot_table_dues_paied_for_all_members(
     df_missing = get_df_pivot_table_dues_paied_for_all_members(db, months=months, month_cases=month_cases, is_paied=False)
 
     if just_download:
-        filename = f"CdC Membros Quotas de {since or months[0]} a {until or months[-1]}.xlsx"
+        filename = f"CECC Membros Quotas de {since or months[0]} a {until or months[-1]}.xlsx"
 
         # Save the DataFrame to an Excel file
         output = BytesIO()
@@ -333,7 +333,7 @@ def list_member_dues_payments_order_by_pay_date(
         until = until or _df['Quota'].max()
 
         # Create file
-        filename = f"CdC Lista de pagamento de Quotas de {since} a {until}.xlsx"
+        filename = f"CECC Lista de pagamento de Quotas de {since} a {until}.xlsx"
 
         # Save the DataFrame to an Excel file
         _output = BytesIO()
