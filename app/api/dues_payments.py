@@ -1,4 +1,5 @@
 from typing import List
+
 from fastapi import APIRouter
 from sqlalchemy.orm import Session
 from starlette import status
@@ -10,12 +11,12 @@ router = APIRouter()
 
 @router.post(
     path="/",
-    response_model=schemas.dues_payments.DuesPayment,
+    response_model=schemas.dues_payments.DuesPaymentView,
     status_code=status.HTTP_201_CREATED
 )
-def create_dues_payment_year_month(dues_payment: schemas.dues_payments.DuesPaymentCreate,
+def create_dues_payment_year_month(dues_payment_create: schemas.dues_payments.DuesPaymentCreate,
                                    db: Session = DB_SESSION):
-    return crud_dues_payments.create_dues_payment_year_month(db=db, dues_payment=dues_payment)
+    return crud_dues_payments.create_dues_payment_year_month(db=db, dues_payment_create=dues_payment_create)
 
 
 @router.get(
@@ -31,7 +32,7 @@ def list_dues_payment_year_month_stats(since: str = None,
 
 @router.get(
     path="/{id_year_month}/show",
-    response_model=schemas.dues_payments.DuesPaymentStats,
+    response_model=schemas.dues_payments.DuesPaymentView,
     status_code=status.HTTP_200_OK
 )
 def get_dues_payment_year_month_stats(id_year_month: str, db: Session = DB_SESSION):

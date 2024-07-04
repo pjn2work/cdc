@@ -38,42 +38,42 @@
 
                         <hr>
 
-                        <p class="align_center">
-                            <form class="form-inline" method="get" action="update">
+                        <form class="form-inline" method="get" action="update">
+                            <p class="align_center">
                                 <button class="btn btn-primary mb-1" type="submit">Editar Associado</button>
-                            </form>
-                        </p>
+                            </p>
+                        </form>
                         {% if member.is_active %}
-                        <p class="align_center">
-                            <form class="form-inline" method="post" action="amount">
+                        <form class="form-inline" method="post" action="amount">
+                            <p class="align_center">
                                 <button class="btn btn-primary mb-1" type="submit">Alterar valor da quota desde</button>
                                 <input class="form-text" type="month" size="5" id="since" name="since" placeholder="{{ this_month }}" value="{{ this_month }}" required>
                                 para
                                 <input class="form-text" type="text" size="4" id="amount" name="amount" placeholder="{{ member.amount }}" value="{{ member.amount }}" required>€
-                            </form>
-                        </p>
+                            </p>
+                        </form>
                         {% endif %}
 
-                        <p class="align_center">
-                            <form class="form-inline" method="post" action="active">
+                        <form class="form-inline" method="post" action="active">
+                            <p class="align_center">
                                 <button class="btn btn-primary mb-1" type="submit">
                                     {% if member.is_active %}Desa{% else %}A{% endif %}ctivar Associado desde
                                 </button>
                                 <input class="form-text" type="month" size="5" id="since" name="since" placeholder="{{ this_month }}" value="{{ this_month }}" required>
                                 <input class="hidden" type="checkbox" id="is_active" name="is_active" {% if not member.is_active %}checked{% endif %}>
-                            </form>
-                        </p>
+                            </p>
+                        </form>
 
-                        <p class="align_center">
-                            <form class="form-inline" method="post" action="donation">
+                        <form class="form-inline" method="post" action="donation">
+                            <p class="align_center">
                                 <button class="btn btn-primary mb-1" type="submit">Registar donativo feito no dia</button>
                                 <input class="form-text" type="date" size="5" id="pay_date" name="pay_date" placeholder="{{ today }}" value="{{ today }}" required>
                                 no valor de
                                 <input class="form-text" type="text" size="4" id="amount" name="amount" placeholder="" value="" required>€
                                 pagamento em dinheiro?
                                 <input class="form-text" type="checkbox" id="is_cash" name="is_cash">
-                            </form>
-                        </p>
+                            </p>
+                        </form>
                     </div>
                 </div>
             </div>

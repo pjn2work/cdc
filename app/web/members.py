@@ -6,7 +6,6 @@ from . import templates
 from ..db import crud_member, schemas, DB_SESSION
 from ..utils import get_today_year_month_str, get_today
 
-
 router = APIRouter()
 
 
@@ -42,7 +41,7 @@ async def create_member_submit(request: Request, db: Session = DB_SESSION):
     data = await request.form()
     member_create: schemas.members.MemberCreate = schemas.members.MemberCreate(**data)
 
-    member = crud_member.create_member(db=db, member=member_create)
+    member = crud_member.create_member(db=db, member_create=member_create)
     return RedirectResponse(url=f"{member.member_id}/show", status_code=303)
 
 
@@ -101,9 +100,9 @@ async def update_member(request: Request, member_id: int, db: Session = DB_SESSI
 @router.post("/{member_id}/donation", response_class=HTMLResponse)
 async def post_member_donation(request: Request, member_id: int, db: Session = DB_SESSION):
     data = await request.form()
-    member_donation: schemas.member_donations.MemberDonationCreate = schemas.member_donations.MemberDonationCreate(**data)
+    member_donation_create: schemas.member_donations.MemberDonationCreate = schemas.member_donations.MemberDonationCreate(**data)
 
-    _ = crud_member.post_member_donation(db, member_id=member_id, member_donation=member_donation)
+    _ = crud_member.post_member_donation(db, member_id=member_id, member_donation_create=member_donation_create)
     return RedirectResponse(url=f"show", status_code=303)
 
 

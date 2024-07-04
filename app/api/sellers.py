@@ -14,9 +14,10 @@ router = APIRouter()
     response_model=schemas.sellers.SellerView,
     status_code=status.HTTP_201_CREATED
 )
-def create_seller(seller: schemas.sellers.SellerCreate,
-                  db: Session = DB_SESSION):
-    return crud_sellers.create_seller(db=db, seller=seller)
+def create_seller(
+        seller_create: schemas.sellers.SellerCreate,
+        db: Session = DB_SESSION):
+    return crud_sellers.create_seller(db=db, seller_create=seller_create)
 
 
 @router.get(
@@ -59,9 +60,10 @@ def update_seller(seller_id: int,
     response_model=schemas.sellers.ExpenseAccountView,
     status_code=status.HTTP_201_CREATED
 )
-def create_expense_account(expense_account: schemas.sellers.ExpenseAccountCreate,
-                  db: Session = DB_SESSION):
-    return crud_sellers.create_expense_account(db=db, expense_account=expense_account)
+def create_expense_account(
+        expense_account_create: schemas.sellers.ExpenseAccountCreate,
+        db: Session = DB_SESSION):
+    return crud_sellers.create_expense_account(db=db, expense_account_create=expense_account_create)
 
 
 @router.get(

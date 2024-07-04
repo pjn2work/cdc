@@ -86,8 +86,8 @@ def get_members_list(
     return result
 
 
-def create_member(db: Session, member: schemas.members.MemberCreate) -> models.Member:
-    db_member = models.Member(**member.model_dump())
+def create_member(db: Session, member_create: schemas.members.MemberCreate) -> models.Member:
+    db_member = models.Member(**member_create.model_dump())
     try:
         db.add(db_member)
         db.commit()
@@ -107,7 +107,7 @@ def update_member(
         db: Session,
         db_member: models.Member,
         member_update: schemas.members.MemberUpdate) -> models.Member:
-    update_data = member_update.dict(exclude_unset=True)
+    update_data = member_update.model_dump(exclude_unset=True)
     for key, value in update_data.items():
         setattr(db_member, key, value)
 
@@ -235,8 +235,8 @@ def _create_member_history(db: Session, member: models.Member) -> schemas.member
     return db_member_history
 
 
-def post_member_donation(db: Session, member_id: int, member_donation: schemas.member_donations.MemberDonationCreate):
-    db_member_donation = models.MemberDonation(member_id=member_id, **member_donation.model_dump())
+def post_member_donation(db: Session, member_id: int, member_donation_create: schemas.member_donations.MemberDonationCreate):
+    db_member_donation = models.MemberDonation(member_id=member_id, **member_donation_create.model_dump())
     db_member_donation.pay_update_time = get_now()
     try:
         db.add(db_member_donation)

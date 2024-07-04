@@ -37,7 +37,7 @@ def get_due_payment(request: Request, id_year_month: str, db: Session = DB_SESSI
 @router.post("/create", response_class=HTMLResponse)
 async def create_due_payment_submit(request: Request, db: Session = DB_SESSION):
     data = await request.form()
-    dues_payment: schemas.dues_payments.DuesPaymentCreate = schemas.dues_payments.DuesPaymentCreate(**data)
+    dues_payment_create: schemas.dues_payments.DuesPaymentCreate = schemas.dues_payments.DuesPaymentCreate(**data)
 
-    dp = crud_dues_payments.create_dues_payment_year_month(db=db, dues_payment=dues_payment)
+    dp = crud_dues_payments.create_dues_payment_year_month(db=db, dues_payment_create=dues_payment_create)
     return RedirectResponse(url=f"{dp.id_year_month}/show", status_code=303)

@@ -33,7 +33,7 @@ class MemberCreate(MemberBase):
 class MemberUpdate(BaseModel):
     name: Optional[str] = Field(min_length=3, max_length=100, default=None)
     tlf: Optional[str] = Field(min_length=9, max_length=13, default=None)
-    email: Optional[EmailStr] = Field(min_length=8, max_length=100, default=None)
+    email: Optional[EmailStr] = Field(default=None)
     notes: Optional[str] = Field(default=None)
 
 
