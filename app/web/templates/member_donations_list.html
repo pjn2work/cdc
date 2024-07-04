@@ -25,7 +25,7 @@
                 <td class="align_right"><a href="../members/{{ md.member_id }}/show">{{ md.member_id }}</a></td>
                 <td class="align_left">{{ md.member.name }}</td>
                 <td class="align_right">{{ md.amount }} €</td>
-                <td class="align_center">{{ md.is_cash }}</td>
+                <td class="align_center">{{ show_boolean(md.is_cash) }}</td>
                 <td class="align_left">{{ md.pay_date }}</td>
                 <td class="align_left">{{ md.pay_update_time }}</td>
             </tr>

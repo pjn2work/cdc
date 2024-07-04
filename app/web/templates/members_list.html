@@ -21,7 +21,7 @@
             <tr>
                 <th class="align_right">Membro ID</th>
                 <th>Inicio</th>
-                <th>Activo</th>
+                <th class="align_center">Activo</th>
                 <th>Nome</th>
                 <th class="align_right">Meses em dívida</th>
                 <th class="align_right">Valor em dívida</th>
@@ -34,7 +34,7 @@
                 <tr>
                     <td class="align_right"><a href="{{ member.member_id }}/show">{{ member.member_id }}</a></td>
                     <td>{{ member.start_date }}</td>
-                    <td>{{ member.is_active }}</td>
+                    <td class="align_center">{{ show_boolean(member.is_active) }}</td>
                     <td>{{ member.name }}</td>
                     <td class="align_right">{{ member.total_months_missing }}</td>
                     <td class="align_right">{{ member.total_amount_missing }} €</td>

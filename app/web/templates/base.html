@@ -1,3 +1,12 @@
+{%- macro show_boolean(value=false) -%}
+{% if value is none %}
+---
+{% elif value %}
+    <img src="/green.png" alt="Sim" width="30" height="30">
+{% else %}
+    <img src="/red.png" alt="Não" width="30" height="30">
+{% endif %}
+{%- endmacro -%}
 <!DOCTYPE html>
 <html lang="pt">
 <head>

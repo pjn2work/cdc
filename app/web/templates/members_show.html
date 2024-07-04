@@ -112,8 +112,8 @@
                 <td class="red align_center"><button onclick="pay_member_due({{ mdp.tid }})">Pagar</button></td>
                 {%- endif %}
                 <td class="align_right">{{ mdp.amount }} €</td>
-                <td class="align_center">{{ mdp.is_cash }}</td>
-                <td class="align_center">{{ mdp.is_member_active }}</td>
+                <td class="align_center">{{ show_boolean(mdp.is_cash) }}</td>
+                <td class="align_center">{{ show_boolean(mdp.is_member_active) }}</td>
                 <td>{{ mdp.pay_date|default("", True) }}</td>
                 <td>{{ mdp.pay_update_time }}</td>
             </tr>
@@ -139,7 +139,7 @@
             <tr>
                 <td class="align_right">{{ md.tid }}</td>
                 <td class="align_right">{{ md.amount }} €</td>
-                <td class="align_center">{{ md.is_cash }}</td>
+                <td class="align_center">{{ show_boolean(md.is_cash) }}</td>
                 <td>{{ md.pay_date }}</td>
                 <td>{{ md.pay_update_time }}</td>
             </tr>
@@ -173,7 +173,7 @@
                 <td class="align_right">{{ mh.tid }}</td>
                 <td>{{ mh.date_time }}</td>
                 <td class="align_center">{{ mh.since }}</td>
-                <td class="align_center">{{ mh.is_active }}</td>
+                <td class="align_center">{{ show_boolean(mh.is_active) }}</td>
                 <td class="align_right">{{ mh.amount }} €</td>
                 <td class="align_right">{{ mh.total_months_missing }}</td>
                 <td class="align_right">{{ mh.total_amount_missing }} €</td>
