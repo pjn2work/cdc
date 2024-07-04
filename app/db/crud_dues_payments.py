@@ -194,11 +194,11 @@ def pay_member_due_payment(
     return mdp
 
 
-def get_df_pivot_table_dues_paied_for_all_members(
+def get_df_pivot_table_dues_paid_for_all_members(
         db: Session,
         months: List[str],
         month_cases: List,
-        is_paied: bool) -> pd.DataFrame:
+        is_paid: bool) -> pd.DataFrame:
     # Construct the query
     query = db.query(
         models.Member.member_id,
@@ -206,7 +206,7 @@ def get_df_pivot_table_dues_paied_for_all_members(
         *month_cases
     ).filter(and_(
         models.MemberDuesPayment.is_member_active==True,
-        models.MemberDuesPayment.is_paid==is_paied)
+        models.MemberDuesPayment.is_paid==is_paid)
     ).join(
         models.MemberDuesPayment
     ).group_by(
@@ -216,7 +216,7 @@ def get_df_pivot_table_dues_paied_for_all_members(
     results = query.all()
     if results:
         # Convert results to a DataFrame
-        multiplier = 1 if is_paied else -1
+        multiplier = 1 if is_paid else -1
         data = [
             {id_year_month: getattr(row, id_year_month) * multiplier for id_year_month in months}
             for row in results
@@ -236,7 +236,7 @@ def get_df_pivot_table_dues_paied_for_all_members(
     return df
 
 
-def pivot_table_dues_paied_for_all_members(
+def pivot_table_dues_paid_for_all_members(
         db: Session,
         since: str = None,
         until: str = None,
@@ -262,8 +262,8 @@ def pivot_table_dues_paied_for_all_members(
         for id_year_month in months
     ]
 
-    df_paied = get_df_pivot_table_dues_paied_for_all_members(db, months=months, month_cases=month_cases, is_paied=True)
-    df_missing = get_df_pivot_table_dues_paied_for_all_members(db, months=months, month_cases=month_cases, is_paied=False)
+    df_paid = get_df_pivot_table_dues_paid_for_all_members(db, months=months, month_cases=month_cases, is_paid=True)
+    df_missing = get_df_pivot_table_dues_paid_for_all_members(db, months=months, month_cases=month_cases, is_paid=False)
 
     if just_download:
         filename = f"CECC Membros Quotas de {since or months[0]} a {until or months[-1]}.xlsx"
@@ -271,8 +271,8 @@ def pivot_table_dues_paied_for_all_members(
         # Save the DataFrame to an Excel file
         output = BytesIO()
         with pd.ExcelWriter(output, engine="openpyxl") as writer:
-            if df_paied is not None:
-                df_paied.to_excel(writer, index=False, sheet_name="Quotas pagas")
+            if df_paid is not None:
+                df_paid.to_excel(writer, index=False, sheet_name="Quotas pagas")
             if df_missing is not None:
                 df_missing.to_excel(writer, index=False, sheet_name="Quotas em atraso")
         output.seek(0)
@@ -284,7 +284,7 @@ def pivot_table_dues_paied_for_all_members(
             headers={"Content-Disposition": f"attachment; filename={filename}"}
         )
 
-    return df_paied, df_missing
+    return df_paid, df_missing
 
 
 def list_member_dues_payments_order_by_pay_date(
@@ -293,7 +293,7 @@ def list_member_dues_payments_order_by_pay_date(
         until: str = None,
         just_download: bool = False,
 ) -> List[models.MemberDuesPayment] | StreamingResponse:
-    # Query between months for paied dues
+    # Query between months for paid dues
     months_query = db.query(
         models.MemberDuesPayment
     ).filter_by(

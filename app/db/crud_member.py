@@ -256,7 +256,7 @@ def list_member_donations_order_by_pay_date(
         until: str = None,
         just_download: bool = False,
 ) -> List[models.MemberDonation] | StreamingResponse:
-    # Query between months for paied dues
+    # Query between months for paid dues
     months_query = db.query(
         models.MemberDonation
     ).order_by(

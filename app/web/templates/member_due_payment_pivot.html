@@ -7,7 +7,7 @@
 {% include "_form_filter_between_dates.html" %}
 {%- endblock %}
 
-{% macro show_table(class_style="table-dark", table_header="Quotas pagas", df=df_paied) -%}
+{% macro show_table(class_style="table-dark", table_header="Quotas pagas", df=df_paid) -%}
 
     <br>
 
@@ -37,7 +37,7 @@
 {%- endmacro %}
 
 {% block content_out_div %}
-    {{ show_table("table-dark", "Quotas pagas", df_paied) }}
+    {{ show_table("table-dark", "Quotas pagas", df_paid) }}
 
     {{ show_table("table-light", "Quotas em atraso", df_missing) }}
 {% endblock %}

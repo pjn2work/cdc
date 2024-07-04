@@ -5,7 +5,6 @@ from starlette.responses import HTMLResponse, RedirectResponse
 from . import templates
 from ..db import crud_dues_payments, schemas, DB_SESSION
 
-
 router = APIRouter()
 
 
@@ -46,7 +45,7 @@ async def pay_member_due_payment(
 
 
 @router.get("/pivot_table", response_class=HTMLResponse)
-def table_dues_paied_for_all_members(
+def table_dues_paid_for_all_members(
         request: Request,
         since: str = None,
         until: str = None,
@@ -55,26 +54,26 @@ def table_dues_paied_for_all_members(
         db: Session = DB_SESSION):
 
     if do_filter:
-        result = crud_dues_payments.pivot_table_dues_paied_for_all_members(db, since=since, until=until, just_download=just_download)
+        result = crud_dues_payments.pivot_table_dues_paid_for_all_members(db, since=since, until=until, just_download=just_download)
 
         if just_download:
             return result
 
-        df_paied, df_missing = result
+        df_paid, df_missing = result
         columns = [
             col
-            for col in df_paied.columns
+            for col in df_paid.columns
             if col not in ("ID", "Nome")
         ]
-        df_paied = df_paied.to_dict(orient="records")
+        df_paid = df_paid.to_dict(orient="records")
         df_missing = df_missing.to_dict(orient="records")
     else:
-        df_paied, df_missing = [{}], [{}]
+        df_paid, df_missing = [{}], [{}]
         columns = []
 
     return templates.TemplateResponse("member_due_payment_pivot.html", {
         "request": request,
         "columns": columns,
-        "df_paied": df_paied,
+        "df_paid": df_paid,
         "df_missing": df_missing
     })
