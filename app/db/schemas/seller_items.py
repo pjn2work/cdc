@@ -43,7 +43,7 @@ class SellerItems(SellerItemsBase):
 
 
 class ExpenseAccountBase(BaseModel):
-    name: str = Field(min_length=2, max_length=100, examples=["money sell"])
+    name: str = Field(min_length=2, max_length=100, examples=["only cash account"])
     notes: str = Field(default="", examples=["default account"])
 
 
@@ -60,7 +60,12 @@ class ExpenseAccount(ExpenseAccountBase):
     ea_id: int
     row_update_time: datetime
 
-    seller_items: List[SellerItems] = []
-
     class Config:
         orm_mode: True
+
+
+class ExpenseAccountView(ExpenseAccount):
+    seller_items: List[SellerItems] = []
+
+    total_amount_seller_sold: Optional[float] = Field(default=0.0)
+    total_quantity_seller_sold: Optional[int] = Field(default=0)

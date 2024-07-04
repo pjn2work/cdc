@@ -30,3 +30,10 @@ class Seller(SellerBase):
 
     class Config:
         orm_mode: True
+
+
+class SellerView(Seller):
+    seller_items: List[SellerItems] = []
+
+    total_amount_sold: Optional[float] = Field(default=0.0)
+    total_quantity_sold: Optional[int] = Field(default=0)

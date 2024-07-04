@@ -37,12 +37,18 @@ class Items(ItemsBase):
     item_id: int
     row_update_time: datetime
 
-    seller_items: List[SellerItems] = []
-    member_items: List[MemberItems] = []
-
     class Config:
         orm_mode: True
 
+
+class ItemsView(Items):
+    seller_items: List[SellerItems] = []
+    member_items: List[MemberItems] = []
+
+    total_amount_seller_sold: Optional[float] = Field(default=0.0)
+    total_quantity_seller_sold: Optional[int] = Field(default=0)
+    total_amount_member_sold: Optional[float] = Field(default=0.0)
+    total_quantity_member_sold: Optional[int] = Field(default=0)
 
 # ----------------------------------------------------------
 
@@ -69,3 +75,6 @@ class Categories(CategoriesBase):
 
     class Config:
         orm_mode: True
+
+class CategoriesView(Categories):
+    items: List[Items] = []

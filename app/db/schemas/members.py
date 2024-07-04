@@ -67,14 +67,14 @@ class MemberHistory(MemberHistoryBase):
 class Member(MemberBaseStats):
     member_id: int
 
-    member_history: List[MemberHistory] = []
-    member_due_payment: List[MemberDuesPayment] = []
-    member_donations: List[MemberDonation] = []
-    member_items: List[MemberItems] = []
-
     class Config:
         orm_mode: True
 
 
 class MemberView(Member):
     months_missing: List[str] = []
+
+    member_history: List[MemberHistory] = []
+    member_due_payment: List[MemberDuesPayment] = []
+    member_donations: List[MemberDonation] = []
+    member_items: List[MemberItems] = []
