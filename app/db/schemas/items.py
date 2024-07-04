@@ -4,29 +4,23 @@ from pydantic import BaseModel, Field
 
 from .member_items import MemberItems
 from .seller_items import SellerItems
-from ...utils import date, datetime
+from ...utils import datetime
 
 
 class ItemBase(BaseModel):
-    seller_id: int
-    item_id: int
-    ea_id: int
+    category_id: int
 
-    quantity: int = Field(ge=1)
-    total_price: float = Field(ge=0.0)
-    notes: str = Field(default="", examples=["default account"])
-    sell_date: date
+    name: str = Field(min_length=3, max_length=100, examples=["Book"])
+    base_price: float = Field(ge=0.0)
+    notes: str = Field(default="", examples=["item notes"])
 
 
 class ItemUpdate(BaseModel):
-    seller_id: Optional[int] = Field(default=None)
-    item_id: Optional[int] = Field(default=None)
-    ea_id: Optional[int] = Field(default=None)
+    category_id: Optional[int] = Field(default=None)
 
-    quantity: Optional[int] = Field(ge=1, default=None)
-    total_price: Optional[float] = Field(ge=0.0, default=None)
+    name: Optional[str] = Field(min_length=3, max_length=100, default=None)
+    base_price: Optional[float] = Field(ge=0.0, default=None)
     notes: Optional[str] = Field(default=None)
-    sell_date: Optional[date] = Field(default=None)
 
 
 class ItemCreate(ItemBase):
