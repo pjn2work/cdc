@@ -2,7 +2,7 @@ from fastapi import HTTPException, status, APIRouter, Request
 from starlette.responses import HTMLResponse, RedirectResponse
 
 from . import templates
-from ..sec import login_for_access_token
+from ..sec import get_access_token
 
 router = APIRouter()
 
@@ -19,7 +19,7 @@ async def login(request: Request):
     client_secret = data.get("client_secret")
 
     try:
-        token_response = await login_for_access_token(None, client_id, client_secret)
+        token_response = get_access_token(client_id, client_secret)
         response = RedirectResponse(url="/web/", status_code=status.HTTP_302_FOUND)
         response.set_cookie(key="access_token", value=token_response["access_token"], httponly=True)
         return response

@@ -44,28 +44,28 @@ def hash_password(plain_password: str) -> str:
     return pwd_context.hash(plain_password)
 
 
-def verify_password(plain_password: str, hashed_password: str) -> bool:
+def _verify_password(plain_password: str, hashed_password: str) -> bool:
     try:
         return pwd_context.verify(plain_password, hashed_password)
     except:
         return False
 
 
-def get_client_by_id(client_id: str) -> Client | None:
+def _get_client_by_id(client_id: str) -> Client | None:
     client = APP_CLIENTS.get(client_id)
     if client is None:
         return None
     return Client(**client)
 
 
-def verify_client(client_id: str, client_secret: str) -> Client | None:
-    client = get_client_by_id(client_id)
-    if client and verify_password(client_secret, client.client_secret):
+def _verify_client(client_id: str, client_secret: str) -> Client | None:
+    client = _get_client_by_id(client_id)
+    if client and _verify_password(client_secret, client.client_secret):
         return client
     return None
 
 
-def create_access_token(data: dict) -> str:
+def _create_access_token(data: dict) -> str:
     expire = datetime.utcnow() + ACCESS_TOKEN_EXPIRE
     to_encode = data.copy()
     to_encode.update({"exp": expire})
@@ -74,27 +74,32 @@ def create_access_token(data: dict) -> str:
     return encoded_jwt
 
 
-@router.post("/token", response_model=Token)
-async def login_for_access_token(request: Request = None, client_id: str="", client_secret: str=""):
-    if not client_id:
-        data = await request.form()
-        client_id = data.get("client_id")
-        client_secret = data.get("client_secret")
-
-    client: Client = verify_client(client_id, client_secret)
+def get_access_token(client_id: str, client_secret: str) -> str:
+    client: Client = _verify_client(client_id, client_secret)
     if client is None:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Incorrect client_id or client_secret",
             headers={"WWW-Authenticate": "Bearer"},
         )
-    access_token = create_access_token(
+    access_token = _create_access_token(
         data={
             "sub": client_id,
             "scopes": client.scopes
         }
     )
     return {"access_token": access_token, "token_type": "bearer"}
+
+
+@router.post("/token", response_model=Token)
+async def login_for_access_token(request: Request = None, client_id: str="", client_secret: str=""):
+    # for swagger
+    if not client_id:
+        data = await request.form()
+        client_id = data.get("client_id")
+        client_secret = data.get("client_secret")
+
+    return get_access_token(client_id, client_secret)
 
 
 def _get_current_client(token: str) -> TokenData:
@@ -109,7 +114,7 @@ def _get_current_client(token: str) -> TokenData:
         client_id: str = payload.get("sub")
         scopes: List[str] = payload.get("scopes", [])
 
-        if client_id is None or get_client_by_id(client_id) is None:
+        if client_id is None or _get_client_by_id(client_id) is None:
             raise credentials_exception
 
         token_data = TokenData(client_id=client_id, scopes=scopes)
