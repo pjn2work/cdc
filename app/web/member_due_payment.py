@@ -4,6 +4,7 @@ from starlette.responses import HTMLResponse, RedirectResponse
 
 from . import templates
 from ..db import crud_dues_payments, schemas, DB_SESSION
+from ..sec import GET_CURRENT_API_CLIENT, TokenData
 
 router = APIRouter()
 
@@ -15,7 +16,8 @@ async def list_member_dues_payments_order_by_pay_date(
         until: str = None,
         just_download: bool = False,
         do_filter: bool = False,
-        db: Session = DB_SESSION):
+        db: Session = DB_SESSION,
+        current_client: TokenData = GET_CURRENT_API_CLIENT):
 
     if do_filter:
         mdp_list = crud_dues_payments.list_member_dues_payments_order_by_pay_date(db, since=since, until=until, just_download=just_download)
@@ -36,7 +38,8 @@ async def list_member_dues_payments_order_by_pay_date(
 async def pay_member_due_payment(
         request: Request,
         tid: int,
-        db: Session = DB_SESSION):
+        db: Session = DB_SESSION,
+        current_client: TokenData = GET_CURRENT_API_CLIENT):
     data = await request.form()
     mdpc: schemas.member_due_payment.MemberDuesPaymentCreate = schemas.member_due_payment.MemberDuesPaymentCreate(**data)
 
@@ -51,7 +54,8 @@ def table_dues_paid_for_all_members(
         until: str = None,
         just_download: bool = False,
         do_filter: bool = False,
-        db: Session = DB_SESSION):
+        db: Session = DB_SESSION,
+        current_client: TokenData = GET_CURRENT_API_CLIENT):
 
     if do_filter:
         result = crud_dues_payments.pivot_table_dues_paid_for_all_members(db, since=since, until=until, just_download=just_download)

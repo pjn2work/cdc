@@ -5,6 +5,7 @@ from sqlalchemy.orm import Session
 from starlette import status
 
 from ..db import crud_dues_payments, schemas, DB_SESSION
+from ..sec import GET_CURRENT_API_CLIENT, TokenData
 
 router = APIRouter()
 
@@ -14,8 +15,10 @@ router = APIRouter()
     response_model=schemas.dues_payments.DuesPaymentView,
     status_code=status.HTTP_201_CREATED
 )
-def create_dues_payment_year_month(dues_payment_create: schemas.dues_payments.DuesPaymentCreate,
-                                   db: Session = DB_SESSION):
+def create_dues_payment_year_month(
+        dues_payment_create: schemas.dues_payments.DuesPaymentCreate,
+        db: Session = DB_SESSION,
+        current_client: TokenData = GET_CURRENT_API_CLIENT):
     return crud_dues_payments.create_dues_payment_year_month(db=db, dues_payment_create=dues_payment_create)
 
 
@@ -24,9 +27,10 @@ def create_dues_payment_year_month(dues_payment_create: schemas.dues_payments.Du
     response_model=List[schemas.dues_payments.DuesPaymentStats],
     status_code=status.HTTP_200_OK
 )
-def list_dues_payment_year_month_stats(since: str = None,
-                                       until: str = None,
-                                       db: Session = DB_SESSION):
+def list_dues_payment_year_month_stats(
+        since: str = None, until: str = None,
+        db: Session = DB_SESSION,
+        current_client: TokenData = GET_CURRENT_API_CLIENT):
     return crud_dues_payments.get_dues_payment_year_month_stats_list(db=db, since=since, until=until)
 
 
@@ -35,5 +39,8 @@ def list_dues_payment_year_month_stats(since: str = None,
     response_model=schemas.dues_payments.DuesPaymentView,
     status_code=status.HTTP_200_OK
 )
-def get_dues_payment_year_month_stats(id_year_month: str, db: Session = DB_SESSION):
+def get_dues_payment_year_month_stats(
+        id_year_month: str,
+        db: Session = DB_SESSION,
+        current_client: TokenData = GET_CURRENT_API_CLIENT):
     return crud_dues_payments.get_due_payment_year_month_stats(db=db, id_year_month=id_year_month)

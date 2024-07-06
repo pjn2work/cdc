@@ -71,7 +71,8 @@ def update_member(
 def update_member_active(
         member_id: int,
         member_update: schemas.members.MemberUpdateActive,
-        db: Session = DB_SESSION):
+        db: Session = DB_SESSION,
+        current_client: TokenData = GET_CURRENT_API_CLIENT):
     db_member = crud_member.get_member_by_id(db, member_id=member_id)
     return crud_member.update_member_active(db, db_member=db_member, member_update=member_update)
 
