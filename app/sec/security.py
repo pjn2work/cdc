@@ -15,7 +15,7 @@ cred = read_json_file("../../credentials.json", same_as=__file__)
 APP_CLIENTS = cred["app_clients"]
 SECRET_KEY = cred["app_secret_key"]
 ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE = timedelta(seconds=10)
+ACCESS_TOKEN_EXPIRE = timedelta(minutes=30)
 
 
 router = APIRouter()

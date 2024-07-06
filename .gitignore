@@ -36,7 +36,6 @@ MANIFEST
 .idea
 
 # DB
-data/
 data.*
 *.spsql
 *.log
