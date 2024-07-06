@@ -3,19 +3,19 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from starlette.staticfiles import StaticFiles
 
-from . import logit, logging
-from .api.dues_payments import router as dues_payments_router
-from .api.items import router as items_router
-from .api.member_due_payment import router as member_due_payment_router
-from .api.members import router as members_router
-from .api.sellers import router as sellers_router
-from .db import init_db, get_db
-from .sec import router as sec_router
-from .web.dues_payments import router as web_dues_payments_router
-from .web.index import router as web_index
-from .web.login import router as login_router
-from .web.member_due_payment import router as web_member_due_payment_router
-from .web.members import router as web_members_router
+from app import logit, logging
+from app.api.dues_payments import router as dues_payments_router
+from app.api.items import router as items_router
+from app.api.member_due_payment import router as member_due_payment_router
+from app.api.members import router as members_router
+from app.api.sellers import router as sellers_router
+from app.db import init_db, get_db
+from app.sec import router as sec_router
+from app.web.dues_payments import router as web_dues_payments_router
+from app.web.index import router as web_index
+from app.web.login import router as login_router
+from app.web.member_due_payment import router as web_member_due_payment_router
+from app.web.members import router as web_members_router
 
 
 @asynccontextmanager

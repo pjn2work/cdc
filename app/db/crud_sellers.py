@@ -2,7 +2,7 @@ from typing import List
 
 from sqlalchemy.orm import Session
 
-from . import models, schemas
+from app.db import models, schemas
 
 
 def create_seller(db: Session, seller_create: schemas.sellers.SellerCreate) -> models.Seller:

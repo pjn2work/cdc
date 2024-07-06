@@ -2,10 +2,10 @@ from typing import List, Optional
 
 from pydantic import BaseModel, Field, EmailStr
 
-from .member_donations import MemberDonation
-from .member_due_payment import MemberDuesPayment
-from .member_items import MemberItems
-from ...utils import get_today, get_now, datetime, date, get_today_year_month_str
+from app.db.schemas.member_donations import MemberDonation
+from app.db.schemas.member_due_payment import MemberDuesPayment
+from app.db.schemas.member_items import MemberItems
+from app.utils import get_today, get_now, datetime, date, get_today_year_month_str
 
 
 class MemberBase(BaseModel):

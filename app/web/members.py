@@ -2,10 +2,10 @@ from fastapi import APIRouter, Request
 from sqlalchemy.orm import Session
 from starlette.responses import HTMLResponse, RedirectResponse
 
-from . import templates
-from ..db import crud_member, schemas, DB_SESSION
-from ..sec import GET_CURRENT_WEB_CLIENT, TokenData
-from ..utils import get_today_year_month_str, get_today
+from app.db import crud_member, schemas, DB_SESSION
+from app.sec import GET_CURRENT_WEB_CLIENT, TokenData
+from app.utils import get_today_year_month_str, get_today
+from app.web import templates
 
 router = APIRouter()
 

@@ -7,7 +7,7 @@ from jose import JWTError, jwt
 from passlib.context import CryptContext
 from pydantic import BaseModel
 
-from ..utils import read_json_file
+from app.utils import read_json_file
 
 cred = read_json_file("../../credentials.json", same_as=__file__)
 

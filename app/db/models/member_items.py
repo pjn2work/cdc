@@ -1,7 +1,7 @@
 from sqlalchemy import Column, Integer, Float, String, ForeignKey, Date, DateTime, Boolean
 from sqlalchemy.orm import relationship
 
-from ..database import Base
+from app.db.database import Base
 
 
 class MemberItems(Base):

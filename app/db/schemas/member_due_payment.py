@@ -2,7 +2,7 @@ from typing import Optional
 
 from pydantic import BaseModel, Field
 
-from ...utils import datetime, date, get_today
+from app.utils import datetime, date, get_today
 
 
 class MemberDuesPaymentBase(BaseModel):

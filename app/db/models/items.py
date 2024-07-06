@@ -1,7 +1,7 @@
 from sqlalchemy import Column, Integer, Float, String, ForeignKey, UniqueConstraint, DateTime
 from sqlalchemy.orm import relationship
 
-from ..database import Base
+from app.db.database import Base
 
 
 class Category(Base):

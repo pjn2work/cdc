@@ -1,8 +1,8 @@
 from fastapi import HTTPException, status, APIRouter, Request
 from starlette.responses import HTMLResponse, RedirectResponse
 
-from . import templates
-from ..sec import get_access_token
+from app.sec import get_access_token
+from app.web import templates
 
 router = APIRouter()
 

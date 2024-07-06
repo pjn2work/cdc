@@ -7,9 +7,9 @@ from fastapi.responses import StreamingResponse
 from sqlalchemy import or_
 from sqlalchemy.orm import Session
 
-from . import models, schemas
-from .crud_dues_payments import get_member_due_payment_missing_stats, make_due_payment_for_new_member
-from ..utils import get_now, get_today_year_month_str
+from app.db import models, schemas
+from app.db.crud_dues_payments import get_member_due_payment_missing_stats, make_due_payment_for_new_member
+from app.utils import get_now, get_today_year_month_str
 
 
 def get_member_by_id(db: Session, member_id: int) -> models.Member:

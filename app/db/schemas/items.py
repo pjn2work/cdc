@@ -2,9 +2,9 @@ from typing import List, Optional
 
 from pydantic import BaseModel, Field
 
-from .member_items import MemberItems
-from .seller_items import SellerItems
-from ...utils import datetime
+from app.db.schemas.member_items import MemberItems
+from app.db.schemas.seller_items import SellerItems
+from app.utils import datetime
 
 
 class ItemBase(BaseModel):

@@ -2,8 +2,8 @@ from typing import Optional, List
 
 from pydantic import BaseModel, Field
 
-from .member_due_payment import MemberDuesPayment
-from ...utils import date, format_year_month
+from app.db.schemas.member_due_payment import MemberDuesPayment
+from app.utils import date, format_year_month
 
 
 class DuesPaymentBase(BaseModel):

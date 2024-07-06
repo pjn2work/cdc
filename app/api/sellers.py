@@ -4,8 +4,8 @@ from fastapi import APIRouter
 from sqlalchemy.orm import Session
 from starlette import status
 
-from ..db import crud_sellers, schemas, DB_SESSION
-from ..sec import GET_CURRENT_API_CLIENT, TokenData
+from app.db import crud_sellers, schemas, DB_SESSION
+from app.sec import GET_CURRENT_API_CLIENT, TokenData
 
 router = APIRouter()
 

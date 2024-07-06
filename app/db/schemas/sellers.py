@@ -2,8 +2,8 @@ from typing import List, Optional
 
 from pydantic import BaseModel, Field, EmailStr
 
-from .seller_items import SellerItems
-from ...utils import datetime
+from app.db.schemas.seller_items import SellerItems
+from app.utils import datetime
 
 
 class SellerBase(BaseModel):

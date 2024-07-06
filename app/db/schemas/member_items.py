@@ -2,7 +2,7 @@ from typing import Optional
 
 from pydantic import BaseModel, Field
 
-from ...utils import date, datetime
+from app.utils import date, datetime
 
 
 class MemberItemsBase(BaseModel):
