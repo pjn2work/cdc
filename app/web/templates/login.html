@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Login</title>
+</head>
+<body>
+    <h1>Login</h1>
+    <form method="post" action="/login/">
+        <label for="client_id">Client ID:</label>
+        <input type="text" id="client_id" name="client_id">
+        <br>
+        <label for="client_secret">Client Secret:</label>
+        <input type="password" id="client_secret" name="client_secret">
+        <br>
+        <button type="submit">Login</button>
+    </form>
+    {% if error %}
+        <p style="color: red;">{{ error }}</p>
+    {% endif %}
+</body>
+</html>

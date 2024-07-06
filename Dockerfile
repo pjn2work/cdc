@@ -7,6 +7,7 @@ WORKDIR /cecc
 # Copy the current directory contents into the container at /cecc
 COPY app /cecc/app
 COPY requirements.txt /cecc
+COPY credentials.json /cecc
 RUN mkdir -p data/
 
 # Install any needed packages specified in requirements.txt

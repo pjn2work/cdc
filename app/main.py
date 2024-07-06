@@ -10,8 +10,10 @@ from .api.member_due_payment import router as member_due_payment_router
 from .api.members import router as members_router
 from .api.sellers import router as sellers_router
 from .db import init_db, get_db
+from .sec import router as sec_router
 from .web.dues_payments import router as web_dues_payments_router
 from .web.index import router as web_index
+from .web.login import router as login_router
 from .web.member_due_payment import router as web_member_due_payment_router
 from .web.members import router as web_members_router
 
@@ -26,6 +28,10 @@ async def lifespan(_: FastAPI):
 
 
 app = FastAPI(lifespan=lifespan, debug=False)
+
+# Security
+app.include_router(sec_router, prefix="/sec", tags=["/sec"])
+app.include_router(login_router, prefix="/login", tags=["/login"])
 
 # APIs
 app.include_router(members_router, prefix="/api/members", tags=["/api/members"])

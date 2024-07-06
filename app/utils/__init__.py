@@ -1,3 +1,5 @@
+import json
+import os.path
 from datetime import datetime, date
 
 from pytz import timezone
@@ -29,3 +31,11 @@ def format_year_month(ym: str | date) -> str:
         ym = ym[:4] + "-" + ym[4:6]
     year, month = list(map(int, ym.split('-')))
     return f"{year}-{month:02d}"
+
+
+def read_json_file(file_name: str, same_as: str = "") -> dict:
+    if same_as:
+        file_name = os.path.join(os.path.dirname(same_as), file_name)
+
+    with open(file_name, "r") as file:
+        return json.load(file)
