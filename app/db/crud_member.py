@@ -277,7 +277,7 @@ def list_member_donations_order_by_pay_date(
     if just_download:
         _data = [
             {
-                "Membro ID": md.member_id,
+                "Associado ID": md.member_id,
                 "Nome": md.member.name,
                 "Valor": md.amount,
                 "Data Pagamento": md.pay_date,

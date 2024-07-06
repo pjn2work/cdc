@@ -266,7 +266,7 @@ def pivot_table_dues_paid_for_all_members(
     df_missing = get_df_pivot_table_dues_paid_for_all_members(db, months=months, month_cases=month_cases, is_paid=False)
 
     if just_download:
-        filename = f"CECC Membros Quotas de {since or months[0]} a {until or months[-1]}.xlsx"
+        filename = f"CECC Associados Quotas de {since or months[0]} a {until or months[-1]}.xlsx"
 
         # Save the DataFrame to an Excel file
         output = BytesIO()
