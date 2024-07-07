@@ -1,3 +1,5 @@
+import hashlib
+import os
 from datetime import timedelta, datetime
 from typing import List
 
@@ -11,9 +13,9 @@ from app.utils import read_json_file
 
 cred = read_json_file("../../credentials.json", same_as=__file__)
 
-# default_cecc_password
+SALT = cred.get("salt", "")
 APP_CLIENTS = cred["app_clients"]
-SECRET_KEY = cred["app_secret_key"]
+SECRET_KEY = cred["app_secret_key"] or os.getenv("APP_SECRET_KEY", "not_secured")
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE = timedelta(minutes=30)
 
@@ -41,14 +43,18 @@ class TokenData(BaseModel):
 
 
 def hash_password(plain_password: str) -> str:
-    return pwd_context.hash(plain_password)
+    plain_password += SALT
+    password_bytes = plain_password.encode('utf-8')
+
+    hash_object = hashlib.sha256()
+    hash_object.update(password_bytes)
+
+    hashed_password = hash_object.hexdigest()
+    return hashed_password
 
 
 def _verify_password(plain_password: str, hashed_password: str) -> bool:
-    try:
-        return pwd_context.verify(plain_password, hashed_password)
-    except:
-        return False
+    return hash_password(plain_password) == hashed_password
 
 
 def _get_client_by_id(client_id: str) -> Client | None:
@@ -91,6 +97,11 @@ def get_access_token(client_id: str, client_secret: str) -> str:
     return {"access_token": access_token, "token_type": "bearer"}
 
 
+@router.get("/hash", response_model=Client)
+def make_hash_password(plain_password: str=""):
+    return Client(client_secret=hash_password(plain_password))
+
+
 @router.post("/token", response_model=Token)
 async def login_for_access_token(request: Request = None, client_id: str="", client_secret: str=""):
     # for swagger
@@ -114,10 +125,11 @@ def _get_current_client(token: str) -> TokenData:
         client_id: str = payload.get("sub")
         scopes: List[str] = payload.get("scopes", [])
 
-        if client_id is None or _get_client_by_id(client_id) is None:
+        client = _get_client_by_id(client_id)
+        if client_id is None or client is None:
             raise credentials_exception
 
-        token_data = TokenData(client_id=client_id, scopes=scopes)
+        token_data = TokenData(client_id=client_id, scopes=client.scopes)
     except JWTError:
         raise credentials_exception
 
@@ -131,3 +143,9 @@ async def get_current_api_client(token: str = Depends(oauth2_scheme)) -> TokenDa
 async def get_current_web_client(request: Request) -> TokenData:
     token = request.cookies.get("access_token")
     return _get_current_client(token)
+
+def are_valid_scopes(necessary_scopes: List[str], current_client: TokenData) -> str:
+    for scope in necessary_scopes:
+        if scope in current_client.scopes:
+            return scope
+    raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not enough permissions")

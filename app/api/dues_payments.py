@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 from starlette import status
 
 from app.db import crud_dues_payments, schemas, DB_SESSION
-from app.sec import GET_CURRENT_API_CLIENT, TokenData
+from app.sec import GET_CURRENT_API_CLIENT, TokenData, are_valid_scopes
 
 router = APIRouter()
 
@@ -19,6 +19,7 @@ def create_dues_payment_year_month(
         dues_payment_create: schemas.dues_payments.DuesPaymentCreate,
         db: Session = DB_SESSION,
         current_client: TokenData = GET_CURRENT_API_CLIENT):
+    are_valid_scopes(["app:create", "due_payment:create"], current_client)
     return crud_dues_payments.create_dues_payment_year_month(db=db, dues_payment_create=dues_payment_create)
 
 
@@ -31,6 +32,7 @@ def list_dues_payment_year_month_stats(
         since: str = None, until: str = None,
         db: Session = DB_SESSION,
         current_client: TokenData = GET_CURRENT_API_CLIENT):
+    are_valid_scopes(["app:read", "due_payment:read"], current_client)
     return crud_dues_payments.get_dues_payment_year_month_stats_list(db=db, since=since, until=until)
 
 
@@ -43,4 +45,5 @@ def get_dues_payment_year_month_stats(
         id_year_month: str,
         db: Session = DB_SESSION,
         current_client: TokenData = GET_CURRENT_API_CLIENT):
+    are_valid_scopes(["app:read", "due_payment:read"], current_client)
     return crud_dues_payments.get_due_payment_year_month_stats(db=db, id_year_month=id_year_month)

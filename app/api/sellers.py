@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 from starlette import status
 
 from app.db import crud_sellers, schemas, DB_SESSION
-from app.sec import GET_CURRENT_API_CLIENT, TokenData
+from app.sec import GET_CURRENT_API_CLIENT, TokenData, are_valid_scopes
 
 router = APIRouter()
 
@@ -19,6 +19,7 @@ def create_seller(
         seller_create: schemas.sellers.SellerCreate,
         db: Session = DB_SESSION,
         current_client: TokenData = GET_CURRENT_API_CLIENT):
+    are_valid_scopes(["app:create", "seller:create"], current_client)
     return crud_sellers.create_seller(db=db, seller_create=seller_create)
 
 
@@ -32,6 +33,7 @@ def list_sellers(
         search_text: str = "",
         db: Session = DB_SESSION,
         current_client: TokenData = GET_CURRENT_API_CLIENT):
+    are_valid_scopes(["app:read", "seller:read"], current_client)
     return crud_sellers.get_sellers_list(db, skip=skip, limit=limit, search_text=search_text)
 
 
@@ -44,6 +46,7 @@ def get_seller(
         seller_id: int,
         db: Session = DB_SESSION,
         current_client: TokenData = GET_CURRENT_API_CLIENT):
+    are_valid_scopes(["app:read", "seller:read"], current_client)
     return crud_sellers.get_seller(db, seller_id=seller_id)
 
 
@@ -57,6 +60,7 @@ def update_seller(
         seller_update: schemas.sellers.SellerUpdate,
         db: Session = DB_SESSION,
         current_client: TokenData = GET_CURRENT_API_CLIENT):
+    are_valid_scopes(["app:update", "seller:update"], current_client)
     db_seller = crud_sellers.get_seller_by_id(db, seller_id=seller_id)
     return crud_sellers.update_seller(db, db_seller=db_seller, seller_update=seller_update)
 
@@ -73,6 +77,7 @@ def create_expense_account(
         expense_account_create: schemas.sellers.ExpenseAccountCreate,
         db: Session = DB_SESSION,
         current_client: TokenData = GET_CURRENT_API_CLIENT):
+    are_valid_scopes(["app:create", "expense_account:create"], current_client)
     return crud_sellers.create_expense_account(db=db, expense_account_create=expense_account_create)
 
 
@@ -86,6 +91,7 @@ def list_expense_accounts(
         search_text: str = "",
         db: Session = DB_SESSION,
         current_client: TokenData = GET_CURRENT_API_CLIENT):
+    are_valid_scopes(["app:read", "expense_account:read"], current_client)
     return crud_sellers.get_expense_accounts_list(db, skip=skip, limit=limit, search_text=search_text)
 
 
@@ -98,6 +104,7 @@ def get_expense_account(
         ea_id: int,
         db: Session = DB_SESSION,
         current_client: TokenData = GET_CURRENT_API_CLIENT):
+    are_valid_scopes(["app:read", "expense_account:read"], current_client)
     return crud_sellers.get_expense_account(db, ea_id=ea_id)
 
 
@@ -111,5 +118,6 @@ def update_expense_account(
         expense_account_update: schemas.sellers.ExpenseAccountUpdate,
         db: Session = DB_SESSION,
         current_client: TokenData = GET_CURRENT_API_CLIENT):
+    are_valid_scopes(["app:update", "expense_account:update"], current_client)
     db_expense_account = crud_sellers.get_expense_account_by_id(db, ea_id=ea_id)
     return crud_sellers.update_expense_account(db, db_seller=db_expense_account, expense_account_update=expense_account_update)
