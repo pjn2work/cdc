@@ -157,7 +157,7 @@ async def post_member_donation(
 
 
 @router.get("/donations", response_class=HTMLResponse)
-async def get_members_donations(
+async def list_members_donations(
         request: Request,
         since: str = None,
         until: str = None,

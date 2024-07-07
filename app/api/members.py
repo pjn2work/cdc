@@ -24,11 +24,11 @@ def create_member(
 
 
 @router.get(
-    path="/donation",
+    path="/donations",
     response_model=List[schemas.members.MemberDonation],
     status_code = status.HTTP_200_OK
 )
-def list_member_donation(
+def list_members_donations(
         since: str = None, until: str = None,
         db: Session = DB_SESSION,
         current_client: TokenData = GET_CURRENT_API_CLIENT):
