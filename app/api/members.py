@@ -24,6 +24,19 @@ def create_member(
 
 
 @router.get(
+    path="/donation",
+    response_model=List[schemas.members.MemberDonation],
+    status_code = status.HTTP_200_OK
+)
+def list_member_donation(
+        since: str = None, until: str = None,
+        db: Session = DB_SESSION,
+        current_client: TokenData = GET_CURRENT_API_CLIENT):
+    are_valid_scopes(["app:read", "member_donation:read"], current_client)
+    return crud_member.list_member_donations_order_by_pay_date(db, since=since, until=until, just_download=False)
+
+
+@router.get(
     path="/",
     response_model=List[schemas.members.Member],
     status_code=status.HTTP_200_OK

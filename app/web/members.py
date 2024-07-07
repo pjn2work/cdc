@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from starlette.responses import HTMLResponse, RedirectResponse
 
 from app.db import crud_member, schemas, DB_SESSION
-from app.sec import GET_CURRENT_WEB_CLIENT, TokenData
+from app.sec import GET_CURRENT_WEB_CLIENT, TokenData, are_valid_scopes
 from app.utils import get_today_year_month_str, get_today
 from app.web import templates
 
@@ -19,6 +19,8 @@ def list_members(
         do_filter: bool = False,
         db: Session = DB_SESSION,
         current_client: TokenData = GET_CURRENT_WEB_CLIENT):
+    are_valid_scopes(["app:read", "member:read"], current_client)
+
     if do_filter:
         members = crud_member.get_members_list(db, only_due_missing=only_due_missing, only_active_members=only_active_members, search_text=search_text)
     else:
@@ -35,6 +37,8 @@ def list_members(
 def create_member(
         request: Request,
         current_client: TokenData = GET_CURRENT_WEB_CLIENT):
+    are_valid_scopes(["app:create", "member:create"], current_client)
+
     return templates.TemplateResponse("members_create.html", {
         "request": request,
         "today": str(get_today())
@@ -46,6 +50,8 @@ async def create_member_submit(
         request: Request,
         db: Session = DB_SESSION,
         current_client: TokenData = GET_CURRENT_WEB_CLIENT):
+    are_valid_scopes(["app:create", "member:create"], current_client)
+
     data = await request.form()
     member_create: schemas.members.MemberCreate = schemas.members.MemberCreate(**data)
 
@@ -59,6 +65,8 @@ def show_member(
         member_id: int,
         db: Session = DB_SESSION,
         current_client: TokenData = GET_CURRENT_WEB_CLIENT):
+    are_valid_scopes(["app:read", "member:read"], current_client)
+
     member = crud_member.get_member(db, member_id=member_id)
     member.member_due_payment = sorted(member.member_due_payment, key=lambda mdp: mdp.id_year_month, reverse=True)
     member.member_history = sorted(member.member_history, key=lambda mh: mh.tid, reverse=True)
@@ -76,6 +84,8 @@ async def change_member_active(
         member_id: int,
         db: Session = DB_SESSION,
         current_client: TokenData = GET_CURRENT_WEB_CLIENT):
+    are_valid_scopes(["app:update", "member:update"], current_client)
+
     data = await request.form()
     member_update: schemas.members.MemberUpdateActive = schemas.members.MemberUpdateActive(**data)
 
@@ -90,6 +100,8 @@ async def change_member_due_payment_amount(
         member_id: int,
         db: Session = DB_SESSION,
         current_client: TokenData = GET_CURRENT_WEB_CLIENT):
+    are_valid_scopes(["app:update", "member:update"], current_client)
+
     data = await request.form()
     member_update: schemas.members.MemberUpdateAmount = schemas.members.MemberUpdateAmount(**data)
 
@@ -104,6 +116,8 @@ def edit_member(
         member_id: int,
         db: Session = DB_SESSION,
         current_client: TokenData = GET_CURRENT_WEB_CLIENT):
+    are_valid_scopes(["app:update", "member:update"], current_client)
+
     member = crud_member.get_member(db, member_id=member_id)
     return templates.TemplateResponse("members_edit.html", {
         "request": request,
@@ -117,6 +131,8 @@ async def update_member(
         member_id: int,
         db: Session = DB_SESSION,
         current_client: TokenData = GET_CURRENT_WEB_CLIENT):
+    are_valid_scopes(["app:update", "member:update"], current_client)
+
     data = await request.form()
     member_update: schemas.members.MemberUpdate = schemas.members.MemberUpdate(**data)
 
@@ -131,6 +147,8 @@ async def post_member_donation(
         member_id: int,
         db: Session = DB_SESSION,
         current_client: TokenData = GET_CURRENT_WEB_CLIENT):
+    are_valid_scopes(["app:create", "member_donation:create"], current_client)
+
     data = await request.form()
     member_donation_create: schemas.member_donations.MemberDonationCreate = schemas.member_donations.MemberDonationCreate(**data)
 
@@ -147,6 +165,8 @@ async def get_members_donations(
         do_filter: bool = False,
         db: Session = DB_SESSION,
         current_client: TokenData = GET_CURRENT_WEB_CLIENT):
+    are_valid_scopes(["app:read", "member_donation:read"], current_client)
+
     if do_filter:
         md_list = crud_member.list_member_donations_order_by_pay_date(db, since=since, until=until, just_download=just_download)
 
