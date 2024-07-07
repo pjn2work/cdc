@@ -2,19 +2,19 @@
 {% block title %}Ver Quota{% endblock %}
 {% block page_header %}Quota {{ dp.id_year_month }}{% endblock %}
 
-{% macro show_table(class_style="table-dark", table_header="Quotas por pagar", is_for_not_paied=True) -%}
+{% macro show_table(class_style="table-dark", table_header="Quotas por pagar", is_for_not_paid=True) -%}
             <div class="row mb-0">
                 <div class="col-md-12">
                     <h5>{{ table_header }}</h5>
                     <table class="table table-striped table-bordered">
                         <thead class="{{ class_style }}">
                             <tr>
-                                <th class="align_right">ID</th>
+                                <th class="align_right">Associado ID</th>
                                 <th class="align_left">Nome</th>
                                 <th class="align_left">Contacto</th>
                                 <th class="align_right">Valor</th>
                                 <th class="align_left">Última actualização</th>
-                                {%- if is_for_not_paied %}
+                                {%- if is_for_not_paid %}
                                 <th class="align_center">Efectuar pagamento</th>
                                 {% else %}
                                 <th class="align_left">Data de pagamento</th>
@@ -23,14 +23,14 @@
                         </thead>
                         <tbody>
                             {%- for mdp in dp.member_due_payment if mdp.is_member_active %}
-                                {%- if (is_for_not_paied and not mdp.is_paid) or (not is_for_not_paied and mdp.is_paid) %}
+                                {%- if (is_for_not_paid and not mdp.is_paid) or (not is_for_not_paid and mdp.is_paid) %}
                                 <tr>
                                     <td class="align_right"><a href="../../members/{{ mdp.member_id }}/show">{{ mdp.member_id }}</a></td>
                                     <td class="align_left">{{ mdp.member.name }}</td>
                                     <td class="align_left">{{ mdp.member.tlf }}</td>
                                     <td class="align_right">{{ mdp.amount }} €</td>
                                     <td class="align_left">{{ mdp.pay_update_time }}</td>
-                                    {%- if is_for_not_paied %}
+                                    {%- if is_for_not_paid %}
                                     <td class="red align_center"><button onclick="pay_member_due({{ mdp.tid }})">Pagar</button></td>
                                     {% else %}
                                     <td class="align_left">{{ mdp.pay_date|default("", True) }}</td>

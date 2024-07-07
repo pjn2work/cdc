@@ -5,13 +5,13 @@ services:
     ports:
       - "8000:80"
     volumes:
-      - ./data:/cdc/data
+      - ./data:/cecc/data
     depends_on:
       - db
   db:
     image: postgres
     environment:
-      POSTGRES_DB: cdc
+      POSTGRES_DB: cecc
       POSTGRES_USER: user
       POSTGRES_PASSWORD: password
     volumes:

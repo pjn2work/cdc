@@ -1,6 +1,9 @@
-from typing import Optional
+from typing import Optional, List
+
 from pydantic import BaseModel, Field
-from ...utils import date, format_year_month
+
+from app.db.schemas.member_due_payment import MemberDuesPayment
+from app.utils import date, format_year_month
 
 
 class DuesPaymentBase(BaseModel):
@@ -30,3 +33,7 @@ class DuesPaymentStats(DuesPayment):
     total_members_paid: Optional[int] = Field(default=0)
     total_amount_missing: Optional[float] = Field(default=0.0)
     total_members_missing: Optional[int] = Field(default=0)
+
+
+class DuesPaymentView(DuesPaymentStats):
+    member_due_payment: Optional[List[MemberDuesPayment]] = Field(default_factory=lambda :[])

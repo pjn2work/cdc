@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}Lista Donativos{% endblock %}
+{% block page_header %}Lista de donativos - {{ total }}{% endblock %}
+{% set form_action = "" %}
+{% set by_month = False %}
+{% block content_in_div %}
+{% include "_form_filter_between_dates.html" %}
+{%- endblock %}
+{% block content_out_div %}
+    <br>
+    <table class="table table-striped table-bordered">
+        <thead class="table-dark">
+            <tr>
+                <th class="align_right">Associado ID</th>
+                <th class="align_left">Nome</th>
+                <th class="align_right">Donativo</th>
+                <th class="align_center">VD</th>
+                <th class="align_left">Data de pagamento</th>
+                <th class="align_left">Data de actualização</th>
+            </tr>
+        </thead>
+        <tbody>
+        {%- for md in md_list %}
+            <tr>
+                <td class="align_right"><a href="../members/{{ md.member_id }}/show">{{ md.member_id }}</a></td>
+                <td class="align_left">{{ md.member.name }}</td>
+                <td class="align_right">{{ md.amount }} €</td>
+                <td class="align_center">{{ show_boolean(md.is_cash) }}</td>
+                <td class="align_left">{{ md.pay_date }}</td>
+                <td class="align_left">{{ md.pay_update_time }}</td>
+            </tr>
+        {%- endfor %}
+        </tbody>
+    </table>
+{% endblock %}

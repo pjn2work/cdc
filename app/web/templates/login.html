@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <title>CECC - Login</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/cecc.css">
+</head>
+<body>
+    <div class="container">
+        <table class="full_width">
+            <tr>
+                <td style="width: 50%">
+                    <h1 class="my-4">Gestão de Quotas e Livros</h1>
+                </td>
+                <td class="align_right">
+                    <a href="https://www.casadocaminho-ce.pt/"><img src="/cecc_logo.jpg" style="float:right;width:20%;height:20%;" alt="Casa do Caminho"></a>
+                </td>
+            </tr>
+        </table>
+
+        <div class="card">
+            <div class="card-body">
+                <div class="row mb-0">
+                    <div class="col-md-5">
+                        <form method="post">
+                            <label class="form-label label-text align_left" for="client_id">Username</label>
+                            <input class="form-control-plaintext data-text align_left" type="text" id="client_id" name="client_id">
+                            <br>
+                            <label class="form-label label-text align_left" for="client_secret">Password</label>
+                            <input class="form-control-plaintext data-text align_left" type="password" id="client_secret" name="client_secret">
+                            <br>
+                            <button class="btn btn-primary mb-1" type="submit">Login</button>
+                        </form>
+                    </div>
+                </div>
+                {% if error %}
+                    <br><p style="color: red;">{{ error }}</p>
+                {% endif %}
+            </div>
+        </div>
+
+    </div>
+
+</body>
+</html>

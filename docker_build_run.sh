@@ -1,5 +1,5 @@
-if [ -z "$(docker images -q cdc:latest)" ]; then
+if [ -z "$(docker images -q cecc:latest)" ]; then
   echo Creating image
-  docker build . -t cdc
+  docker build . -t cecc
 fi
-docker run --rm -p 8000:80 -v ./data:/cdc/data cdc
+docker run --rm -p 8000:80 -v ./data:/cecc/data cecc

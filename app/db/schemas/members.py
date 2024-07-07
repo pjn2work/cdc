@@ -1,7 +1,11 @@
 from typing import List, Optional
+
 from pydantic import BaseModel, Field, EmailStr
-from ...utils import get_today, get_now, datetime, date, get_today_year_month_str
-from .member_due_payment import MemberDuesPayment
+
+from app.db.schemas.member_donations import MemberDonation
+from app.db.schemas.member_due_payment import MemberDuesPayment
+from app.db.schemas.member_items import MemberItems
+from app.utils import get_today, get_now, datetime, date, get_today_year_month_str
 
 
 class MemberBase(BaseModel):
@@ -29,7 +33,7 @@ class MemberCreate(MemberBase):
 class MemberUpdate(BaseModel):
     name: Optional[str] = Field(min_length=3, max_length=100, default=None)
     tlf: Optional[str] = Field(min_length=9, max_length=13, default=None)
-    email: Optional[EmailStr] = Field(min_length=8, max_length=100, default=None)
+    email: Optional[EmailStr] = Field(default=None)
     notes: Optional[str] = Field(default=None)
 
 
@@ -63,12 +67,14 @@ class MemberHistory(MemberHistoryBase):
 class Member(MemberBaseStats):
     member_id: int
 
-    member_due_payment: List[MemberDuesPayment] = []
-    member_history: List[MemberHistory] = []
-
     class Config:
         orm_mode: True
 
 
 class MemberView(Member):
     months_missing: List[str] = []
+
+    member_history: List[MemberHistory] = []
+    member_due_payment: List[MemberDuesPayment] = []
+    member_donations: List[MemberDonation] = []
+    member_items: List[MemberItems] = []

@@ -1,7 +1,7 @@
 import logging
 
 
-log = logging.getLogger("CdC")
+log = logging.getLogger("CECC")
 log.setLevel(logging.INFO)
 
 
