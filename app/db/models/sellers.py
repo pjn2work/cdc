@@ -12,6 +12,7 @@ class Seller(Base):
     tlf = Column(String)
     email = Column(String, default="")
     notes = Column(String, default="")
+    row_update_time = Column(DateTime)
 
     seller_items = relationship("SellerItems", back_populates="sellers")
 

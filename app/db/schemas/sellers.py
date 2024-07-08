@@ -26,6 +26,7 @@ class SellerUpdate(BaseModel):
 
 class Seller(SellerBase):
     seller_id: int
+    row_update_time: datetime
 
     class Config:
         orm_mode: True
