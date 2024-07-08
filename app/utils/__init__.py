@@ -1,5 +1,6 @@
 import json
 import os.path
+from base64 import urlsafe_b64encode, urlsafe_b64decode
 from datetime import datetime, date
 
 from pytz import timezone
@@ -39,3 +40,9 @@ def read_json_file(file_name: str, same_as: str = "") -> dict:
 
     with open(file_name, "r") as file:
         return json.load(file)
+
+def b64encode_str(s: str) -> str:
+    return urlsafe_b64encode(s.encode("utf-8")).decode("utf-8")
+
+def b64decode_str(s: str) -> str:
+    return urlsafe_b64decode(s.encode("utf-8")).decode("utf-8")

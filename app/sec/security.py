@@ -9,7 +9,7 @@ from jose import JWTError, jwt
 from passlib.context import CryptContext
 from pydantic import BaseModel
 
-from app.utils import read_json_file
+from app.utils import read_json_file, b64decode_str
 
 cred = read_json_file("../../credentials.json", same_as=__file__)
 
@@ -23,7 +23,7 @@ ACCESS_TOKEN_EXPIRE = timedelta(minutes=30)
 router = APIRouter()
 
 pwd_context = CryptContext(schemes=["sha256_crypt", "md5_crypt", "des_crypt"], deprecated="auto")
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/sec/token")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/oauth/token")
 
 
 class Client(BaseModel):
@@ -103,12 +103,17 @@ def make_hash_password(plain_password: str=""):
 
 
 @router.post("/token", response_model=Token)
-async def login_for_access_token(request: Request = None, client_id: str="", client_secret: str=""):
-    # for swagger
-    if not client_id:
+async def login_for_access_token(
+        request: Request = None,
+        cc: str = ""):
+    if cc:
+        # for m2m use (in the future)
+        client_id, client_secret = b64decode_str(cc).split(":")
+    else:
+        # OIDC (for swagger)
         data = await request.form()
-        client_id = data.get("client_id")
-        client_secret = data.get("client_secret")
+        client_id = data.get("client_id") or data.get("username")
+        client_secret = data.get("client_secret") or data.get("password")
 
     return get_access_token(client_id, client_secret)
 
@@ -143,6 +148,7 @@ async def get_current_api_client(token: str = Depends(oauth2_scheme)) -> TokenDa
 async def get_current_web_client(request: Request) -> TokenData:
     token = request.cookies.get("access_token")
     return _get_current_client(token)
+
 
 def are_valid_scopes(necessary_scopes: List[str], current_client: TokenData) -> str:
     for scope in necessary_scopes:

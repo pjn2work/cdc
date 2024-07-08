@@ -30,7 +30,7 @@ async def lifespan(_: FastAPI):
 app = FastAPI(lifespan=lifespan, debug=False)
 
 # Security
-app.include_router(sec_router, prefix="/sec", tags=["/sec"])
+app.include_router(sec_router, prefix="/oauth", tags=["/oauth"])
 app.include_router(login_router, prefix="/login", tags=["/login"])
 
 # APIs
