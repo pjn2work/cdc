@@ -70,3 +70,8 @@ class Category(CategoryBase):
 
 class CategoryView(Category):
     items: List[Item] = []
+
+    total_amount_seller_sold: Optional[float] = Field(default=0.0)
+    total_quantity_seller_sold: Optional[int] = Field(default=0)
+    total_amount_member_sold: Optional[float] = Field(default=0.0)
+    total_quantity_member_sold: Optional[int] = Field(default=0)

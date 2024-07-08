@@ -9,7 +9,7 @@ class MemberItems(Base):
     tid = Column(Integer, primary_key=True, autoincrement=True, index=True)
 
     member_id = Column(Integer, ForeignKey("members.member_id"), index=True)
-    item_id = Column(String, ForeignKey("items.item_id"), index=True)
+    item_id = Column(Integer, ForeignKey("items.item_id"), index=True)
 
     quantity = Column(Integer)
     total_price = Column(Float)

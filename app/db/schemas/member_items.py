@@ -7,7 +7,6 @@ from app.utils import date, datetime
 
 class MemberItemsBase(BaseModel):
     member_id: int
-    item_id: int
 
     quantity: int = Field(ge=1)
     total_price: float = Field(ge=0.0)
@@ -33,6 +32,7 @@ class MemberItemsCreate(MemberItemsBase):
 
 class MemberItems(MemberItemsBase):
     tid: int
+    item_id: int
     row_update_time: datetime
 
     class Config:

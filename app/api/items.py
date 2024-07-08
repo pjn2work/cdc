@@ -11,64 +11,6 @@ router = APIRouter()
 
 
 @router.post(
-    path="/",
-    response_model=schemas.items.ItemView,
-    status_code=status.HTTP_201_CREATED
-)
-def create_item(
-        item_create: schemas.items.ItemCreate,
-        db: Session = DB_SESSION,
-        current_client: TokenData = GET_CURRENT_API_CLIENT):
-    are_valid_scopes(["app:create", "item:create"], current_client)
-    return crud_items.create_item(db=db, item_create=item_create)
-
-
-@router.get(
-    path="/",
-    response_model=List[schemas.items.Item],
-    status_code=status.HTTP_200_OK
-)
-def list_items(
-        skip: int = 0, limit: int = 1000,
-        search_text: str = "",
-        db: Session = DB_SESSION,
-        current_client: TokenData = GET_CURRENT_API_CLIENT):
-    are_valid_scopes(["app:read", "item:read"], current_client)
-    return crud_items.get_items_list(db, skip=skip, limit=limit, search_text=search_text)
-
-
-@router.get(
-    path="/{item_id}",
-    response_model=schemas.items.ItemView,
-    status_code=status.HTTP_200_OK
-)
-def get_item(
-        item_id: int,
-        db: Session = DB_SESSION,
-        current_client: TokenData = GET_CURRENT_API_CLIENT):
-    are_valid_scopes(["app:read", "item:read"], current_client)
-    return crud_items.get_item(db, item_id=item_id)
-
-
-@router.put(
-    path="/{item_id}",
-    response_model=schemas.items.ItemView,
-    status_code = status.HTTP_200_OK
-)
-def update_item(
-        item_id: int,
-        item_update: schemas.items.ItemUpdate,
-        db: Session = DB_SESSION,
-        current_client: TokenData = GET_CURRENT_API_CLIENT):
-    are_valid_scopes(["app:update", "item:update"], current_client)
-    db_item = crud_items.get_item_by_id(db, item_id=item_id)
-    return crud_items.update_item(db, db_item=db_item, item_update=item_update)
-
-
-# ----------------------------------------------------------
-
-
-@router.post(
     path="/categories",
     response_model=schemas.items.CategoryView,
     status_code=status.HTTP_201_CREATED
@@ -132,11 +74,12 @@ def update_category(
     status_code=status.HTTP_201_CREATED
 )
 def create_seller_item(
+        item_id: int,
         seller_item_create: schemas.seller_items.SellerItemsCreate,
         db: Session = DB_SESSION,
         current_client: TokenData = GET_CURRENT_API_CLIENT):
     are_valid_scopes(["app:create", "seller_item:create"], current_client)
-    return crud_items.create_seller_item(db=db, seller_item_create=seller_item_create)
+    return crud_items.create_seller_item(db=db, item_id=item_id, seller_item_create=seller_item_create)
 
 
 @router.get(
@@ -145,12 +88,13 @@ def create_seller_item(
     status_code=status.HTTP_200_OK
 )
 def list_seller_items(
+        item_id: int,
         skip: int = 0, limit: int = 1000,
         search_text: str = "",
         db: Session = DB_SESSION,
         current_client: TokenData = GET_CURRENT_API_CLIENT):
     are_valid_scopes(["app:read", "seller_item:read"], current_client)
-    return crud_items.get_seller_items_list(db, skip=skip, limit=limit, search_text=search_text)
+    return crud_items.get_seller_items_list(db, item_id=item_id, skip=skip, limit=limit, search_text=search_text)
 
 
 @router.get(
@@ -190,11 +134,12 @@ def update_seller_item(
     status_code=status.HTTP_201_CREATED
 )
 def create_member_item(
+        item_id: int,
         member_item_create: schemas.member_items.MemberItemsCreate,
         db: Session = DB_SESSION,
         current_client: TokenData = GET_CURRENT_API_CLIENT):
     are_valid_scopes(["app:create", "member_item:create"], current_client)
-    return crud_items.create_member_item(db=db, member_item_create=member_item_create)
+    return crud_items.create_member_item(db=db, item_id=item_id, member_item_create=member_item_create)
 
 
 @router.get(
@@ -203,12 +148,13 @@ def create_member_item(
     status_code=status.HTTP_200_OK
 )
 def list_member_items(
+        item_id: int,
         skip: int = 0, limit: int = 1000,
         search_text: str = "",
         db: Session = DB_SESSION,
         current_client: TokenData = GET_CURRENT_API_CLIENT):
     are_valid_scopes(["app:read", "member_item:read"], current_client)
-    return crud_items.get_member_items_list(db, skip=skip, limit=limit, search_text=search_text)
+    return crud_items.get_member_items_list(db, item_id=item_id, skip=skip, limit=limit, search_text=search_text)
 
 
 @router.get(
@@ -237,3 +183,61 @@ def update_member_item(
     are_valid_scopes(["app:update", "member_item:update"], current_client)
     db_member_item = crud_items.get_member_item_by_id(db, tid=tid)
     return crud_items.update_member_item(db, db_member_item=db_member_item, member_item_update=member_item_update)
+
+
+# ----------------------------------------------------------
+
+
+@router.post(
+    path="/",
+    response_model=schemas.items.ItemView,
+    status_code=status.HTTP_201_CREATED
+)
+def create_item(
+        item_create: schemas.items.ItemCreate,
+        db: Session = DB_SESSION,
+        current_client: TokenData = GET_CURRENT_API_CLIENT):
+    are_valid_scopes(["app:create", "item:create"], current_client)
+    return crud_items.create_item(db=db, item_create=item_create)
+
+
+@router.get(
+    path="/",
+    response_model=List[schemas.items.Item],
+    status_code=status.HTTP_200_OK
+)
+def list_items(
+        skip: int = 0, limit: int = 1000,
+        search_text: str = "",
+        db: Session = DB_SESSION,
+        current_client: TokenData = GET_CURRENT_API_CLIENT):
+    are_valid_scopes(["app:read", "item:read"], current_client)
+    return crud_items.get_items_list(db, skip=skip, limit=limit, search_text=search_text)
+
+
+@router.get(
+    path="/{item_id}",
+    response_model=schemas.items.ItemView,
+    status_code=status.HTTP_200_OK
+)
+def get_item(
+        item_id: int,
+        db: Session = DB_SESSION,
+        current_client: TokenData = GET_CURRENT_API_CLIENT):
+    are_valid_scopes(["app:read", "item:read"], current_client)
+    return crud_items.get_item(db, item_id=item_id)
+
+
+@router.put(
+    path="/{item_id}",
+    response_model=schemas.items.ItemView,
+    status_code = status.HTTP_200_OK
+)
+def update_item(
+        item_id: int,
+        item_update: schemas.items.ItemUpdate,
+        db: Session = DB_SESSION,
+        current_client: TokenData = GET_CURRENT_API_CLIENT):
+    are_valid_scopes(["app:update", "item:update"], current_client)
+    db_item = crud_items.get_item_by_id(db, item_id=item_id)
+    return crud_items.update_item(db, db_item=db_item, item_update=item_update)
