@@ -1,0 +1,332 @@
+---
+
+MEMBER1: &M1
+  start_date: "2024-03-01"
+  is_active: true
+  amount: 15.0
+  name: "Member 1"
+  tlf: "912000111"
+  email: "member1@gmail.com"
+  notes: "member 1 notes"
+
+MEMBER2: &M2
+  start_date: "2024-03-17"
+  is_active: true
+  amount: 10.3
+  name: "Member 2"
+  tlf: "933000222"
+  email: "member2@gmail.com"
+  notes: "member 2 notes"
+
+
+SELLER1: &S1
+  name: "Seller 1"
+  tlf: "912000111"
+  email: "seller1@gmail.com"
+  notes: "seller 1 notes"
+
+SELLER2: &S2
+  name: "Seller 2"
+  tlf: "912000222"
+  email: "seller2@gmail.com"
+  notes: "seller 2 notes"
+
+
+
+
+SETUP:
+  _run_mode_: USECASES_AS_TESTSTEPS
+
+  _usecases_:
+
+    step_health:
+      _exec_method_: api_get_str
+      url: health
+      expected_response: "\"I'm alive\""
+
+    step_authenticate:
+      _exec_method_: api_post_token
+      params:
+        cc: "YWRtaW46cGVkcm8="
+      expected_response:
+        token_type: "bearer"
+
+    step_clear_db:
+      _exec_method_: api_get_str
+      url: web/reset
+
+
+
+POPULATE:
+  _run_mode_: SCENARIOS_AS_TESTS__USECASES_AS_TESTSTEPS
+
+  _scenarios_:
+
+    due_payments:
+
+      step_post_due_payment1:
+        _exec_method_: api_post
+        url: api/dues_payments/
+        control:
+          expected_status_code: 201
+          ok: 201
+        data:
+          id_year_month: "2024-02"
+
+      step_post_due_payment2:
+        _based_on_: ["due_payments/step_post_due_payment1", ["url", "control"]]
+        _exec_method_: api_post
+        data:
+          id_year_month: "2024-04"
+
+      step_post_member1:
+        _exec_method_: api_post
+        url: api/members/
+        control:
+          expected_status_code: 201
+          ok: 201
+        data: *M1
+        _save: M1
+        expected_response:
+          total_months_missing: 1
+          total_amount_missing: 15.0
+          member_due_payment:
+          - id_year_month: "2024-04"
+            amount: 15.0
+            is_paid: false
+            is_member_active: true
+
+      step_post_due_payment3:
+        _based_on_: ["due_payments/step_post_due_payment1", ["url", "control"]]
+        _exec_method_: api_post
+        data:
+          id_year_month: "2024-01"
+
+      step_post_due_payment4:
+        _based_on_: ["due_payments/step_post_due_payment1", ["url", "control"]]
+        _exec_method_: api_post
+        data:
+          id_year_month: "2024-03"
+        expected_response:
+          total_amount_missing: 15
+          total_members_missing: 1
+
+      step_post_due_payment5:
+        _based_on_: ["due_payments/step_post_due_payment1", ["url", "control"]]
+        _exec_method_: api_post
+        data:
+          id_year_month: "2024-05"
+        expected_response:
+          total_amount_missing: 15
+          total_members_missing: 1
+
+      step_post_member2:
+        _exec_method_: api_post
+        url: api/members/
+        control:
+          expected_status_code: 201
+          ok: 201
+        data: *M2
+        _save: M2
+        expected_response:
+          total_months_missing: 2
+          total_amount_missing: 20.6
+          total_months_paid: 0
+          total_amount_paid: 0.0
+          member_due_payment:
+          - id_year_month: "2024-04"
+            amount: 10.3
+            is_paid: false
+            is_member_active: true
+          - id_year_month: "2024-05"
+            amount: 10.3
+            is_paid: false
+            is_member_active: true
+          member_history:
+          - is_active: true
+            total_months_missing: 2
+            total_amount_missing: 20.6
+            total_months_paid: 0
+            total_amount_paid: 0.0
+
+      step_post_member1_donation:
+        _exec_method_: api_post
+        url: api/members/?/donation
+        _get: M1.member_id
+        data:
+          amount: 28.8
+          is_cash: true
+          pay_date: "2024-04-15"
+
+      step_post_member1_pay_dp:
+        _exec_method_: api_put
+        url: api/member_due_payment/3
+        data:
+          is_cash: true
+          pay_date: "2024-05-11"
+        expected_response:
+          id_year_month: "2024-05"
+          pay_date: "2024-05-11"
+          amount: 15.0
+          is_paid: true
+          is_cash: true
+
+      step_post_member2_pay_dp:
+        _exec_method_: api_put
+        url: api/member_due_payment/5
+        data:
+          is_cash: false
+          pay_date: "2024-05-12"
+        expected_response:
+          id_year_month: "2024-05"
+          pay_date: "2024-05-12"
+          amount: 10.3
+          is_paid: true
+          is_cash: false
+
+    sellers:
+
+      step_create_expense_account1:
+        _exec_method_: api_post
+        url: api/sellers/expense-accounts
+        control:
+          expected_status_code: 201
+          ok: 201
+        data:
+          name: "Expense Account 1"
+          notes: "EA 1 notes"
+
+      step_create_expense_account2:
+        _exec_method_: api_post
+        url: api/sellers/expense-accounts
+        control:
+          expected_status_code: 201
+          ok: 201
+        data:
+          name: "Expense Account 2"
+          notes: "EA 2 notes"
+
+      step_create_seller1:
+        _exec_method_: api_post
+        url: api/sellers/
+        control:
+          expected_status_code: 201
+          ok: 201
+        data: *S1
+        _save: S1
+
+      step_create_seller2:
+        _exec_method_: api_post
+        url: api/sellers/
+        control:
+          expected_status_code: 201
+          ok: 201
+        data: *S2
+        _save: S2
+
+    items:
+
+      step_create_category1:
+        _exec_method_: api_post
+        url: api/items/categories
+        control:
+          expected_status_code: 201
+          ok: 201
+        data:
+          name: "Category 1"
+          notes: "Category 1 notes"
+
+      step_create_category2:
+        _exec_method_: api_post
+        url: api/items/categories
+        control:
+          expected_status_code: 201
+          ok: 201
+        data:
+          name: "Category 2"
+          notes: "Category 2 notes"
+
+      step_create_item1:
+        _exec_method_: api_post
+        url: api/items/
+        control:
+          expected_status_code: 201
+          ok: 201
+        data:
+          category_id: 1
+          name: "Item 1"
+          base_price: 1
+          notes: "Item 1 notes"
+
+      step_create_item2:
+        _exec_method_: api_post
+        url: api/items/
+        control:
+          expected_status_code: 201
+          ok: 201
+        data:
+          category_id: 1
+          name: "Item 2"
+          base_price: 2
+          notes: "Item 2 notes"
+
+      step_create_item3:
+        _exec_method_: api_post
+        url: api/items/
+        control:
+          expected_status_code: 201
+          ok: 201
+        data:
+          category_id: 1
+          name: "Item 3"
+          base_price: 3
+          notes: "Item 3 notes"
+
+    seller_items:
+
+      step_seller1_item_1:
+        _exec_method_: api_post
+        url: api/items/1/sellers
+        control:
+          expected_status_code: 201
+          ok: 201
+        data:
+          seller_id: 1
+          ea_id: 1
+          quantity: 2
+          total_price: 20.0
+          notes: "Item 1 Seller 1 notes"
+          sell_date: "2024-01-25"
+
+    member_items:
+
+      step_member1_item_2:
+        _exec_method_: api_post
+        url: api/items/2/members
+        control:
+          expected_status_code: 201
+          ok: 201
+        data:
+          member_id: 1
+          quantity: 3
+          total_price: 30.0
+          is_cash: false
+          notes: "Item 2 Member 1 notes"
+          buy_date: "2024-01-26"
+
+      step_member2_item_2:
+        _exec_method_: api_post
+        url: api/items/2/members
+        control:
+          expected_status_code: 201
+          ok: 201
+        data:
+          member_id: 2
+          quantity: 4
+          total_price: 40.0
+          is_cash: true
+          notes: "Item 2 Member 2 notes"
+          buy_date: "2024-01-27"
+
+
+...
