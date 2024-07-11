@@ -29,9 +29,12 @@ async def lifespan(_: FastAPI):
 
 app = FastAPI(lifespan=lifespan, debug=False)
 
+@app.get(path="/health")
+def health():
+    return "I'm alive"
+
 # Security
 app.include_router(sec_router, prefix="/oauth", tags=["/oauth"])
-app.include_router(login_router, prefix="/login", tags=["/login"])
 
 # APIs
 app.include_router(members_router, prefix="/api/members", tags=["/api/members"])
@@ -42,6 +45,7 @@ app.include_router(items_router, prefix="/api/items", tags=["/api/items"])
 
 # Web pages
 app.include_router(web_index, prefix="/web", tags=["/web"])
+app.include_router(login_router, prefix="/web/login", tags=["/web/login"])
 app.include_router(web_members_router, prefix="/web/members", tags=["/web/members"])
 app.include_router(web_dues_payments_router, prefix="/web/dues_payments", tags=["/web/dues_payments"])
 app.include_router(web_member_due_payment_router, prefix="/web/member_due_payment", tags=["/web/member_due_payment"])
