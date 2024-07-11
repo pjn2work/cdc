@@ -74,12 +74,14 @@ def create_dues_payment_year_month(db: Session, dues_payment_create: schemas.due
         db.commit()
     except:
         db.rollback()
-        raise HTTPException(status_code=400, detail=f"Due month {dp.date_ym} was already created, no need to create a new one.")
+        raise HTTPException(status_code=409, detail=f"Due Payment {dp.date_ym} was already created, no need to create a new one.")
 
     _make_due_payment_for_active_members(db=db, id_year_month=db_dues_payment.id_year_month, date_ym=db_dues_payment.date_ym)
     _make_due_payment_for_non_active_members(db=db, id_year_month=db_dues_payment.id_year_month, date_ym=db_dues_payment.date_ym)
 
     db.refresh(db_dues_payment)
+    _calc_dues_payment_stats(db, db_dues_payment)
+
     return db_dues_payment
 
 
@@ -151,7 +153,7 @@ def _make_due_payment_for_member(db: Session, id_year_month: str, member: models
 def get_member_due_payment(db: Session, tid: int) -> models.MemberDuesPayment:
     mdp: models.MemberDuesPayment = db.get(models.MemberDuesPayment, tid)
     if mdp is None:
-        raise HTTPException(status_code=404, detail=f"MemberDuesPayment={tid} not found.")
+        raise HTTPException(status_code=404, detail=f"MemberDuesPayment {tid} not found")
     return mdp
 
 

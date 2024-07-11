@@ -132,7 +132,7 @@ def update_member_active(
     now = get_now()
 
     if db_member.is_active == member_update.is_active:
-        raise HTTPException(status_code=400, detail=f"Member {db_member.member_id} was already active set to {member_update.is_active}.")
+        raise HTTPException(status_code=409, detail=f"Member {db_member.member_id} was already active set to {member_update.is_active}.")
 
     try:
         db_member.is_active = member_update.is_active
@@ -191,7 +191,7 @@ def update_member_amount(
         db_member: models.Member,
         member_update: schemas.members.MemberUpdateAmount) -> models.Member:
     if not db_member.is_active:
-        raise HTTPException(status_code=400, detail=f"Member={db_member.member_id} is not active.")
+        raise HTTPException(status_code=409, detail=f"Member {db_member.member_id} is not active. You must activate the user first if you want to change the amount.")
 
     mdpl = db.query(models.MemberDuesPayment).filter_by(
         member_id=db_member.member_id,
