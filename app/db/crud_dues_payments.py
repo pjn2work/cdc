@@ -26,7 +26,7 @@ def get_member_due_payment_missing_stats(db: Session, member_id: int) -> Tuple[L
     return months_missing, total_amount_missing
 
 
-def _calc_dues_payment_stats(db: Session, dp: models.DuesPayment) -> schemas.dues_payments.DuesPaymentView:
+def _calc_dues_payment_stats(db: Session, dp: models.DuesPayment) -> models.DuesPayment:
     dp.total_amount_paid, dp.total_members_paid = db.query(
         func.sum(models.MemberDuesPayment.amount), func.count(models.MemberDuesPayment.amount)
     ).filter_by(id_year_month=dp.id_year_month, is_paid=True, is_member_active=True).one()
@@ -37,7 +37,7 @@ def _calc_dues_payment_stats(db: Session, dp: models.DuesPayment) -> schemas.due
     return dp
 
 
-def get_due_payment_year_month_stats(db: Session, id_year_month: str) -> schemas.dues_payments.DuesPaymentView:
+def get_due_payment_year_month_stats(db: Session, id_year_month: str) -> models.DuesPayment:
     _dp = db.get(models.DuesPayment, id_year_month)
     if _dp is None:
         raise HTTPException(status_code=404, detail=f"Due Payment {id_year_month} not found")

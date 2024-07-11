@@ -197,8 +197,8 @@ def create_seller_item(db: Session, item_id: int, seller_item_create: schemas.se
     return db_seller_item
 
 
-def get_seller_items_list(db: Session, skip: int, limit: int, search_text: str) -> List[models.SellerItems]:
-    _dbq = db.query(models.SellerItems)
+def get_seller_items_list(db: Session, item_id: int, skip: int, limit: int, search_text: str) -> List[models.SellerItems]:
+    _dbq = db.query(models.SellerItems).filter_by(item_id=item_id)
 
     if search_text is not None:
         _dbq = _dbq.filter(or_(
