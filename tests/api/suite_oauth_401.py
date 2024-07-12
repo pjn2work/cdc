@@ -20,7 +20,6 @@ class SuiteOauth401:
         """
         self.ddt.run(ma, rm, tag_name="CONNECTIVITY")
 
-
     def test_status_code_401(self, ma: dict, rm: ReportManager, **kwargs):
         """
         @ON_SUCCESS 0

@@ -27,3 +27,11 @@ class SuitePopulate:
         @PRIO 5
         """
         self.ddt.run(ma, rm, tag_name="POPULATE")
+
+    def test_validate(self, ma: dict, rm: ReportManager, **kwargs):
+        """
+        @ON_SUCCESS 5
+        @LEVEL 3
+        @PRIO 10
+        """
+        self.ddt.run(ma, rm, tag_name="VALIDATIONS")

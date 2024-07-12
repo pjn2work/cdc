@@ -27,17 +27,23 @@ class Context:
         if name is None:
             return ""
 
-        if "." in name:
-            name, field = name.split(".")
-        else:
-            field = None
-
-        if name not in self.vars:
-            raise ValueError(f"Variable {name} not saved in context!")
-
-        if field is None:
+        if "." not in name:
             return self.vars[name]
-        return str(self.vars[name][field])
+
+        fields = name.split(".")
+        current_vars = self.vars
+        _path = []
+        for field in fields:
+            _path.append(field)
+
+            if field.isdigit() and isinstance(current_vars, List):
+                current_vars = current_vars[int(field)]
+            else:
+                if field not in current_vars:
+                    raise ValueError(f"Variable {'.'.join(_path)} not saved in context!")
+                current_vars = current_vars[field]
+
+        return current_vars
 
 
 def handle_api_calls(_func=None, *, http_method:str = "GET"):
