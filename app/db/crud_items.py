@@ -262,6 +262,9 @@ def create_member_item(db: Session, item_id: int, member_item_create: schemas.me
     try:
         db.add(db_member_item)
         db.commit()
+
+        _update_item_and_category_stats(db, db_member_item.item_id)
+        #update_member_item_stats(db, db_member_item.member_id)
     except:
         db.rollback()
         raise
@@ -306,7 +309,7 @@ def update_member_item(db: Session, db_member_item: models.MemberItems, member_i
         db.commit()
 
         _update_item_and_category_stats(db, db_member_item.item_id)
-        update_member_item_stats(db, db_member_item.member_id)
+        #update_member_item_stats(db, db_member_item.member_id)
     except:
         db.rollback()
         raise
