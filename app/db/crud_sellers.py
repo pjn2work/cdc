@@ -1,4 +1,4 @@
-from typing import List, Tuple
+from typing import List
 
 from fastapi import HTTPException
 from sqlalchemy import or_
@@ -14,11 +14,11 @@ def create_seller(db: Session, seller_create: schemas.sellers.SellerCreate) -> m
     try:
         db.add(db_seller)
         db.commit()
-        db.refresh(db_seller)
     except:
         db.rollback()
         raise
 
+    db.refresh(db_seller)
     return db_seller
 
 
@@ -36,17 +36,27 @@ def get_sellers_list(db: Session, skip: int = 0, limit: int = 1000, search_text:
     return _dbq.offset(skip).limit(limit).all()
 
 
-def _get_seller_stats(db: Session, seller_id: int) -> Tuple[int, float]:
+def update_seller_stats(db: Session, seller_id: int) -> models.Seller:
+    db_seller = get_seller_by_id(db, seller_id)
+
     _results = db.query(
         models.SellerItems
     ).filter_by(
         seller_id=seller_id
     ).order_by(models.SellerItems.sell_date).all()
 
-    total_quantity_sold: int = sum([row.quantity for row in _results])
-    total_amount_sold: float = sum([row.total_price for row in _results])
+    db_seller.total_quantity_sold = sum([row.quantity for row in _results])
+    db_seller.total_amount_sold = sum([row.total_price for row in _results])
 
-    return total_quantity_sold, total_amount_sold
+    try:
+        db.add(db_seller)
+        db.commit()
+    except:
+        db.rollback()
+        raise
+
+    db.refresh(db_seller)
+    return db_seller
 
 
 def get_seller_by_id(db: Session, seller_id: int) -> models.Seller:
@@ -57,11 +67,7 @@ def get_seller_by_id(db: Session, seller_id: int) -> models.Seller:
 
 
 def get_seller(db: Session, seller_id: int) -> models.Seller:
-    seller = get_seller_by_id(db, seller_id)
-
-    seller.total_quantity_sold, seller.total_amount_sold = _get_seller_stats(db, seller_id)
-
-    return seller
+    return get_seller_by_id(db, seller_id)
 
 
 def update_seller(db: Session, db_seller: models.Seller, seller_update: schemas.sellers.SellerUpdate) -> models.Seller:
@@ -73,11 +79,11 @@ def update_seller(db: Session, db_seller: models.Seller, seller_update: schemas.
     try:
         db.add(db_seller)
         db.commit()
-        db.refresh(db_seller)
     except:
         db.rollback()
         raise
 
+    db.refresh(db_seller)
     return db_seller
 
 
@@ -91,11 +97,11 @@ def create_expense_account(db: Session, expense_account_create: schemas.sellers.
     try:
         db.add(db_expense_account)
         db.commit()
-        db.refresh(db_expense_account)
     except:
         db.rollback()
         raise
 
+    db.refresh(db_expense_account)
     return db_expense_account
 
 
@@ -111,17 +117,27 @@ def get_expense_accounts_list(db: Session, skip: int, limit: int, search_text: s
     return _dbq.offset(skip).limit(limit).all()
 
 
-def _get_expense_account_stats(db: Session, ea_id: int) -> Tuple[int, float]:
+def update_expense_account_stats(db: Session, ea_id: int) -> models.ExpenseAccount:
+    db_expense_account = get_expense_account_by_id(db, ea_id)
+
     _results = db.query(
         models.SellerItems
     ).filter_by(
         ea_id=ea_id
     ).all()
 
-    total_quantity_seller_sold: int = sum([row.quantity for row in _results])
-    total_amount_seller_sold: float = sum([row.total_price for row in _results])
+    db_expense_account.total_quantity_seller_sold = sum([row.quantity for row in _results])
+    db_expense_account.total_amount_seller_sold = sum([row.total_price for row in _results])
 
-    return total_quantity_seller_sold, total_amount_seller_sold
+    try:
+        db.add(db_expense_account)
+        db.commit()
+    except:
+        db.rollback()
+        raise
+
+    db.refresh(db_expense_account)
+    return db_expense_account
 
 
 def get_expense_account_by_id(db: Session, ea_id: int) -> models.ExpenseAccount:
@@ -132,11 +148,7 @@ def get_expense_account_by_id(db: Session, ea_id: int) -> models.ExpenseAccount:
 
 
 def get_expense_account(db: Session, ea_id: int) -> models.ExpenseAccount:
-    expense_account = get_expense_account_by_id(db, ea_id)
-
-    expense_account.total_quantity_seller_sold, expense_account.total_amount_seller_sold = _get_expense_account_stats(db, ea_id)
-
-    return expense_account
+    return get_expense_account_by_id(db, ea_id)
 
 
 def update_expense_account(db: Session, db_expense_account: models.ExpenseAccount, expense_account_update: schemas.sellers.ExpenseAccountUpdate) -> models.ExpenseAccount:
@@ -148,9 +160,9 @@ def update_expense_account(db: Session, db_expense_account: models.ExpenseAccoun
     try:
         db.add(db_expense_account)
         db.commit()
-        db.refresh(db_expense_account)
     except:
         db.rollback()
         raise
 
+    db.refresh(db_expense_account)
     return db_expense_account

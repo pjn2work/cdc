@@ -1,10 +1,11 @@
-from typing import List, Tuple
+from typing import List
 
 from fastapi import HTTPException
 from sqlalchemy import or_
 from sqlalchemy.orm import Session
 
 from app.db import models, schemas
+from app.db.crud_sellers import update_expense_account_stats, update_seller_stats
 from app.utils import get_now
 
 
@@ -33,28 +34,37 @@ def get_items_list(db: Session, skip: int, limit: int, search_text: str) -> List
 
     return _dbq.offset(skip).limit(limit).all()
 
-def _get_item_stats(db: Session, item_id: int) -> Tuple[int, float, int, float]:
+def _update_item_and_category_stats(db: Session, item_id: int) -> models.Item:
+    db_item = get_item_by_id(db, item_id)
+
     _result_sellers = db.query(
         models.SellerItems
-    ).filter(
-        models.SellerItems.item_id == item_id
+    ).filter_by(
+        item_id=item_id
     ).all()
 
     _result_members = db.query(
         models.MemberItems
-    ).filter(
-        models.MemberItems.item_id == item_id
+    ).filter_by(
+        item_id=item_id
     ).all()
 
-    total_quantity_seller_sold: int = sum([row.quantity for row in _result_sellers])
-    total_amount_seller_sold: float = sum([row.total_price for row in _result_sellers])
-    total_quantity_member_sold: int = sum([row.quantity for row in _result_members])
-    total_amount_member_sold: float = sum([row.total_price for row in _result_members])
+    db_item.total_quantity_seller_sold = sum([row.quantity for row in _result_sellers])
+    db_item.total_amount_seller_sold = sum([row.total_price for row in _result_sellers])
+    db_item.total_quantity_member_sold = sum([row.quantity for row in _result_members])
+    db_item.total_amount_member_sold = sum([row.total_price for row in _result_members])
 
-    return (total_quantity_seller_sold,
-            total_amount_seller_sold,
-            total_quantity_member_sold,
-            total_amount_member_sold)
+    try:
+        db.add(db_item)
+        db.commit()
+
+        _update_category_stats(db, db_item.category_id)
+    except:
+        db.rollback()
+        raise
+
+    db.refresh(db_item)
+    return db_item
 
 
 def get_item_by_id(db: Session, item_id: int) -> models.Item:
@@ -65,14 +75,7 @@ def get_item_by_id(db: Session, item_id: int) -> models.Item:
 
 
 def get_item(db: Session, item_id: int) -> models.Item:
-    item = get_item_by_id(db, item_id)
-
-    (item.total_quantity_seller_sold,
-     item.total_amount_seller_sold,
-     item.total_quantity_member_sold,
-     item.total_amount_member_sold) = _get_item_stats(db, item_id)
-
-    return item
+    return get_item_by_id(db, item_id)
 
 
 def update_item(db: Session, db_item: models.Item, item_update: schemas.items.ItemUpdate) -> models.Item:
@@ -121,28 +124,39 @@ def get_categories_list(db: Session, skip: int, limit: int, search_text: str) ->
     return _dbq.offset(skip).limit(limit).all()
 
 
-def _get_category_stats(db: Session, category_id: int) -> Tuple[int, float, int, float]:
+def _update_category_stats(db: Session, category_id: int) -> models.Category:
+    db_category = get_category_by_id(db, category_id)
+
     _result_sellers = db.query(
         models.SellerItems
+    ).join(
+        models.Item
     ).filter(
         models.Item.category_id == category_id
     ).all()
 
     _result_members = db.query(
         models.MemberItems
+    ).join(
+        models.Item
     ).filter(
         models.Item.category_id == category_id
     ).all()
 
-    total_quantity_seller_sold: int = sum([row.quantity for row in _result_sellers])
-    total_amount_seller_sold: float = sum([row.total_price for row in _result_sellers])
-    total_quantity_member_sold: int = sum([row.quantity for row in _result_members])
-    total_amount_member_sold: float = sum([row.total_price for row in _result_members])
+    db_category.total_quantity_seller_sold = sum([row.quantity for row in _result_sellers])
+    db_category.total_amount_seller_sold = sum([row.total_price for row in _result_sellers])
+    db_category.total_quantity_member_sold = sum([row.quantity for row in _result_members])
+    db_category.total_amount_member_sold = sum([row.total_price for row in _result_members])
 
-    return (total_quantity_seller_sold,
-            total_amount_seller_sold,
-            total_quantity_member_sold,
-            total_amount_member_sold)
+    try:
+        db.add(db_category)
+        db.commit()
+    except:
+        db.rollback()
+        raise
+
+    db.refresh(db_category)
+    return db_category
 
 
 def get_category_by_id(db: Session, category_id: int) -> models.Category:
@@ -153,14 +167,7 @@ def get_category_by_id(db: Session, category_id: int) -> models.Category:
 
 
 def get_category(db: Session, category_id: int) -> models.Category:
-    category = get_category_by_id(db, category_id)
-
-    (category.total_quantity_seller_sold,
-     category.total_amount_seller_sold,
-     category.total_quantity_member_sold,
-     category.total_amount_member_sold) = _get_category_stats(db, category_id)
-
-    return category
+    return get_category_by_id(db, category_id)
 
 
 def update_category(db: Session, db_category: models.Category, category_update: schemas.items.CategoryUpdate) -> models.Category:
@@ -186,14 +193,19 @@ def update_category(db: Session, db_category: models.Category, category_update: 
 def create_seller_item(db: Session, item_id: int, seller_item_create: schemas.seller_items.SellerItemsCreate) -> models.SellerItems:
     db_seller_item = models.SellerItems(item_id=item_id, **seller_item_create.model_dump())
     db_seller_item.row_update_time = get_now()
+
     try:
         db.add(db_seller_item)
         db.commit()
-        db.refresh(db_seller_item)
+
+        update_expense_account_stats(db, db_seller_item.ea_id)
+        update_seller_stats(db, db_seller_item.seller_id)
+        _update_item_and_category_stats(db, db_seller_item.item_id)
     except:
         db.rollback()
         raise
 
+    db.refresh(db_seller_item)
     return db_seller_item
 
 
@@ -229,11 +241,15 @@ def update_seller_item(db: Session, db_seller_item: models.SellerItems, seller_i
     try:
         db.add(db_seller_item)
         db.commit()
-        db.refresh(db_seller_item)
+
+        update_expense_account_stats(db, db_seller_item.ea_id)
+        update_seller_stats(db, db_seller_item.seller_id)
+        _update_item_and_category_stats(db, db_seller_item.item_id)
     except:
         db.rollback()
         raise
 
+    db.refresh(db_seller_item)
     return db_seller_item
 
 
@@ -246,11 +262,11 @@ def create_member_item(db: Session, item_id: int, member_item_create: schemas.me
     try:
         db.add(db_member_item)
         db.commit()
-        db.refresh(db_member_item)
     except:
         db.rollback()
         raise
 
+    db.refresh(db_member_item)
     return db_member_item
 
 
@@ -288,9 +304,12 @@ def update_member_item(db: Session, db_member_item: models.MemberItems, member_i
     try:
         db.add(db_member_item)
         db.commit()
-        db.refresh(db_member_item)
+
+        _update_item_and_category_stats(db, db_member_item.item_id)
+        update_member_item_stats(db, db_member_item.member_id)
     except:
         db.rollback()
         raise
 
+    db.refresh(db_member_item)
     return db_member_item

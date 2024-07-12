@@ -28,15 +28,15 @@ class Seller(SellerBase):
     seller_id: int
     row_update_time: datetime
 
+    total_amount_sold: Optional[float] = Field(default=0.0)
+    total_quantity_sold: Optional[int] = Field(default=0)
+
     class Config:
         orm_mode: True
 
 
 class SellerView(Seller):
     seller_items: List[SellerItems] = []
-
-    total_amount_sold: Optional[float] = Field(default=0.0)
-    total_quantity_sold: Optional[int] = Field(default=0)
 
 
 # ----------------------------------------------------------
@@ -60,12 +60,12 @@ class ExpenseAccount(ExpenseAccountBase):
     ea_id: int
     row_update_time: datetime
 
+    total_amount_seller_sold: Optional[float] = Field(default=0.0)
+    total_quantity_seller_sold: Optional[int] = Field(default=0)
+
     class Config:
         orm_mode: True
 
 
 class ExpenseAccountView(ExpenseAccount):
     seller_items: List[SellerItems] = []
-
-    total_amount_seller_sold: Optional[float] = Field(default=0.0)
-    total_quantity_seller_sold: Optional[int] = Field(default=0)

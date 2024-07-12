@@ -12,6 +12,11 @@ class Category(Base):
     notes = Column(String, default="")
     row_update_time = Column(DateTime)
 
+    total_amount_seller_sold = Column(Float, default=0.0)
+    total_quantity_seller_sold = Column(Integer, default=0)
+    total_amount_member_sold = Column(Float, default=0.0)
+    total_quantity_member_sold = Column(Integer, default=0)
+
     items = relationship("Item", back_populates="categories")
 
 
@@ -20,12 +25,17 @@ class Item(Base):
     __table_args__ = (UniqueConstraint("category_id", "name", name="uix_2"), )
     item_id = Column(Integer, primary_key=True, autoincrement=True, index=True)
 
-    category_id = Column(String, ForeignKey("categories.category_id"), index=True)
+    category_id = Column(Integer, ForeignKey("categories.category_id"), index=True)
 
     name = Column(String, index=True)
     base_price = Column(Float)
     notes = Column(String, default="")
     row_update_time = Column(DateTime)
+
+    total_amount_seller_sold = Column(Float, default=0.0)
+    total_quantity_seller_sold = Column(Integer, default=0)
+    total_amount_member_sold = Column(Float, default=0.0)
+    total_quantity_member_sold = Column(Integer, default=0)
 
     categories = relationship("Category", back_populates="items")
     seller_items = relationship("SellerItems", back_populates="items")

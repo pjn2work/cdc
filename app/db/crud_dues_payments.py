@@ -1,4 +1,5 @@
 import datetime
+import logging
 from io import BytesIO
 from typing import List, Tuple
 
@@ -92,7 +93,7 @@ def _make_due_payment_for_non_active_members(db: Session, id_year_month: str, da
     now = get_now()
     try:
         for member in _member_list:
-            logit(f"Creating 0.0€ Due Payment for member={member.member_id} for {id_year_month} month.")
+            logit(f"Creating 0.0€ Due Payment for member={member.member_id} for {id_year_month} month.", logging.INFO)
             mdp = models.MemberDuesPayment(
                 member_id=member.member_id,
                 id_year_month=id_year_month,
@@ -133,7 +134,7 @@ def make_due_payment_for_new_member(db: Session, member: models.Member) -> None:
 
 
 def _make_due_payment_for_member(db: Session, id_year_month: str, member: models.Member) -> None:
-    logit(f"Creating missing {member.amount}€ Due Payment for member={member.member_id} for {id_year_month} month.")
+    logit(f"Creating missing {member.amount}€ Due Payment for member={member.member_id} for {id_year_month} month.", logging.INFO)
     mdp = models.MemberDuesPayment(
         member_id=member.member_id,
         id_year_month=id_year_month,
