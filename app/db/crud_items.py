@@ -87,11 +87,13 @@ def update_item(db: Session, db_item: models.Item, item_update: schemas.items.It
     try:
         db.add(db_item)
         db.commit()
-        db.refresh(db_item)
+
+        _update_item_and_category_stats(db, db_item.item_id)
     except:
         db.rollback()
         raise
 
+    db.refresh(db_item)
     return db_item
 
 

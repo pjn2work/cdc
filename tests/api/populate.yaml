@@ -595,5 +595,154 @@ VALIDATIONS:
             total_amount_member_sold: 0
             total_quantity_member_sold: 0
 
+    items:
+
+      step_get_item1:
+        _exec_method_: api_get
+        url: api/items/1
+        expected_response:
+          item_id: 1
+          category_id: 1
+          name: Item 1
+          base_price: 1
+          notes: Item 1 notes
+          total_amount_seller_sold: 20
+          total_quantity_seller_sold: 2
+          total_amount_member_sold: 0
+          total_quantity_member_sold: 0
+          seller_items:
+            - seller_id: 1
+              ea_id: 1
+              quantity: 2
+              total_price: 20
+              notes: Item 1 Seller 1 notes
+              sell_date: "2024-01-25"
+              tid: 1
+              item_id: 1
+          member_items: [ ]
+
+      step_get_item2:
+        _exec_method_: api_get
+        url: api/items/2
+        expected_response:
+          item_id: 2
+          category_id: 1
+          name: Item 2
+          base_price: 2
+          notes: Item 2 notes
+          total_amount_seller_sold: 0
+          total_quantity_seller_sold: 0
+          total_amount_member_sold: 70
+          total_quantity_member_sold: 7
+          seller_items: [ ]
+          member_items:
+            - member_id: 1
+              quantity: 3
+              total_price: 30
+              notes: Item 2 Member 1 notes
+              buy_date: "2024-01-26"
+              is_cash: false
+              tid: 1
+              item_id: 2
+            - member_id: 2
+              quantity: 4
+              total_price: 40
+              notes: Item 2 Member 2 notes
+              buy_date: "2024-01-27"
+              is_cash: true
+              tid: 2
+              item_id: 2
+
+      update_item2:
+        _exec_method_: api_put
+        url: api/items/2
+        data:
+          category_id: 2
+          name: "Item 2.1"
+          base_price: 2.1
+          notes: "Item 2.1 notes"
+        expected_response:
+          item_id: 2
+          category_id: 2
+          name: "Item 2.1"
+          base_price: 2.1
+          notes: "Item 2.1 notes"
+          total_amount_seller_sold: 0
+          total_quantity_seller_sold: 0
+          total_amount_member_sold: 70
+          total_quantity_member_sold: 7
+          seller_items: [ ]
+          member_items:
+            - member_id: 1
+              quantity: 3
+              total_price: 30
+              notes: Item 2 Member 1 notes
+              buy_date: "2024-01-26"
+              is_cash: false
+              tid: 1
+              item_id: 2
+            - member_id: 2
+              quantity: 4
+              total_price: 40
+              notes: Item 2 Member 2 notes
+              buy_date: "2024-01-27"
+              is_cash: true
+              tid: 2
+              item_id: 2
+
+      step_list_items:
+        _exec_method_: api_list
+        url: api/items/
+        expected_response:
+          - category_id: 1
+            name: Item 1
+            base_price: 1.0
+            notes: Item 1 notes
+            item_id: 1
+            total_amount_seller_sold: 20.0
+            total_quantity_seller_sold: 2
+            total_amount_member_sold: 0.0
+            total_quantity_member_sold: 0
+          - category_id: 2
+            name: Item 2.1
+            base_price: 2.1
+            notes: Item 2.1 notes
+            item_id: 2
+            total_amount_seller_sold: 0
+            total_quantity_seller_sold: 0
+            total_amount_member_sold: 70.0
+            total_quantity_member_sold: 7
+          - category_id: 1
+            name: Item 3
+            base_price: 3.0
+            notes: Item 3 notes
+            item_id: 3
+            total_amount_seller_sold: 0.0
+            total_quantity_seller_sold: 0
+            total_amount_member_sold: 0.0
+            total_quantity_member_sold: 0
+
+      step_get_category2:
+        _exec_method_: api_get
+        url: api/items/categories/2
+        expected_response:
+          category_id: 2
+          name: Category 2.1
+          notes: Category 2.1 notes
+          total_amount_seller_sold: 0.0
+          total_quantity_seller_sold: 0
+          total_amount_member_sold: 70
+          total_quantity_member_sold: 7
+          items:
+            - category_id: 2
+              name: Item 2.1
+              base_price: 2.1
+              notes: Item 2.1 notes
+              item_id: 2
+              total_amount_seller_sold: 0
+              total_quantity_seller_sold: 0
+              total_amount_member_sold: 70.0
+              total_quantity_member_sold: 7
+
 
 ...

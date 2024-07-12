@@ -28,6 +28,8 @@ class Context:
             return ""
 
         if "." not in name:
+            if name not in self.vars[name]:
+                raise ValueError(f"Variable {name} not saved in context!")
             return self.vars[name]
 
         fields = name.split(".")
@@ -58,7 +60,7 @@ def handle_api_calls(_func=None, *, http_method:str = "GET"):
             current_test = kwargs["current_test"]
 
             url = BASE_URL + str(usecase.get("url", ''))
-            url = url.replace("?", context.get(usecase.get("_get")))
+            url = url.replace("?", str(context.get(usecase.get("_get"))))
             furl = "?".join(filter(None, [url, urlencode(usecase.get("params", {}))]))
 
             try:
