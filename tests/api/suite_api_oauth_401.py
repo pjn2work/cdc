@@ -4,14 +4,14 @@ from testipy.reporter import ReportManager
 from toolbox import Toolbox
 
 
-class SuiteOauth401:
+class SuiteApiOauth401:
     """
     @LEVEL 1
-    @TAG DDT MEMBER
+    @TAG DDT API 401
     """
 
     def __init__(self):
-        self.ddt = DDTMethods("oauth_401.yaml", env_name="", exec_toolbox=Toolbox())
+        self.ddt = DDTMethods("api_oauth_401.yaml", env_name="", exec_toolbox=Toolbox())
 
     def test_connectivity(self, ma: dict, rm: ReportManager, **kwargs):
         """

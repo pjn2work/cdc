@@ -90,13 +90,49 @@ POPULATE:
         data: *M1
         _save: M1
         expected_response:
+          member_id: 1
+          start_date: "2024-03-01"
+          is_active: true
+          amount: 15
+          name: Member 1
+          tlf: "912000111"
+          email: member1@gmail.com
+          notes: member 1 notes
           total_months_missing: 1
-          total_amount_missing: 15.0
+          total_amount_missing: 15
+          total_months_paid: 0
+          total_amount_paid: 0
+          total_quantity_bought: 0
+          total_amount_bought: 0
+          months_missing: [ ]
+          member_history:
+            - start_date: "2024-03-01"
+              is_active: true
+              amount: 15
+              name: Member 1
+              tlf: "912000111"
+              email: member1@gmail.com
+              notes: member 1 notes
+              total_months_missing: 1
+              total_amount_missing: 15
+              total_months_paid: 0
+              total_amount_paid: 0
+              total_quantity_bought: 0
+              total_amount_bought: 0
+              member_id: 1
+              since: 2024-07
+              tid: 1
           member_due_payment:
-          - id_year_month: "2024-04"
-            amount: 15.0
-            is_paid: false
-            is_member_active: true
+            - amount: 15
+              is_paid: false
+              is_member_active: true
+              is_cash: null
+              pay_date: null
+              tid: 1
+              member_id: 1
+              id_year_month: 2024-04
+          member_donations: [ ]
+          member_items: [ ]
 
       step_post_due_payment3:
         _based_on_: ["due_payments/step_post_due_payment1", ["url", "control"]]
@@ -131,25 +167,57 @@ POPULATE:
         data: *M2
         _save: M2
         expected_response:
+          start_date: "2024-03-17"
+          is_active: true
+          amount: 10.3
+          name: Member 2
+          tlf: "933000222"
+          email: member2@gmail.com
+          notes: member 2 notes
           total_months_missing: 2
           total_amount_missing: 20.6
           total_months_paid: 0
-          total_amount_paid: 0.0
-          member_due_payment:
-          - id_year_month: "2024-04"
-            amount: 10.3
-            is_paid: false
-            is_member_active: true
-          - id_year_month: "2024-05"
-            amount: 10.3
-            is_paid: false
-            is_member_active: true
+          total_amount_paid: 0
+          total_quantity_bought: 0
+          total_amount_bought: 0
+          member_id: 2
+          months_missing: [ ]
           member_history:
-          - is_active: true
-            total_months_missing: 2
-            total_amount_missing: 20.6
-            total_months_paid: 0
-            total_amount_paid: 0.0
+            - start_date: "2024-03-17"
+              is_active: true
+              amount: 10.3
+              name: Member 2
+              tlf: "933000222"
+              email: member2@gmail.com
+              notes: member 2 notes
+              total_months_missing: 2
+              total_amount_missing: 20.6
+              total_months_paid: 0
+              total_amount_paid: 0
+              total_quantity_bought: 0
+              total_amount_bought: 0
+              member_id: 2
+              since: 2024-07
+              tid: 2
+          member_due_payment:
+            - amount: 10.3
+              is_paid: false
+              is_member_active: true
+              is_cash: null
+              pay_date: null
+              tid: 4
+              member_id: 2
+              id_year_month: 2024-04
+            - amount: 10.3
+              is_paid: false
+              is_member_active: true
+              is_cash: null
+              pay_date: null
+              tid: 5
+              member_id: 2
+              id_year_month: 2024-05
+          member_donations: [ ]
+          member_items: [ ]
 
     member_donations:
 
@@ -777,6 +845,16 @@ VALIDATIONS:
               total_amount_member_sold: 0
               total_quantity_member_sold: 0
 
+    members:
+      step_list_members:
+        _exec_method_: api_get
 
+    seller_items:
+      step_get_category1:
+        _exec_method_: api_get
+
+    member_items:
+      step_get_category1:
+        _exec_method_: api_get
 
 ...
