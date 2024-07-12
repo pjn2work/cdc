@@ -21,6 +21,9 @@ class MemberAbs(Base):
     total_months_paid = Column(Integer, default=0)
     total_amount_paid = Column(Float, default=0.0)
 
+    total_quantity_bought = Column(Integer, default=0)
+    total_amount_bought = Column(Float, default=0.0)
+
 
 class Member(MemberAbs):
     __tablename__ = "members"

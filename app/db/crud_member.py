@@ -307,5 +307,28 @@ def list_member_donations_order_by_pay_date(
     return md_list
 
 
+def update_member_stats(db: Session, member_id: int) -> models.Member:
+    db_member = get_member_by_id(db, member_id)
+
+    _results = db.query(
+        models.MemberItems
+    ).filter_by(
+        member_id=member_id
+    ).all()
+
+    db_member.total_quantity_bought = sum([row.quantity for row in _results])
+    db_member.total_amount_bought = sum([row.total_price for row in _results])
+
+    try:
+        db.add(db_member)
+        db.commit()
+    except:
+        db.rollback()
+        raise
+
+    db.refresh(db_member)
+    return db_member
+
+
 def _get_fields(d: dict) -> dict:
     return {k: v for k, v in d.items() if not k.startswith("_")}

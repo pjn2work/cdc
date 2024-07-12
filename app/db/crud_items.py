@@ -5,6 +5,7 @@ from sqlalchemy import or_
 from sqlalchemy.orm import Session
 
 from app.db import models, schemas
+from app.db.crud_member import update_member_stats
 from app.db.crud_sellers import update_expense_account_stats, update_seller_stats
 from app.utils import get_now
 
@@ -269,7 +270,7 @@ def create_member_item(db: Session, item_id: int, member_item_create: schemas.me
         db.commit()
 
         _update_item_and_category_stats(db, db_member_item.item_id)
-        #update_member_item_stats(db, db_member_item.member_id)
+        update_member_stats(db, db_member_item.member_id)
     except:
         db.rollback()
         raise
@@ -304,6 +305,9 @@ def get_member_item(db: Session, tid: int) -> models.MemberItems:
 
 
 def update_member_item(db: Session, db_member_item: models.MemberItems, member_item_update: schemas.member_items.MemberItemsUpdate) -> models.MemberItems:
+    old_item_id = db_member_item.item_id
+    old_member_id = db_member_item.member_id
+
     db_member_item.row_update_time = get_now()
     update_data = member_item_update.model_dump(exclude_unset=True)
     for key, value in update_data.items():
@@ -313,8 +317,12 @@ def update_member_item(db: Session, db_member_item: models.MemberItems, member_i
         db.add(db_member_item)
         db.commit()
 
+        if "member_id" in update_data:
+            update_member_stats(db, old_member_id)
+        if "item_id" in update_data:
+            _update_item_and_category_stats(db, old_item_id)
         _update_item_and_category_stats(db, db_member_item.item_id)
-        #update_member_item_stats(db, db_member_item.member_id)
+        update_member_stats(db, db_member_item.member_id)
     except:
         db.rollback()
         raise
