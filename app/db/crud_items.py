@@ -79,6 +79,7 @@ def get_item(db: Session, item_id: int) -> models.Item:
 
 
 def update_item(db: Session, db_item: models.Item, item_update: schemas.items.ItemUpdate) -> models.Item:
+    old_category = db_item.category_id
     db_item.row_update_time = get_now()
     update_data = item_update.model_dump(exclude_unset=True)
     for key, value in update_data.items():
@@ -88,6 +89,8 @@ def update_item(db: Session, db_item: models.Item, item_update: schemas.items.It
         db.add(db_item)
         db.commit()
 
+        if "category_id" in update_data:
+            _update_category_stats(db, old_category)
         _update_item_and_category_stats(db, db_item.item_id)
     except:
         db.rollback()

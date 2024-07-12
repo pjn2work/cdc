@@ -744,5 +744,39 @@ VALIDATIONS:
               total_amount_member_sold: 70.0
               total_quantity_member_sold: 7
 
+      step_get_category1:
+        _exec_method_: api_get
+        url: api/items/categories/1
+        _assertions:
+          - ["Total Items must be 2", "len(response['items']) == 2"]
+        expected_response:
+          category_id: 1
+          name: Category 1
+          notes: Category 1 notes
+          total_amount_seller_sold: 20
+          total_quantity_seller_sold: 2
+          total_amount_member_sold: 0
+          total_quantity_member_sold: 0
+          items:
+            - category_id: 1
+              name: Item 1
+              base_price: 1
+              notes: Item 1 notes
+              item_id: 1
+              total_amount_seller_sold: 20
+              total_quantity_seller_sold: 2
+              total_amount_member_sold: 0
+              total_quantity_member_sold: 0
+            - category_id: 1
+              name: Item 3
+              base_price: 3
+              notes: Item 3 notes
+              item_id: 3
+              total_amount_seller_sold: 0
+              total_quantity_seller_sold: 0
+              total_amount_member_sold: 0
+              total_quantity_member_sold: 0
+
+
 
 ...

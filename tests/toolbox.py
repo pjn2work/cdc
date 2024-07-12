@@ -58,6 +58,7 @@ def handle_api_calls(_func=None, *, http_method:str = "GET"):
             rm = kwargs["rm"]
             context = kwargs["context"]
             current_test = kwargs["current_test"]
+            _assertions = usecase.get("_assertions", [])
 
             url = BASE_URL + str(usecase.get("url", ''))
             url = url.replace("?", str(context.get(usecase.get("_get"))))
@@ -68,6 +69,11 @@ def handle_api_calls(_func=None, *, http_method:str = "GET"):
 
                 context.save(usecase.get("_save"), response)
                 rm.test_info(current_test, f"{usecase_name} - {http_method} {furl} - received payload:\n{prettify(response, as_yaml=False)}")
+
+                for _message, _assertion in _assertions:
+                    exec_method = f"assert {_assertion}, '{_message}'"
+                    exec(exec_method)
+
                 return response
             except Exception as ex:
                 _show_expected_payload_vs_received(rm, current_test, usecase, usecase_name, url, http_method, ex)
