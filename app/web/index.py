@@ -13,16 +13,3 @@ def index(
         current_client: TokenData = GET_CURRENT_WEB_CLIENT):
     are_valid_scopes(["app:read", "index:read"], current_client)
     return templates.TemplateResponse("index.html", {"request": request})
-
-
-####################
-# TODO to be deleted
-from app.sec import GET_CURRENT_API_CLIENT
-from app.db.models import clear_db
-
-@router.get("/reset", response_class=HTMLResponse)
-def index(current_client: TokenData = GET_CURRENT_API_CLIENT):
-    are_valid_scopes(["app:admin"], current_client)
-    clear_db()
-    return "DB is now cleared."
-####################

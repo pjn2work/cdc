@@ -15,9 +15,9 @@ cred = read_json_file("../../credentials.json", same_as=__file__)
 
 SALT = cred.get("salt", "")
 APP_CLIENTS = cred["app_clients"]
-SECRET_KEY = cred["app_secret_key"] or os.getenv("APP_SECRET_KEY", "not_secured")
+SECRET_KEY = cred["app_secret_key"] or os.getenv("CECC_SECRET_KEY", "not_secured")
 ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE = timedelta(minutes=30)
+ACCESS_TOKEN_EXPIRE = timedelta(hours=30)
 
 
 router = APIRouter()
@@ -124,6 +124,9 @@ def _get_current_client(token: str) -> TokenData:
         detail="Could not validate credentials",
         headers={"WWW-Authenticate": "Bearer"},
     )
+
+    if not token:
+        raise credentials_exception
 
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])

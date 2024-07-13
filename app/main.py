@@ -9,6 +9,7 @@ from app.api.items import router as items_router
 from app.api.member_due_payment import router as member_due_payment_router
 from app.api.members import router as members_router
 from app.api.sellers import router as sellers_router
+from app.api.tests import router as tests_router
 from app.db import init_db, get_db
 from app.sec import router as sec_router
 from app.web.dues_payments import router as web_dues_payments_router
@@ -42,6 +43,7 @@ app.include_router(dues_payments_router, prefix="/api/dues_payments", tags=["/ap
 app.include_router(member_due_payment_router, prefix="/api/member_due_payment", tags=["/api/member_due_payment"])
 app.include_router(sellers_router, prefix="/api/sellers", tags=["/api/sellers"])
 app.include_router(items_router, prefix="/api/items", tags=["/api/items"])
+app.include_router(tests_router, prefix="/api/tests", tags=["/api/tests"])
 
 # Web pages
 app.include_router(web_index, prefix="/web", tags=["/web"])
