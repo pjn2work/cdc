@@ -132,7 +132,7 @@ def update_member_active(
     now = get_now()
 
     if db_member.is_active == member_update.is_active:
-        raise HTTPException(status_code=400, detail=f"Member {db_member.member_id} was already active set to {member_update.is_active}.")
+        raise HTTPException(status_code=409, detail=f"Member {db_member.member_id} was already active set to {member_update.is_active}.")
 
     try:
         db_member.is_active = member_update.is_active
@@ -191,7 +191,7 @@ def update_member_amount(
         db_member: models.Member,
         member_update: schemas.members.MemberUpdateAmount) -> models.Member:
     if not db_member.is_active:
-        raise HTTPException(status_code=400, detail=f"Member={db_member.member_id} is not active.")
+        raise HTTPException(status_code=409, detail=f"Member {db_member.member_id} is not active. You must activate the user first if you want to change the amount.")
 
     mdpl = db.query(models.MemberDuesPayment).filter_by(
         member_id=db_member.member_id,
@@ -305,6 +305,29 @@ def list_member_donations_order_by_pay_date(
         )
 
     return md_list
+
+
+def update_member_stats(db: Session, member_id: int) -> models.Member:
+    db_member = get_member_by_id(db, member_id)
+
+    _results = db.query(
+        models.MemberItems
+    ).filter_by(
+        member_id=member_id
+    ).all()
+
+    db_member.total_quantity_bought = sum([row.quantity for row in _results])
+    db_member.total_amount_bought = sum([row.total_price for row in _results])
+
+    try:
+        db.add(db_member)
+        db.commit()
+    except:
+        db.rollback()
+        raise
+
+    db.refresh(db_member)
+    return db_member
 
 
 def _get_fields(d: dict) -> dict:

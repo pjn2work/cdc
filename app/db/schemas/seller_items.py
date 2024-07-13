@@ -7,7 +7,6 @@ from app.utils import date, datetime
 
 class SellerItemsBase(BaseModel):
     seller_id: int
-    item_id: int
     ea_id: int
 
     quantity: int = Field(ge=1)
@@ -33,6 +32,7 @@ class SellerItemsCreate(SellerItemsBase):
 
 class SellerItems(SellerItemsBase):
     tid: int
+    item_id: int
     row_update_time: datetime
 
     class Config:

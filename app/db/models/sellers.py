@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, DateTime
+from sqlalchemy import Column, Integer, Float, String, DateTime
 from sqlalchemy.orm import relationship
 
 from app.db.database import Base
@@ -12,6 +12,10 @@ class Seller(Base):
     tlf = Column(String)
     email = Column(String, default="")
     notes = Column(String, default="")
+    row_update_time = Column(DateTime)
+
+    total_amount_sold = Column(Float, default=0.0)
+    total_quantity_sold = Column(Integer, default=0)
 
     seller_items = relationship("SellerItems", back_populates="sellers")
 
@@ -26,5 +30,8 @@ class ExpenseAccount(Base):
     name = Column(String, index=True)
     notes = Column(String, default="")
     row_update_time = Column(DateTime)
+
+    total_amount_seller_sold = Column(Float, default=0.0)
+    total_quantity_seller_sold = Column(Integer, default=0)
 
     seller_items = relationship("SellerItems", back_populates="expense_accounts")

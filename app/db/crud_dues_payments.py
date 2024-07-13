@@ -1,4 +1,5 @@
 import datetime
+import logging
 from io import BytesIO
 from typing import List, Tuple
 
@@ -26,7 +27,7 @@ def get_member_due_payment_missing_stats(db: Session, member_id: int) -> Tuple[L
     return months_missing, total_amount_missing
 
 
-def _calc_dues_payment_stats(db: Session, dp: models.DuesPayment) -> schemas.dues_payments.DuesPaymentView:
+def _calc_dues_payment_stats(db: Session, dp: models.DuesPayment) -> models.DuesPayment:
     dp.total_amount_paid, dp.total_members_paid = db.query(
         func.sum(models.MemberDuesPayment.amount), func.count(models.MemberDuesPayment.amount)
     ).filter_by(id_year_month=dp.id_year_month, is_paid=True, is_member_active=True).one()
@@ -37,7 +38,7 @@ def _calc_dues_payment_stats(db: Session, dp: models.DuesPayment) -> schemas.due
     return dp
 
 
-def get_due_payment_year_month_stats(db: Session, id_year_month: str) -> schemas.dues_payments.DuesPaymentView:
+def get_due_payment_year_month_stats(db: Session, id_year_month: str) -> models.DuesPayment:
     _dp = db.get(models.DuesPayment, id_year_month)
     if _dp is None:
         raise HTTPException(status_code=404, detail=f"Due Payment {id_year_month} not found")
@@ -74,12 +75,14 @@ def create_dues_payment_year_month(db: Session, dues_payment_create: schemas.due
         db.commit()
     except:
         db.rollback()
-        raise HTTPException(status_code=400, detail=f"Due month {dp.date_ym} was already created, no need to create a new one.")
+        raise HTTPException(status_code=409, detail=f"Due Payment {dp.date_ym} was already created, no need to create a new one.")
 
     _make_due_payment_for_active_members(db=db, id_year_month=db_dues_payment.id_year_month, date_ym=db_dues_payment.date_ym)
     _make_due_payment_for_non_active_members(db=db, id_year_month=db_dues_payment.id_year_month, date_ym=db_dues_payment.date_ym)
 
     db.refresh(db_dues_payment)
+    _calc_dues_payment_stats(db, db_dues_payment)
+
     return db_dues_payment
 
 
@@ -90,7 +93,7 @@ def _make_due_payment_for_non_active_members(db: Session, id_year_month: str, da
     now = get_now()
     try:
         for member in _member_list:
-            logit(f"Creating 0.0€ Due Payment for member={member.member_id} for {id_year_month} month.")
+            logit(f"Creating 0.0€ Due Payment for member={member.member_id} for {id_year_month} month.", logging.INFO)
             mdp = models.MemberDuesPayment(
                 member_id=member.member_id,
                 id_year_month=id_year_month,
@@ -131,7 +134,7 @@ def make_due_payment_for_new_member(db: Session, member: models.Member) -> None:
 
 
 def _make_due_payment_for_member(db: Session, id_year_month: str, member: models.Member) -> None:
-    logit(f"Creating missing {member.amount}€ Due Payment for member={member.member_id} for {id_year_month} month.")
+    logit(f"Creating missing {member.amount}€ Due Payment for member={member.member_id} for {id_year_month} month.", logging.INFO)
     mdp = models.MemberDuesPayment(
         member_id=member.member_id,
         id_year_month=id_year_month,
@@ -151,7 +154,7 @@ def _make_due_payment_for_member(db: Session, id_year_month: str, member: models
 def get_member_due_payment(db: Session, tid: int) -> models.MemberDuesPayment:
     mdp: models.MemberDuesPayment = db.get(models.MemberDuesPayment, tid)
     if mdp is None:
-        raise HTTPException(status_code=404, detail=f"MemberDuesPayment={tid} not found.")
+        raise HTTPException(status_code=404, detail=f"MemberDuesPayment {tid} not found")
     return mdp
 
 

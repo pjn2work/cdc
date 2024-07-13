@@ -25,6 +25,9 @@ class MemberBaseStats(MemberBase):
     total_months_paid: int = Field(default=0)
     total_amount_paid: float = Field(default=0.0)
 
+    total_quantity_bought: int = Field(default=0)
+    total_amount_bought: float = Field(default=0.0)
+
 
 class MemberCreate(MemberBase):
     pass
