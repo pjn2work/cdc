@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from starlette.responses import HTMLResponse, RedirectResponse
 
 from app.db import crud_dues_payments, schemas, DB_SESSION
-from app.sec import GET_CURRENT_API_CLIENT, TokenData, are_valid_scopes
+from app.sec import GET_CURRENT_WEB_CLIENT, TokenData, are_valid_scopes
 from app.web import templates
 
 router = APIRouter()
@@ -17,7 +17,7 @@ async def list_member_dues_payments_order_by_pay_date(
         just_download: bool = False,
         do_filter: bool = False,
         db: Session = DB_SESSION,
-        current_client: TokenData = GET_CURRENT_API_CLIENT):
+        current_client: TokenData = GET_CURRENT_WEB_CLIENT):
     are_valid_scopes(["app:read", "member_due_payment:read"], current_client)
 
     if do_filter:
@@ -40,7 +40,7 @@ async def pay_member_due_payment(
         request: Request,
         tid: int,
         db: Session = DB_SESSION,
-        current_client: TokenData = GET_CURRENT_API_CLIENT):
+        current_client: TokenData = GET_CURRENT_WEB_CLIENT):
     are_valid_scopes(["app:create", "member_due_payment:create"], current_client)
 
     data = await request.form()
@@ -58,7 +58,7 @@ def table_dues_paid_for_all_members(
         just_download: bool = False,
         do_filter: bool = False,
         db: Session = DB_SESSION,
-        current_client: TokenData = GET_CURRENT_API_CLIENT):
+        current_client: TokenData = GET_CURRENT_WEB_CLIENT):
     are_valid_scopes(["app:read", "member_due_payment:read"], current_client)
 
     if do_filter:
