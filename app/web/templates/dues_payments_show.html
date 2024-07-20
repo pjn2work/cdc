@@ -13,6 +13,7 @@
                                 <th class="align_left">Nome</th>
                                 <th class="align_left">Contacto</th>
                                 <th class="align_right">Valor</th>
+                                <th class="align_center">V.D.</th>
                                 <th class="align_left">Última actualização</th>
                                 {%- if is_for_not_paid %}
                                 <th class="align_center">Efectuar pagamento</th>
@@ -22,13 +23,14 @@
                             </tr>
                         </thead>
                         <tbody>
-                            {%- for mdp in dp.member_due_payment if mdp.is_member_active %}
+                            {%- for mdp in dp.member_due_payment|sort(attribute='pay_date', reverse = True)|sort(attribute='pay_update_time', reverse = True) if mdp.is_member_active %}
                                 {%- if (is_for_not_paid and not mdp.is_paid) or (not is_for_not_paid and mdp.is_paid) %}
                                 <tr>
                                     <td class="align_right"><a href="../../members/{{ mdp.member_id }}/show">{{ mdp.member_id }}</a></td>
                                     <td class="align_left">{{ mdp.member.name }}</td>
                                     <td class="align_left">{{ mdp.member.tlf }}</td>
                                     <td class="align_right">{{ mdp.amount }} €</td>
+                                    <td class="align_center">{{ show_boolean(mdp.is_cash) }} </td>
                                     <td class="align_left">{{ mdp.pay_update_time }}</td>
                                     {%- if is_for_not_paid %}
                                     <td class="red align_center"><button onclick="pay_member_due({{ mdp.tid }})">Pagar</button></td>

@@ -9,7 +9,7 @@ from sqlalchemy.orm import Session
 
 from app.db import models, schemas
 from app.db.crud_dues_payments import get_member_due_payment_missing_stats, make_due_payment_for_new_member
-from app.utils import get_now, get_today_year_month_str
+from app.utils import get_now, get_today_year_month_str, str2date
 
 
 def get_member_by_id(db: Session, member_id: int) -> models.Member:
@@ -265,8 +265,10 @@ def list_member_donations_order_by_pay_date(
         models.MemberDonation.pay_update_time.desc(),
     )
     if since:
+        since = str2date(since)
         months_query = months_query.filter(models.MemberDonation.pay_date >= since)
     if until:
+        until = str2date(until)
         months_query = months_query.filter(models.MemberDonation.pay_date <= until)
 
     md_list: List[models.MemberDonation] = months_query.all()
@@ -280,6 +282,7 @@ def list_member_donations_order_by_pay_date(
                 "Associado ID": md.member_id,
                 "Nome": md.member.name,
                 "Valor": md.amount,
+                "V.D.": md.is_cash,
                 "Data Pagamento": md.pay_date,
                 "Data Actualização": md.pay_update_time,
             }

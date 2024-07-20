@@ -2,7 +2,7 @@
 {% block title %}Lista pagamento Quotas{% endblock %}
 {% block page_header %}Lista de pagamentos de quotas - {{ total }}{% endblock %}
 {% set form_action = "" %}
-{% set by_month = True %}
+{% set by_month = False %}
 {% block content_in_div %}
 {% include "_form_filter_between_dates.html" %}
 {%- endblock %}
@@ -15,17 +15,19 @@
                 <th class="align_left">Nome</th>
                 <th class="align_center">Mensalidade</th>
                 <th class="align_right">Valor pago</th>
+                <th class="align_center">V.D.</th>
                 <th class="align_left">Data de pagamento</th>
                 <th class="align_left">Data de actualização</th>
             </tr>
         </thead>
         <tbody>
-        {%- for mdp in mdp_list %}
+        {%- for mdp in mdp_list|sort(attribute='pay_date', reverse = True)|sort(attribute='id_year_month', reverse = True) %}
             <tr>
                 <td class="align_right"><a href="../members/{{ mdp.member_id }}/show">{{ mdp.member_id }}</a></td>
                 <td class="align_left">{{ mdp.member.name }}</td>
                 <td class="align_center">{{ mdp.id_year_month }}</td>
                 <td class="align_right">{{ mdp.amount }} €</td>
+                <td class="align_center">{{ show_boolean(mdp.is_cash) }} </td>
                 <td class="align_left">{{ mdp.pay_date }}</td>
                 <td class="align_left">{{ mdp.pay_update_time }}</td>
             </tr>

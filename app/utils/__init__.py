@@ -20,7 +20,7 @@ def get_first_day(date_: date) -> date:
     return date(date_.year, date_.month, 1)
 
 
-def get_today_year_month_str():
+def get_today_year_month_str() -> str:
     return format_year_month(get_today())
 
 
@@ -32,6 +32,10 @@ def format_year_month(ym: str | date) -> str:
         ym = ym[:4] + "-" + ym[4:6]
     year, month = list(map(int, ym.split('-')))
     return f"{year}-{month:02d}"
+
+
+def str2date(s: str) -> date:
+    return datetime.strptime(s, "%Y-%m-%d").date()
 
 
 def read_json_file(file_name: str, same_as: str = "") -> dict:

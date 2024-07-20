@@ -11,7 +11,7 @@ from sqlalchemy.orm import Session
 
 from app import logit
 from app.db import models, schemas
-from app.utils import get_now, get_today_year_month_str, format_year_month
+from app.utils import get_now, get_today_year_month_str, format_year_month, str2date
 
 
 def get_member_due_payment_missing_stats(db: Session, member_id: int) -> Tuple[List[str], int]:
@@ -308,11 +308,11 @@ def list_member_dues_payments_order_by_pay_date(
         models.MemberDuesPayment.pay_update_time.desc(),
     )
     if since:
-        since = format_year_month(since)
-        months_query = months_query.filter(models.DuesPayment.date_ym >= since)
+        since = str2date(since)
+        months_query = months_query.filter(models.MemberDuesPayment.pay_date >= since)
     if until:
-        until = format_year_month(until)
-        months_query = months_query.filter(models.DuesPayment.date_ym <= until)
+        until = str2date(until)
+        months_query = months_query.filter(models.MemberDuesPayment.pay_date <= until)
 
     mdp_list: List[models.MemberDuesPayment] = months_query.all()
     if not mdp_list:
@@ -326,6 +326,7 @@ def list_member_dues_payments_order_by_pay_date(
                 "Nome": mdp.member.name,
                 "Quota": mdp.id_year_month,
                 "Valor": mdp.amount,
+                "V.D.": mdp.is_cash,
                 "Data Pagamento": mdp.pay_date,
                 "Data Actualização": mdp.pay_update_time,
             }
