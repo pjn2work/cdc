@@ -6,6 +6,16 @@ body {
     align-items: center;
 }
 
+table, pre {
+    width: 98%;
+    border-collapse: collapse;
+    margin: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    background-color: #fff;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
 .table th, .table td {
     vertical-align: middle;
     white-space: nowrap;
@@ -79,6 +89,9 @@ body {
 .padding-5 {
     padding: 5px;
 }
+.padding-15 {
+    padding: 15px;
+}
 
 .hidden {
     opacity: 0;
@@ -96,4 +109,14 @@ body {
     border: 1px solid #ccc;
     padding: 20px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+fieldset {
+    all: revert;
+    padding: 10px;
+}
+
+legend {
+    all: revert;
+    padding: 10px;
 }

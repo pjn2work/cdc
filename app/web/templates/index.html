@@ -9,56 +9,64 @@
     <div class="container">
         <table class="full_width">
             <tr>
-                <td style="width: 50%">
+                <td style="width: 70%">
                     <h1 class="my-4">Gestão de Quotas e Livros</h1>
                 </td>
                 <td class="align_right">
-                    <a href="https://www.casadocaminho-ce.pt/"><img src="/cecc_logo.jpg" style="float:right;width:20%;height:20%;" alt="Casa do Caminho"></a>
+                    <a href="https://www.casadocaminho-ce.pt/"><img src="/cecc_logo.jpg" style="float:right;width:40%;height:40%;" alt="Casa do Caminho"></a>
                 </td>
             </tr>
         </table>
 
-        <div class="card">
-            <div class="card-body">
-                <div class="row mb-3">
-                    <div class="col-md-6">
+        <table class="full_width">
+            <tr>
+                <td class="padding-15">
+                    <fieldset>
+                    <legend>Gestão de associados, quotas e donativos</legend>
                         <a href="members/create"><label class="label-text menu_button">Criar novo Associado</label></a>
                         <br><br>
-                        <a href="members/"><label class="label-text menu_button">Lista de Associados</label></a>
+                        <a href="members/"><label class="label-text menu_button">Pesquisa de Associados</label></a>
                         <br><br>
                         <a href="dues_payments/"><label class="label-text menu_button">Gestão de quotas mensais</label></a>
-                        <br><hr>
-                        <a href="member_due_payment/pivot_table"><label class="label-text menu_button">Tabela pivot de associados e quotas</label></a>
-                        <br><br>
-                        <a href="member_due_payment/"><label class="label-text menu_button">Pesquisa de pagamentos de quotas</label></a>
-                        <br><br>
-                        <a href="members/donations"><label class="label-text menu_button">Pesquisa de donativos</label></a>
-                    </div>
-
-                    <div class="col-md-6">
-                        <a href="items/categories/"><label class="label-text menu_button">Lista de Categorias</label></a>
-                        <br><br>
+                    </fieldset>
+                </td><td class="padding-15">
+                    <fieldset>
+                    <legend>Gestão de Items</legend>
                         <a href="items/categories/create"><label class="label-text menu_button">Criar nova Categoria</label></a>
                         <br><br>
-                        <a href="items/"><label class="label-text menu_button">Lista de Items</label></a>
-                        <br><hr>
-                        <a href="sellers/"><label class="label-text menu_button">Lista de Vendedores</label></a>
+                        <a href="items/categories/"><label class="label-text menu_button">Pesquisa de Categorias</label></a>
+                        <br><br>
+                        <a href="items/"><label class="label-text menu_button">Pesquisa de Items</label></a>
+                    </fieldset>
+                </td><td class="padding-15">
+                    <fieldset>
+                    <legend>Gestão de Vendedores</legend>
+                        <a href="sellers/"><label class="label-text menu_button">Pesquisa de Vendedores</label></a>
                         <br><br>
                         <a href="sellers/create"><label class="label-text menu_button">Criar Vendedor</label></a>
                         <br><br>
-                        <a href="sellers/expense-accounts/"><label class="label-text menu_button">Lista de Rubricas</label></a>
+                        <a href="sellers/expense-accounts/"><label class="label-text menu_button">Pesquisa de Rubricas</label></a>
                         <br><br>
                         <a href="sellers/expense-accounts/create"><label class="label-text menu_button">Criar nova Rubrica</label></a>
+                    </fieldset>
+                </td>
+            </tr><tr>
+                <td colspan="3" class="padding-15">
+                    <fieldset>
+                    <legend>Gestão Financeira</legend>
+                        <a href="member_due_payment/pivot_table"><label class="label-text menu_button">Tabela pivot de associados e quotas</label></a>
+                        <br><br>
+                        <a href="member_due_payment/"><label class="label-text menu_button">Lista de pagamentos de quotas</label></a>
+                        <br><br>
+                        <a href="members/donations"><label class="label-text menu_button">Lista de donativos</label></a>
                         <br><hr>
                         <a href="sellers/items/"><label class="label-text menu_button">Pesquisa aquisições a Vendedores</label></a>
                         <br><br>
                         <a href="members/items/"><label class="label-text menu_button">Pesquisa de vendas a Associados</label></a>
-                        <br><br>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+                    </fieldset>
+                </td>
+            </tr>
+        </table>
 
 </body>
 </html>

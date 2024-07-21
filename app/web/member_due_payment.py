@@ -28,7 +28,7 @@ async def list_member_dues_payments_order_by_pay_date(
     else:
         mdp_list = []
 
-    return templates.TemplateResponse("member_due_payment_list.html", {
+    return templates.TemplateResponse("due_payments/member_due_payment_list.html", {
         "request": request,
         "mdp_list": mdp_list,
         "total": len(mdp_list),
@@ -79,7 +79,7 @@ def table_dues_paid_for_all_members(
         df_paid, df_missing = [{}], [{}]
         columns = []
 
-    return templates.TemplateResponse("member_due_payment_pivot.html", {
+    return templates.TemplateResponse("due_payments/member_due_payment_pivot.html", {
         "request": request,
         "columns": columns,
         "df_paid": df_paid,

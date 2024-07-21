@@ -26,7 +26,7 @@ def list_members(
     else:
         members = []
 
-    return templates.TemplateResponse("members_list.html", {
+    return templates.TemplateResponse("members/members_list.html", {
         "request": request,
         "members": members,
         "total_results": len(members)
@@ -39,7 +39,7 @@ def create_member(
         current_client: TokenData = GET_CURRENT_WEB_CLIENT):
     are_valid_scopes(["app:create", "member:create"], current_client)
 
-    return templates.TemplateResponse("members_create.html", {
+    return templates.TemplateResponse("members/members_create.html", {
         "request": request,
         "today": str(get_today())
     })
@@ -70,7 +70,7 @@ def show_member(
     member = crud_member.get_member(db, member_id=member_id)
     member.member_due_payment = sorted(member.member_due_payment, key=lambda mdp: mdp.id_year_month, reverse=True)
     member.member_history = sorted(member.member_history, key=lambda mh: mh.tid, reverse=True)
-    return templates.TemplateResponse("members_show.html", {
+    return templates.TemplateResponse("members/members_show.html", {
         "request": request,
         "member": member,
         "this_month": get_today_year_month_str(),
@@ -119,7 +119,7 @@ def edit_member(
     are_valid_scopes(["app:update", "member:update"], current_client)
 
     member = crud_member.get_member(db, member_id=member_id)
-    return templates.TemplateResponse("members_edit.html", {
+    return templates.TemplateResponse("members/members_edit.html", {
         "request": request,
         "member": member
     })
@@ -175,7 +175,7 @@ async def list_members_donations(
     else:
         md_list = []
 
-    return templates.TemplateResponse("member_donations_list.html", {
+    return templates.TemplateResponse("due_payments/member_donations_list.html", {
         "request": request,
         "md_list": md_list,
         "total": len(md_list),
