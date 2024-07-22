@@ -14,15 +14,11 @@ router = APIRouter()
 def list_expense_accounts(
         request: Request,
         search_text: str = "",
-        do_filter: bool = False,
         db: Session = DB_SESSION,
         current_client: TokenData = GET_CURRENT_WEB_CLIENT):
     are_valid_scopes(["app:read", "expense_account:read"], current_client)
 
-    if do_filter:
-        expense_accounts = crud_sellers.get_expense_accounts_list(db, search_text=search_text)
-    else:
-        expense_accounts = []
+    expense_accounts = crud_sellers.get_expense_accounts_list(db, search_text=search_text)
 
     return templates.TemplateResponse("sellers/expense_accounts_list.html", {
         "request": request,
@@ -66,7 +62,7 @@ def show_expense_account(
     are_valid_scopes(["app:read", "expense_account:read"], current_client)
 
     expense_account = crud_sellers.get_expense_account(db, ea_id=ea_id)
-    expense_account.expense_account_items = sorted(expense_account.expense_account_items, key=lambda mh: mh.tid, reverse=True)
+    expense_account.expense_account_items = sorted(expense_account.seller_items, key=lambda mh: mh.tid, reverse=True)
     return templates.TemplateResponse("sellers/expense_accounts_show.html", {
         "request": request,
         "expense_account": expense_account,

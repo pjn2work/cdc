@@ -60,7 +60,7 @@ app.include_router(web_member_due_payment_router, prefix="/web/member_due_paymen
 app.include_router(web_items_router, prefix="/web/items", tags=["/web/items"])
 app.include_router(web_items_categories_router, prefix="/web/items/categories", tags=["/web/items/categories"])
 app.include_router(web_sellers_router, prefix="/web/sellers", tags=["/web/sellers"])
-app.include_router(web_sellers_ea_router, prefix="/web/sellers/expense-accounts", tags=["/web/sellers/expense-accounts"])
+app.include_router(web_sellers_ea_router, prefix="/web/expense-accounts", tags=["/web/expense-accounts"])
 app.include_router(web_sellers_items_router, prefix="/web/sellers/items", tags=["/web/sellers/items"])
 app.include_router(web_members_items_router, prefix="/web/members/items", tags=["/web/members/items"])
 

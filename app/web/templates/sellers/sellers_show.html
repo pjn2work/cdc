@@ -6,7 +6,13 @@
         <div class="card">
             <div class="card-body">
                 <div class="row mb-0">
-                    <div class="col-md-12">
+                    <div class="col-md-2">
+                        <label class="form-label label-text align_center">Quantidade vendida</label>
+                        <p class="form-control-plaintext data-text align_center">{{ seller.total_quantity_sold }}</p>
+                        <label class="form-label label-text align_center">Valor vendido</label>
+                        <p class="form-control-plaintext data-text align_center">{{ seller.total_amount_sold }} €</p>
+                    </div>
+                    <div class="col-md-10">
                         <label class="form-label label-text">Nome</label>
                         <p class="form-control-plaintext data-text">{{ seller.name }}</p>
                         <label class="form-label label-text">Contacto</label>
@@ -15,11 +21,12 @@
                         <p class="form-control-plaintext data-text">{{ seller.email }}</p>
                         <label class="form-label label-text">Notas</label>
                         <textarea class="form-control-plaintext data-text" disabled rows="3" cols="120">{{ seller.notes }}</textarea>
-
+                    </div>
+                </div><div class="row mb-0">
+                    <div class="col-md-12">
                         <hr>
-
                         <form class="form-inline" method="get" action="update">
-                            <p class="align_left">
+                            <p class="align_center">
                                 <button class="btn btn-primary mb-1" type="submit">Editar Vendedor</button>
                             </p>
                         </form>

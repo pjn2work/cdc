@@ -105,7 +105,7 @@ def create_expense_account(db: Session, expense_account_create: schemas.sellers.
     return db_expense_account
 
 
-def get_expense_accounts_list(db: Session, skip: int, limit: int, search_text: str) -> List[models.ExpenseAccount]:
+def get_expense_accounts_list(db: Session, search_text: str, skip: int = 0, limit: int = 100) -> List[models.ExpenseAccount]:
     _dbq = db.query(models.ExpenseAccount)
 
     if search_text is not None:

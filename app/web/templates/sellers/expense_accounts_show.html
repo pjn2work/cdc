@@ -1,10 +1,67 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+{% extends "base.html" %}
+{% block title %}Ver Rúbrica{% endblock %}
+{% block page_header %}Rúbrica {{ expense_account.ea_id }}{% endblock %}
+{% block content_in_div %}
+        <br>
+        <div class="card">
+            <div class="card-body">
+                <div class="row mb-0">
+                    <div class="col-md-2">
+                        <label class="form-label label-text align_center">Quantidade vendida</label>
+                        <p class="form-control-plaintext data-text align_center">{{ expense_account.total_quantity_seller_sold }}</p>
+                        <label class="form-label label-text align_center">Valor vendido</label>
+                        <p class="form-control-plaintext data-text align_center">{{ expense_account.total_amount_seller_sold }} €</p>
+                    </div>
+                    <div class="col-md-10">
+                        <label class="form-label label-text">Nome</label>
+                        <p class="form-control-plaintext data-text">{{ expense_account.name }}</p>
+                        <label class="form-label label-text">Notas</label>
+                        <textarea class="form-control-plaintext data-text" disabled rows="3" cols="120">{{ expense_account.notes }}</textarea>
+                    </div>
+                </div><div class="row mb-0">
+                    <div class="col-md-12">
+                        <hr>
+                        <form class="form-inline" method="get" action="update">
+                            <p class="align_center">
+                                <button class="btn btn-primary mb-1" type="submit">Editar Rúbrica</button>
+                            </p>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+{% endblock %}
 
-</body>
-</html>
+{% block content_out_div %}
+    <br>
+
+    <h5 class="card-title">Lista de vendas</h5>
+    <table class="table table-striped table-bordered">
+        <thead class="table-dark">
+            <tr>
+                <th class="align_right">ID</th>
+                <th class="align_right">Quantidade</th>
+                <th class="align_right">Valor</th>
+                <th class="align_left">Item</th>
+                <th class="align_left">Vendedor</th>
+                <th class="align_center">V.D.</th>
+                <th class="align_left">Data de pagamento</th>
+                <th class="align_left">Data de actualização</th>
+            </tr>
+        </thead>
+        <tbody>
+        {%- for md in expense_account.seller_items %}
+            <tr>
+                <td class="align_right">{{ md.tid }}</td>
+                <td class="align_right">{{ md.quantity }}</td>
+                <td class="align_right">{{ md.total_price }} €</td>
+                <td class="align_left">{{ md.item.name }}</td>
+                <td class="align_left">{{ md.seller.name }}</td>
+                <td class="align_center">{{ show_boolean(md.is_cash) }}</td>
+                <td class="align_left">{{ md.sell_date }}</td>
+                <td class="align_left">{{ md.row_update_time }}</td>
+            </tr>
+        {%- endfor %}
+        </tbody>
+    </table>
+{% endblock %}
