@@ -46,6 +46,7 @@
                 <th class="align_right">ID</th>
                 <th class="align_right">Quantidade</th>
                 <th class="align_right">Valor</th>
+                <th class="align_right">€/uni</th>
                 <th class="align_left">Item</th>
                 <th class="align_left">Rúbrica</th>
                 <th class="align_center">V.D.</th>
@@ -54,11 +55,12 @@
             </tr>
         </thead>
         <tbody>
-        {%- for md in seller.seller_items %}
+        {%- for md in seller.seller_items|sort(attribute='purchase_date', reverse = True) %}
             <tr>
                 <td class="align_right">{{ md.tid }}</td>
                 <td class="align_right">{{ md.quantity }}</td>
                 <td class="align_right">{{ md.total_price }} €</td>
+                <td class="align_right">{{ md.total_price/md.quantity if md.quantity else 0 }} €</td>
                 <td class="align_left">{{ md.item.name }}</td>
                 <td class="align_left">{{ md.expense_account.name }}</td>
                 <td class="align_center">{{ show_boolean(md.is_cash) }}</td>
