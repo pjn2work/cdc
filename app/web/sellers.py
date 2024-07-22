@@ -24,7 +24,7 @@ def list_sellers(
     else:
         sellers = []
 
-    return templates.TemplateResponse("sellers_list.html", {
+    return templates.TemplateResponse("sellers/sellers_list.html", {
         "request": request,
         "sellers": sellers,
         "total_results": len(sellers)
@@ -37,7 +37,7 @@ def create_seller(
         current_client: TokenData = GET_CURRENT_WEB_CLIENT):
     are_valid_scopes(["app:create", "seller:create"], current_client)
 
-    return templates.TemplateResponse("sellers_create.html", {
+    return templates.TemplateResponse("sellers/sellers_create.html", {
         "request": request,
         "today": str(get_today())
     })
@@ -67,7 +67,7 @@ def show_seller(
 
     seller = crud_sellers.get_seller(db, seller_id=seller_id)
     seller.seller_items = sorted(seller.seller_items, key=lambda mh: mh.tid, reverse=True)
-    return templates.TemplateResponse("sellers_show.html", {
+    return templates.TemplateResponse("sellers/sellers_show.html", {
         "request": request,
         "seller": seller,
         "today": get_today()
@@ -83,7 +83,7 @@ def edit_seller(
     are_valid_scopes(["app:update", "seller:update"], current_client)
 
     seller = crud_sellers.get_seller(db, seller_id=seller_id)
-    return templates.TemplateResponse("sellers_edit.html", {
+    return templates.TemplateResponse("sellers/sellers_edit.html", {
         "request": request,
         "seller": seller
     })

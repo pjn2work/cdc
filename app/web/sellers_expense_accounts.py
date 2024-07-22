@@ -24,7 +24,7 @@ def list_expense_accounts(
     else:
         expense_accounts = []
 
-    return templates.TemplateResponse("expense_accounts_list.html", {
+    return templates.TemplateResponse("sellers/expense_accounts_list.html", {
         "request": request,
         "expense_accounts": expense_accounts,
         "total_results": len(expense_accounts)
@@ -37,7 +37,7 @@ def create_expense_account(
         current_client: TokenData = GET_CURRENT_WEB_CLIENT):
     are_valid_scopes(["app:create", "expense_account:create"], current_client)
 
-    return templates.TemplateResponse("expense_accounts_create.html", {
+    return templates.TemplateResponse("sellers/expense_accounts_create.html", {
         "request": request,
         "today": str(get_today())
     })
@@ -67,7 +67,7 @@ def show_expense_account(
 
     expense_account = crud_sellers.get_expense_account(db, ea_id=ea_id)
     expense_account.expense_account_items = sorted(expense_account.expense_account_items, key=lambda mh: mh.tid, reverse=True)
-    return templates.TemplateResponse("expense_accounts_show.html", {
+    return templates.TemplateResponse("sellers/expense_accounts_show.html", {
         "request": request,
         "expense_account": expense_account,
         "today": get_today()
@@ -83,7 +83,7 @@ def edit_expense_account(
     are_valid_scopes(["app:update", "expense_account:update"], current_client)
 
     expense_account = crud_sellers.get_expense_account(db, ea_id=ea_id)
-    return templates.TemplateResponse("expense_accounts_edit.html", {
+    return templates.TemplateResponse("sellers/expense_accounts_edit.html", {
         "request": request,
         "expense_account": expense_account
     })
