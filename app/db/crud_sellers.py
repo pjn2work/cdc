@@ -43,7 +43,7 @@ def update_seller_stats(db: Session, seller_id: int) -> models.Seller:
         models.SellerItems
     ).filter_by(
         seller_id=seller_id
-    ).order_by(models.SellerItems.sell_date).all()
+    ).order_by(models.SellerItems.purchase_date).all()
 
     db_seller.total_quantity_sold = sum([row.quantity for row in _results])
     db_seller.total_amount_sold = sum([row.total_price for row in _results])

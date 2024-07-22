@@ -118,7 +118,7 @@ def create_category(db: Session, category_create: schemas.items.CategoryCreate) 
     return db_category
 
 
-def get_categories_list(db: Session, skip: int, limit: int, search_text: str) -> List[models.Category]:
+def get_categories_list(db: Session, search_text: str, skip: int = 0, limit: int = 1000) -> List[models.Category]:
     _dbq = db.query(models.Category)
 
     if search_text is not None:

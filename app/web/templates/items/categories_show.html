@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% block title %}Ver Categoria{% endblock %}
+{% block page_header %}Categoria {{ category.category_id }}{% endblock %}
+{% block content_in_div %}
+        <br>
+        <div class="card">
+            <div class="card-body">
+                <div class="row mb-0">
+                    <div class="col-md-2">
+                        <label class="form-label label-text align_center">Quantidade vendida</label>
+                        <p class="form-control-plaintext data-text align_center">{{ category.total_quantity_seller_sold }}</p>
+                        <label class="form-label label-text align_center">Valor vendido</label>
+                        <p class="form-control-plaintext data-text align_center">{{ category.total_amount_seller_sold }} €</p>
+                        <label class="form-label label-text align_center">Quantidade comprada</label>
+                        <p class="form-control-plaintext data-text align_center">{{ category.total_quantity_member_sold }}</p>
+                        <label class="form-label label-text align_center">Valor comprado</label>
+                        <p class="form-control-plaintext data-text align_center">{{ category.total_amount_member_sold }} €</p>
+                    </div>
+                    <div class="col-md-10">
+                        <label class="form-label label-text">Nome</label>
+                        <p class="form-control-plaintext data-text">{{ category.name }}</p>
+                        <label class="form-label label-text">Notas</label>
+                        <textarea class="form-control-plaintext data-text" disabled rows="3" cols="120">{{ category.notes }}</textarea>
+                    </div>
+                </div><div class="row mb-0">
+                    <div class="col-md-12">
+                        <hr>
+                        <form class="form-inline" method="get" action="update">
+                            <p class="align_center">
+                                <button class="btn btn-primary mb-1" type="submit">Editar Categoria</button>
+                            </p>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+{% endblock %}
+
+{% block content_out_div %}
+    <br>
+
+    <h5 class="card-title">Lista de Items</h5>
+    <table class="table table-striped table-bordered">
+        <thead class="table-dark">
+            <tr>
+                <th class="align_right">Item ID</th>
+                <th class="align_left">Nome</th>
+                <th class="align_right">Valor base</th>
+                <th class="align_left">Notas</th>
+                <th class="align_right">Qtd compra</th>
+                <th class="align_right">Valor compra</th>
+                <th class="align_right">Média compra €/uni</th>
+                <th class="align_right">Qtd venda</th>
+                <th class="align_right">Valor venda</th>
+                <th class="align_right">Média venda €/uni</th>
+            </tr>
+        </thead>
+        <tbody>
+        {%- for md in category.items %}
+            <tr>
+                <td class="align_right">{{ md.item_id }}</td>
+                <td class="align_left">{{ md.name }}</td>
+                <td class="align_right">{{ md.base_price }} €</td>
+                <td class="align_left">{{ md.notes }}</td>
+                <td class="align_right">{{ md.total_quantity_seller_sold }}</td>
+                <td class="align_right">{{ md.total_amount_seller_sold }} €</td>
+                <td class="align_right">{{ md.total_amount_seller_sold/md.total_quantity_seller_sold if md.total_quantity_seller_sold else 0.0 }} €</td>
+                <td class="align_right">{{ md.total_quantity_member_sold }}</td>
+                <td class="align_right">{{ md.total_amount_member_sold }} €</td>
+                <td class="align_right">{{ md.total_amount_member_sold/md.total_quantity_member_sold if md.total_quantity_member_sold else 0.0 }} €</td>
+            </tr>
+        {%- endfor %}
+        </tbody>
+    </table>
+{% endblock %}

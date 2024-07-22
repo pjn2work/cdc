@@ -14,7 +14,7 @@ class MemberItems(Base):
     quantity = Column(Integer)
     total_price = Column(Float)
     notes = Column(String, default="")
-    buy_date = Column(Date)
+    purchase_date = Column(Date)
     is_cash = Column(Boolean)
     row_update_time = Column(DateTime)
 
