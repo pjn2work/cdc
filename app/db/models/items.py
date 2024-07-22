@@ -17,7 +17,7 @@ class Category(Base):
     total_amount_member_sold = Column(Float, default=0.0)
     total_quantity_member_sold = Column(Integer, default=0)
 
-    items = relationship("Item", back_populates="categories")
+    items = relationship("Item", back_populates="category")
 
 
 class Item(Base):
@@ -37,6 +37,6 @@ class Item(Base):
     total_amount_member_sold = Column(Float, default=0.0)
     total_quantity_member_sold = Column(Integer, default=0)
 
-    categories = relationship("Category", back_populates="items")
-    seller_items = relationship("SellerItems", back_populates="items")
-    member_items = relationship("MemberItems", back_populates="items")
+    category = relationship("Category", back_populates="items")
+    seller_items = relationship("SellerItems", back_populates="item")
+    member_items = relationship("MemberItems", back_populates="item")

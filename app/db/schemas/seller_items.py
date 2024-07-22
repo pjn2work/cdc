@@ -13,6 +13,7 @@ class SellerItemsBase(BaseModel):
     total_price: float = Field(ge=0.0)
     notes: str = Field(default="", examples=["default account"])
     sell_date: date
+    is_cash: bool
 
 
 class SellerItemsUpdate(BaseModel):
@@ -24,6 +25,7 @@ class SellerItemsUpdate(BaseModel):
     total_price: Optional[float] = Field(ge=0.0, default=None)
     notes: Optional[str] = Field(default=None)
     sell_date: Optional[date] = Field(default=None)
+    is_cash: Optional[bool] = Field(default=None)
 
 
 class SellerItemsCreate(SellerItemsBase):

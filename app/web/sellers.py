@@ -14,15 +14,11 @@ router = APIRouter()
 def list_sellers(
         request: Request,
         search_text: str = "",
-        do_filter: bool = False,
         db: Session = DB_SESSION,
         current_client: TokenData = GET_CURRENT_WEB_CLIENT):
     are_valid_scopes(["app:read", "seller:read"], current_client)
 
-    if do_filter:
-        sellers = crud_sellers.get_sellers_list(db, search_text=search_text)
-    else:
-        sellers = []
+    sellers = crud_sellers.get_sellers_list(db, search_text=search_text)
 
     return templates.TemplateResponse("sellers/sellers_list.html", {
         "request": request,

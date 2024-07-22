@@ -17,7 +17,7 @@ class Seller(Base):
     total_amount_sold = Column(Float, default=0.0)
     total_quantity_sold = Column(Integer, default=0)
 
-    seller_items = relationship("SellerItems", back_populates="sellers")
+    seller_items = relationship("SellerItems", back_populates="seller")
 
 
 # ----------------------------------------------------------
@@ -34,4 +34,4 @@ class ExpenseAccount(Base):
     total_amount_seller_sold = Column(Float, default=0.0)
     total_quantity_seller_sold = Column(Integer, default=0)
 
-    seller_items = relationship("SellerItems", back_populates="expense_accounts")
+    seller_items = relationship("SellerItems", back_populates="expense_account")
