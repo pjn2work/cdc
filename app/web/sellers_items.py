@@ -20,12 +20,13 @@ def list_seller_item(
         item_id: int = 0,
         category_id: int = 0,
         tid: int = 0,
+        since: str = "", until: str = "",
         db: Session = DB_SESSION,
         current_client: TokenData = GET_CURRENT_WEB_CLIENT):
     are_valid_scopes(["app:read", "seller_item:read"], current_client)
 
     if do_filter:
-        sellers_items = crud_items.get_sellers_items_list(db, seller_id=seller_id, ea_id=ea_id, item_id=item_id, category_id=category_id, tid=tid, search_text=search_text)
+        sellers_items = crud_items.get_sellers_items_list(db, seller_id=seller_id, ea_id=ea_id, item_id=item_id, category_id=category_id, tid=tid, since=since, until=until, search_text=search_text)
     else:
         sellers_items = []
 
@@ -41,6 +42,8 @@ def list_seller_item(
         "sellers": sellers,
         "expense_accounts": expense_accounts,
         "sellers_items": sellers_items,
+        "since": since,
+        "until": until,
         "total_results": len(sellers_items)
     })
 

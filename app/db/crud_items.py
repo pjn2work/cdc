@@ -245,6 +245,7 @@ def get_sellers_items_list(
         db: Session,
         item_id: int, category_id: int,
         seller_id: int, ea_id: int,
+        since: str, until: str,
         tid: int, search_text: str,
         skip: int = 0, limit: int = 1000
 ) -> List[models.SellerItems]:
@@ -253,6 +254,10 @@ def get_sellers_items_list(
 
     _dbq = db.query(models.SellerItems).join(models.Item).join(models.Seller)
 
+    if since:
+        _dbq = _dbq.filter(models.SellerItems.purchase_date >= since)
+    if until:
+        _dbq = _dbq.filter(models.SellerItems.purchase_date <= until)
     if item_id:
         _dbq = _dbq.filter(models.SellerItems.item_id == item_id)
     if seller_id:
@@ -343,6 +348,7 @@ def get_members_items_list(
         db: Session,
         item_id: int, category_id: int,
         member_id: int,
+        since: str, until: str,
         tid: int, search_text: str,
         skip: int, limit: int
 ) -> List[models.MemberItems]:
@@ -351,10 +357,14 @@ def get_members_items_list(
 
     _dbq = db.query(models.MemberItems).join(models.Item).join(models.Member)
 
+    if since:
+        _dbq = _dbq.filter(models.MemberItems.purchase_date >= since)
+    if until:
+        _dbq = _dbq.filter(models.MemberItems.purchase_date <= until)
     if item_id:
-        _dbq = _dbq.filter(models.SellerItems.item_id == item_id)
+        _dbq = _dbq.filter(models.MemberItems.item_id == item_id)
     if member_id:
-        _dbq = _dbq.filter(models.SellerItems.member_id == member_id)
+        _dbq = _dbq.filter(models.MemberItems.member_id == member_id)
     if category_id:
         _dbq = _dbq.filter(models.Item.category_id == category_id)
 

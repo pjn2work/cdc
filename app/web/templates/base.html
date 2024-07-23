@@ -7,6 +7,14 @@
     <img src="/red.png" alt="Não" width="30" height="30">
 {% endif %}
 {%- endmacro -%}
+{% macro selector(name, values, field_value, field_description) %}
+                    <select name="{{ name }}" id="{{ name }}">
+                        <option value="0"></option>
+                        {%- for v in values %}
+                        <option value="{{ v[field_value] }}">{{ v[field_description] }}</option>
+                        {%- endfor %}
+                    </select>
+{%- endmacro %}
 <!DOCTYPE html>
 <html lang="pt">
 <head>
