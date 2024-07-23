@@ -350,7 +350,7 @@ def get_members_items_list(
         member_id: int,
         since: str, until: str,
         tid: int, search_text: str,
-        skip: int, limit: int
+        skip: int = 0, limit: int = 1000
 ) -> List[models.MemberItems]:
     if tid:
         return [get_member_item_by_id(db, tid=tid)]
