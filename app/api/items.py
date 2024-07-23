@@ -12,11 +12,11 @@ router = APIRouter()
 
 @router.post(
     path="/categories",
-    response_model=schemas.items.CategoryView,
+    response_model=schemas.CategoryView,
     status_code=status.HTTP_201_CREATED
 )
 def create_category(
-        category_create: schemas.items.CategoryCreate,
+        category_create: schemas.CategoryCreate,
         db: Session = DB_SESSION,
         current_client: TokenData = GET_CURRENT_API_CLIENT):
     are_valid_scopes(["app:create", "category:create"], current_client)
@@ -25,7 +25,7 @@ def create_category(
 
 @router.get(
     path="/categories",
-    response_model=List[schemas.items.Category],
+    response_model=List[schemas.Category],
     status_code=status.HTTP_200_OK
 )
 def list_categories(
@@ -39,7 +39,7 @@ def list_categories(
 
 @router.get(
     path="/categories/{category_id}",
-    response_model=schemas.items.CategoryView,
+    response_model=schemas.CategoryView,
     status_code=status.HTTP_200_OK
 )
 def get_category(
@@ -52,12 +52,12 @@ def get_category(
 
 @router.put(
     path="/categories/{category_id}",
-    response_model=schemas.items.CategoryView,
+    response_model=schemas.CategoryView,
     status_code = status.HTTP_200_OK
 )
 def update_category(
         category_id: int,
-        category_update: schemas.items.CategoryUpdate,
+        category_update: schemas.CategoryUpdate,
         db: Session = DB_SESSION,
         current_client: TokenData = GET_CURRENT_API_CLIENT):
     are_valid_scopes(["app:update", "category:update"], current_client)
@@ -70,11 +70,11 @@ def update_category(
 
 @router.post(
     path="/",
-    response_model=schemas.items.ItemView,
+    response_model=schemas.ItemView,
     status_code=status.HTTP_201_CREATED
 )
 def create_item(
-        item_create: schemas.items.ItemCreate,
+        item_create: schemas.ItemCreate,
         db: Session = DB_SESSION,
         current_client: TokenData = GET_CURRENT_API_CLIENT):
     are_valid_scopes(["app:create", "item:create"], current_client)
@@ -83,7 +83,7 @@ def create_item(
 
 @router.get(
     path="/",
-    response_model=List[schemas.items.Item],
+    response_model=List[schemas.Item],
     status_code=status.HTTP_200_OK
 )
 def list_items(
@@ -97,7 +97,7 @@ def list_items(
 
 @router.get(
     path="/{item_id}",
-    response_model=schemas.items.ItemView,
+    response_model=schemas.ItemView,
     status_code=status.HTTP_200_OK
 )
 def get_item(
@@ -110,12 +110,12 @@ def get_item(
 
 @router.put(
     path="/{item_id}",
-    response_model=schemas.items.ItemView,
+    response_model=schemas.ItemView,
     status_code = status.HTTP_200_OK
 )
 def update_item(
         item_id: int,
-        item_update: schemas.items.ItemUpdate,
+        item_update: schemas.ItemUpdate,
         db: Session = DB_SESSION,
         current_client: TokenData = GET_CURRENT_API_CLIENT):
     are_valid_scopes(["app:update", "item:update"], current_client)
@@ -128,12 +128,12 @@ def update_item(
 
 @router.post(
     path="/{item_id}/sellers",
-    response_model=schemas.items.SellerItems,
+    response_model=schemas.SellerItems,
     status_code=status.HTTP_201_CREATED
 )
 def create_seller_item(
         item_id: int,
-        seller_item_create: schemas.seller_items.SellerItemsCreate,
+        seller_item_create: schemas.SellerItemsCreate,
         db: Session = DB_SESSION,
         current_client: TokenData = GET_CURRENT_API_CLIENT):
     are_valid_scopes(["app:create", "seller_item:create"], current_client)
@@ -142,7 +142,7 @@ def create_seller_item(
 
 @router.get(
     path="/{item_id}/sellers",
-    response_model=List[schemas.seller_items.SellerItems],
+    response_model=List[schemas.SellerItems],
     status_code=status.HTTP_200_OK
 )
 def list_seller_items(
@@ -157,7 +157,7 @@ def list_seller_items(
 
 @router.get(
     path="/sellers/{tid}",
-    response_model=schemas.seller_items.SellerItems,
+    response_model=schemas.SellerItems,
     status_code=status.HTTP_200_OK
 )
 def get_seller_item(
@@ -170,12 +170,12 @@ def get_seller_item(
 
 @router.put(
     path="/sellers/{tid}",
-    response_model=schemas.seller_items.SellerItems,
+    response_model=schemas.SellerItems,
     status_code = status.HTTP_200_OK
 )
 def update_seller_item(
         tid: int,
-        seller_item_update: schemas.seller_items.SellerItemsUpdate,
+        seller_item_update: schemas.SellerItemsUpdate,
         db: Session = DB_SESSION,
         current_client: TokenData = GET_CURRENT_API_CLIENT):
     are_valid_scopes(["app:update", "seller_item:update"], current_client)
@@ -188,12 +188,12 @@ def update_seller_item(
 
 @router.post(
     path="/{item_id}/members",
-    response_model=schemas.items.MemberItems,
+    response_model=schemas.MemberItems,
     status_code=status.HTTP_201_CREATED
 )
 def create_member_item(
         item_id: int,
-        member_item_create: schemas.member_items.MemberItemsCreate,
+        member_item_create: schemas.MemberItemsCreate,
         db: Session = DB_SESSION,
         current_client: TokenData = GET_CURRENT_API_CLIENT):
     are_valid_scopes(["app:create", "member_item:create"], current_client)
@@ -202,7 +202,7 @@ def create_member_item(
 
 @router.get(
     path="/{item_id}/members",
-    response_model=List[schemas.member_items.MemberItems],
+    response_model=List[schemas.MemberItems],
     status_code=status.HTTP_200_OK
 )
 def list_member_items(
@@ -217,7 +217,7 @@ def list_member_items(
 
 @router.get(
     path="/members/{tid}",
-    response_model=schemas.member_items.MemberItems,
+    response_model=schemas.MemberItems,
     status_code=status.HTTP_200_OK
 )
 def get_member_item(
@@ -230,12 +230,12 @@ def get_member_item(
 
 @router.put(
     path="/members/{tid}",
-    response_model=schemas.member_items.MemberItems,
+    response_model=schemas.MemberItems,
     status_code = status.HTTP_200_OK
 )
 def update_member_item(
         tid: int,
-        member_item_update: schemas.member_items.MemberItemsUpdate,
+        member_item_update: schemas.MemberItemsUpdate,
         db: Session = DB_SESSION,
         current_client: TokenData = GET_CURRENT_API_CLIENT):
     are_valid_scopes(["app:update", "member_item:update"], current_client)

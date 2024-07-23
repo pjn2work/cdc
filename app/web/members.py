@@ -53,7 +53,7 @@ async def create_member_submit(
     are_valid_scopes(["app:create", "member:create"], current_client)
 
     data = await request.form()
-    member_create: schemas.members.MemberCreate = schemas.members.MemberCreate(**data)
+    member_create: schemas.MemberCreate = schemas.MemberCreate(**data)
 
     member = crud_member.create_member(db=db, member_create=member_create)
     return RedirectResponse(url=f"{member.member_id}/show", status_code=303)
@@ -85,7 +85,7 @@ async def change_member_active(
     are_valid_scopes(["app:update", "member:update"], current_client)
 
     data = await request.form()
-    member_update: schemas.members.MemberUpdateActive = schemas.members.MemberUpdateActive(**data)
+    member_update: schemas.MemberUpdateActive = schemas.MemberUpdateActive(**data)
 
     db_member = crud_member.get_member_by_id(db, member_id=member_id)
     _ = crud_member.update_member_active(db, db_member=db_member, member_update=member_update)
@@ -101,7 +101,7 @@ async def change_member_due_payment_amount(
     are_valid_scopes(["app:update", "member:update"], current_client)
 
     data = await request.form()
-    member_update: schemas.members.MemberUpdateAmount = schemas.members.MemberUpdateAmount(**data)
+    member_update: schemas.MemberUpdateAmount = schemas.MemberUpdateAmount(**data)
 
     db_member = crud_member.get_member_by_id(db, member_id=member_id)
     _ = crud_member.update_member_amount(db, db_member=db_member, member_update=member_update)
@@ -132,7 +132,7 @@ async def update_member(
     are_valid_scopes(["app:update", "member:update"], current_client)
 
     data = await request.form()
-    member_update: schemas.members.MemberUpdate = schemas.members.MemberUpdate(**data)
+    member_update: schemas.MemberUpdate = schemas.MemberUpdate(**data)
 
     db_member = crud_member.get_member_by_id(db, member_id=member_id)
     _ = crud_member.update_member(db, db_member=db_member, member_update=member_update)
@@ -148,7 +148,7 @@ async def post_member_donation(
     are_valid_scopes(["app:create", "member_donation:create"], current_client)
 
     data = await request.form()
-    member_donation_create: schemas.member_donations.MemberDonationCreate = schemas.member_donations.MemberDonationCreate(**data)
+    member_donation_create: schemas.MemberDonationCreate = schemas.MemberDonationCreate(**data)
 
     _ = crud_member.post_member_donation(db, member_id=member_id, member_donation_create=member_donation_create)
     return RedirectResponse(url=f"show", status_code=303)

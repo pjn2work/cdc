@@ -49,7 +49,7 @@ def get_dues_payment_year_month_stats_list(
         db: Session,
         since: str = None,
         until: str = None
-) -> List[schemas.dues_payments.DuesPaymentView]:
+) -> List[schemas.DuesPaymentView]:
     _dp_list = db.query(models.DuesPayment)
     if since:
         since = format_year_month(since)
@@ -66,8 +66,11 @@ def get_dues_payment_year_month_stats_list(
     return results
 
 
-def create_dues_payment_year_month(db: Session, dues_payment_create: schemas.dues_payments.DuesPaymentCreate) -> models.DuesPayment:
-    dp = schemas.dues_payments.DuesPayment(**dues_payment_create.model_dump())
+def create_dues_payment_year_month(
+        db: Session,
+        dues_payment_create: schemas.DuesPaymentCreate
+) -> models.DuesPayment:
+    dp = schemas.DuesPayment(**dues_payment_create.model_dump())
     db_dues_payment = models.DuesPayment(**dp.model_dump())
 
     try:
@@ -161,7 +164,7 @@ def get_member_due_payment(db: Session, tid: int) -> models.MemberDuesPayment:
 def pay_member_due_payment(
         db: Session,
         tid:int,
-        mdpc: schemas.member_due_payment.MemberDuesPaymentCreate
+        mdpc: schemas.MemberDuesPaymentCreate
 ) -> models.MemberDuesPayment:
     mdp: models.MemberDuesPayment = db.get(models.MemberDuesPayment, tid)
     if mdp is None:

@@ -20,7 +20,7 @@ def list_categories(
 
     categories = crud_items.get_categories_list(db, search_text=search_text)
 
-    return templates.TemplateResponse("items/categories_list.html", {
+    return templates.TemplateResponse("categories/categories_list.html", {
         "request": request,
         "categories": categories,
         "total_results": len(categories)
@@ -33,7 +33,7 @@ def create_category(
         current_client: TokenData = GET_CURRENT_WEB_CLIENT):
     are_valid_scopes(["app:create", "category:create"], current_client)
 
-    return templates.TemplateResponse("items/categories_create.html", {
+    return templates.TemplateResponse("categories/categories_create.html", {
         "request": request,
         "today": str(get_today())
     })
@@ -47,7 +47,7 @@ async def create_category_submit(
     are_valid_scopes(["app:create", "category:create"], current_client)
 
     data = await request.form()
-    category_create: schemas.items.CategoryCreate = schemas.items.CategoryCreate(**data)
+    category_create: schemas.CategoryCreate = schemas.CategoryCreate(**data)
 
     category = crud_items.create_category(db=db, category_create=category_create)
     return RedirectResponse(url=f"{category.category_id}/show", status_code=303)
@@ -62,7 +62,7 @@ def show_category(
     are_valid_scopes(["app:read", "category:read"], current_client)
 
     category = crud_items.get_category(db, category_id=category_id)
-    return templates.TemplateResponse("items/categories_show.html", {
+    return templates.TemplateResponse("categories/categories_show.html", {
         "request": request,
         "category": category,
         "today": get_today()
@@ -78,7 +78,7 @@ def edit_category(
     are_valid_scopes(["app:update", "category:update"], current_client)
 
     category = crud_items.get_category(db, category_id=category_id)
-    return templates.TemplateResponse("items/categories_edit.html", {
+    return templates.TemplateResponse("categories/categories_edit.html", {
         "request": request,
         "category": category
     })
@@ -93,7 +93,7 @@ async def update_category(
     are_valid_scopes(["app:update", "category:update"], current_client)
 
     data = await request.form()
-    category_update: schemas.items.CategoryUpdate = schemas.items.CategoryUpdate(**data)
+    category_update: schemas.CategoryUpdate = schemas.CategoryUpdate(**data)
 
     db_category = crud_items.get_category_by_id(db, category_id=category_id)
     _ = crud_items.update_category(db, db_category=db_category, category_update=category_update)

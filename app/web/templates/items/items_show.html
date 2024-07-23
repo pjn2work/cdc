@@ -83,14 +83,14 @@
             <tr>
                 <td class="align_right">{{ md.tid }}</td>
                 <td class="align_left">{{ md.seller.name }}</td>
-                <td class="align_left">{{ md.expense_account.name }} €</td>
+                <td class="align_left">{{ md.expense_account.name }}</td>
                 <td class="align_right">{{ md.quantity }}</td>
                 <td class="align_right">{{ md.total_price }} €</td>
                 <td class="align_right">{{ md.total_price/md.quantity if md.quantity else 0.0 }} €</td>
                 <td class="align_center">{{ show_boolean(md.is_cash) }}</td>
-                <td class="align_left">{{ md.purchase_date }} €</td>
+                <td class="align_left">{{ md.purchase_date }}</td>
                 <td class="align_left">{{ md.notes }}</td>
-                <td class="align_left">{{ md.row_update_time }} €</td>
+                <td class="align_left">{{ md.row_update_time }}</td>
             </tr>
         {%- endfor %}
         </tbody>
@@ -121,9 +121,9 @@
                 <td class="align_right">{{ md.total_price }} €</td>
                 <td class="align_right">{{ md.total_price/md.quantity if md.quantity else 0.0 }} €</td>
                 <td class="align_center">{{ show_boolean(md.is_cash) }}</td>
-                <td class="align_left">{{ md.purchase_date }} €</td>
+                <td class="align_left">{{ md.purchase_date }}</td>
                 <td class="align_left">{{ md.notes }}</td>
-                <td class="align_left">{{ md.row_update_time }} €</td>
+                <td class="align_left">{{ md.row_update_time }}</td>
             </tr>
         {%- endfor %}
         </tbody>

@@ -12,16 +12,16 @@ from app.api.sellers import router as sellers_router
 from app.api.tests import router as tests_router
 from app.db import init_db, get_db
 from app.sec import router as sec_router
+from app.web.categories import router as web_items_categories_router
 from app.web.dues_payments import router as web_dues_payments_router
+from app.web.expense_accounts import router as web_sellers_ea_router
 from app.web.index import router as web_index
 from app.web.items import router as web_items_router
-from app.web.items_categories import router as web_items_categories_router
 from app.web.login import router as login_router
 from app.web.member_due_payment import router as web_member_due_payment_router
 from app.web.members import router as web_members_router
 from app.web.members_items import router as web_members_items_router
 from app.web.sellers import router as web_sellers_router
-from app.web.sellers_expense_accounts import router as web_sellers_ea_router
 from app.web.sellers_items import router as web_sellers_items_router
 
 

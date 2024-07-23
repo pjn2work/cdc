@@ -10,7 +10,10 @@ from app.db.crud_sellers import update_expense_account_stats, update_seller_stat
 from app.utils import get_now
 
 
-def create_item(db: Session, item_create: schemas.items.ItemCreate) -> models.Item:
+def create_item(
+        db: Session,
+        item_create: schemas.ItemCreate
+) -> models.Item:
     db_item = models.Item(**item_create.model_dump())
     db_item.row_update_time = get_now()
     try:
@@ -79,7 +82,11 @@ def get_item(db: Session, item_id: int) -> models.Item:
     return get_item_by_id(db, item_id)
 
 
-def update_item(db: Session, db_item: models.Item, item_update: schemas.items.ItemUpdate) -> models.Item:
+def update_item(
+        db: Session,
+        db_item: models.Item,
+        item_update: schemas.ItemUpdate
+) -> models.Item:
     old_category = db_item.category_id
     db_item.row_update_time = get_now()
     update_data = item_update.model_dump(exclude_unset=True)
@@ -104,7 +111,10 @@ def update_item(db: Session, db_item: models.Item, item_update: schemas.items.It
 # ----------------------------------------------------------
 
 
-def create_category(db: Session, category_create: schemas.items.CategoryCreate) -> models.Category:
+def create_category(
+        db: Session,
+        category_create: schemas.CategoryCreate
+) -> models.Category:
     db_category = models.Category(**category_create.model_dump())
     db_category.row_update_time = get_now()
     try:
@@ -176,7 +186,7 @@ def get_category(db: Session, category_id: int) -> models.Category:
     return get_category_by_id(db, category_id)
 
 
-def update_category(db: Session, db_category: models.Category, category_update: schemas.items.CategoryUpdate) -> models.Category:
+def update_category(db: Session, db_category: models.Category, category_update: schemas.CategoryUpdate) -> models.Category:
     db_category.row_update_time = get_now()
     update_data = category_update.model_dump(exclude_unset=True)
     for key, value in update_data.items():
@@ -196,7 +206,7 @@ def update_category(db: Session, db_category: models.Category, category_update: 
 # ----------------------------------------------------------
 
 
-def create_seller_item(db: Session, item_id: int, seller_item_create: schemas.seller_items.SellerItemsCreate) -> models.SellerItems:
+def create_seller_item(db: Session, item_id: int, seller_item_create: schemas.SellerItemsCreate) -> models.SellerItems:
     db_seller_item = models.SellerItems(item_id=item_id, **seller_item_create.model_dump())
     db_seller_item.row_update_time = get_now()
 
@@ -238,7 +248,7 @@ def get_seller_item(db: Session, tid: int) -> models.SellerItems:
     return get_seller_item_by_id(db, tid)
 
 
-def update_seller_item(db: Session, db_seller_item: models.SellerItems, seller_item_update: schemas.seller_items.SellerItemsUpdate) -> models.SellerItems:
+def update_seller_item(db: Session, db_seller_item: models.SellerItems, seller_item_update: schemas.SellerItemsUpdate) -> models.SellerItems:
     db_seller_item.row_update_time = get_now()
     update_data = seller_item_update.model_dump(exclude_unset=True)
     for key, value in update_data.items():
@@ -262,7 +272,7 @@ def update_seller_item(db: Session, db_seller_item: models.SellerItems, seller_i
 # ----------------------------------------------------------
 
 
-def create_member_item(db: Session, item_id: int, member_item_create: schemas.member_items.MemberItemsCreate) -> models.MemberItems:
+def create_member_item(db: Session, item_id: int, member_item_create: schemas.MemberItemsCreate) -> models.MemberItems:
     db_member_item = models.MemberItems(item_id=item_id, **member_item_create.model_dump())
     db_member_item.row_update_time = get_now()
     try:
@@ -304,7 +314,7 @@ def get_member_item(db: Session, tid: int) -> models.MemberItems:
     return get_member_item_by_id(db, tid)
 
 
-def update_member_item(db: Session, db_member_item: models.MemberItems, member_item_update: schemas.member_items.MemberItemsUpdate) -> models.MemberItems:
+def update_member_item(db: Session, db_member_item: models.MemberItems, member_item_update: schemas.MemberItemsUpdate) -> models.MemberItems:
     old_item_id = db_member_item.item_id
     old_member_id = db_member_item.member_id
 

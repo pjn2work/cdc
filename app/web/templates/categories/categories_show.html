@@ -67,7 +67,7 @@
         <tbody>
         {%- for md in category.items|sort(attribute='name', reverse = False) %}
             <tr>
-                <td class="align_right">{{ md.item_id }}</td>
+                <td class="align_right"><a href="../../items/{{ md.item_id }}/show">{{ md.item_id }}</a></td>
                 <td class="align_left">{{ md.name }}</td>
                 <td class="align_right">{{ md.base_price }} €</td>
                 <td class="align_left">{{ md.notes }}</td>

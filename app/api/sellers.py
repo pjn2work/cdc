@@ -12,11 +12,11 @@ router = APIRouter()
 
 @router.post(
     path="/expense-accounts",
-    response_model=schemas.sellers.ExpenseAccountView,
+    response_model=schemas.ExpenseAccountView,
     status_code=status.HTTP_201_CREATED
 )
 def create_expense_account(
-        expense_account_create: schemas.sellers.ExpenseAccountCreate,
+        expense_account_create: schemas.ExpenseAccountCreate,
         db: Session = DB_SESSION,
         current_client: TokenData = GET_CURRENT_API_CLIENT):
     are_valid_scopes(["app:create", "expense_account:create"], current_client)
@@ -25,7 +25,7 @@ def create_expense_account(
 
 @router.get(
     path="/expense-accounts",
-    response_model=List[schemas.sellers.ExpenseAccount],
+    response_model=List[schemas.ExpenseAccount],
     status_code=status.HTTP_200_OK
 )
 def list_expense_accounts(
@@ -39,7 +39,7 @@ def list_expense_accounts(
 
 @router.get(
     path="/expense-accounts/{ea_id}",
-    response_model=schemas.sellers.ExpenseAccountView,
+    response_model=schemas.ExpenseAccountView,
     status_code=status.HTTP_200_OK
 )
 def get_expense_account(
@@ -52,12 +52,12 @@ def get_expense_account(
 
 @router.put(
     path="/expense-accounts/{ea_id}",
-    response_model=schemas.sellers.ExpenseAccountView,
+    response_model=schemas.ExpenseAccountView,
     status_code = status.HTTP_200_OK
 )
 def update_expense_account(
         ea_id: int,
-        expense_account_update: schemas.sellers.ExpenseAccountUpdate,
+        expense_account_update: schemas.ExpenseAccountUpdate,
         db: Session = DB_SESSION,
         current_client: TokenData = GET_CURRENT_API_CLIENT):
     are_valid_scopes(["app:update", "expense_account:update"], current_client)
@@ -70,11 +70,11 @@ def update_expense_account(
 
 @router.post(
     path="/",
-    response_model=schemas.sellers.SellerView,
+    response_model=schemas.SellerView,
     status_code=status.HTTP_201_CREATED
 )
 def create_seller(
-        seller_create: schemas.sellers.SellerCreate,
+        seller_create: schemas.SellerCreate,
         db: Session = DB_SESSION,
         current_client: TokenData = GET_CURRENT_API_CLIENT):
     are_valid_scopes(["app:create", "seller:create"], current_client)
@@ -83,7 +83,7 @@ def create_seller(
 
 @router.get(
     path="/",
-    response_model=List[schemas.sellers.Seller],
+    response_model=List[schemas.Seller],
     status_code=status.HTTP_200_OK
 )
 def list_sellers(
@@ -97,7 +97,7 @@ def list_sellers(
 
 @router.get(
     path="/{seller_id}",
-    response_model=schemas.sellers.SellerView,
+    response_model=schemas.SellerView,
     status_code=status.HTTP_200_OK
 )
 def get_seller(
@@ -110,12 +110,12 @@ def get_seller(
 
 @router.put(
     path="/{seller_id}",
-    response_model=schemas.sellers.SellerView,
+    response_model=schemas.SellerView,
     status_code = status.HTTP_200_OK
 )
 def update_seller(
         seller_id: int,
-        seller_update: schemas.sellers.SellerUpdate,
+        seller_update: schemas.SellerUpdate,
         db: Session = DB_SESSION,
         current_client: TokenData = GET_CURRENT_API_CLIENT):
     are_valid_scopes(["app:update", "seller:update"], current_client)

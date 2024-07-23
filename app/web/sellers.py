@@ -47,7 +47,7 @@ async def create_seller_submit(
     are_valid_scopes(["app:create", "seller:create"], current_client)
 
     data = await request.form()
-    seller_create: schemas.sellers.SellerCreate = schemas.sellers.SellerCreate(**data)
+    seller_create: schemas.SellerCreate = schemas.SellerCreate(**data)
 
     seller = crud_sellers.create_seller(db=db, seller_create=seller_create)
     return RedirectResponse(url=f"{seller.seller_id}/show", status_code=303)
@@ -93,7 +93,7 @@ async def update_seller(
     are_valid_scopes(["app:update", "seller:update"], current_client)
 
     data = await request.form()
-    seller_update: schemas.sellers.SellerUpdate = schemas.sellers.SellerUpdate(**data)
+    seller_update: schemas.SellerUpdate = schemas.SellerUpdate(**data)
 
     db_seller = crud_sellers.get_seller_by_id(db, seller_id=seller_id)
     _ = crud_sellers.update_seller(db, db_seller=db_seller, seller_update=seller_update)

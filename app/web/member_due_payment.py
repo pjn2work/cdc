@@ -44,7 +44,7 @@ async def pay_member_due_payment(
     are_valid_scopes(["app:create", "member_due_payment:create"], current_client)
 
     data = await request.form()
-    mdpc: schemas.member_due_payment.MemberDuesPaymentCreate = schemas.member_due_payment.MemberDuesPaymentCreate(**data)
+    mdpc: schemas.MemberDuesPaymentCreate = schemas.MemberDuesPaymentCreate(**data)
 
     mdp = crud_dues_payments.pay_member_due_payment(db, tid=tid, mdpc=mdpc)
     return RedirectResponse(url=f"../members/{mdp.member_id}/show", status_code=303)
