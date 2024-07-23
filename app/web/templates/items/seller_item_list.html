@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+{% block title %}Pesquisa Compras{% endblock %}
+{% block page_header %}Pesquisa de compras a vendedores - {{ total_results }}{% endblock %}
+{% block content_in_div %}
+    <div class="padding-15">
+    <form class="form-inline" method="get">
+        <input class="hidden" type="checkbox" id="do_filter" name="do_filter" checked>
+
+        <br>
+        <label for="category_id">Filtrar por Vendedor</label>
+        <select name="seller_id" id="seller_id">
+            <option value="0"></option>
+            {% for seller in sellers %}
+            <option value="{{ seller.seller_id }}">{{ seller.name }}</option>
+            {% endfor %}
+        </select>
+
+        <br>
+        <label for="category_id">Filtrar por Rúbrica</label>
+        <select name="ea_id" id="ea_id">
+            <option value="0"></option>
+            {% for expense_account in expense_accounts %}
+            <option value="{{ expense_account.ea_id }}">{{ expense_account.name }}</option>
+            {% endfor %}
+        </select>
+
+        <br>
+        <label for="category_id">Filtrar por categoria</label>
+        <select name="category_id" id="category_id">
+            <option value="0"></option>
+            {% for category in categories %}
+            <option value="{{ category.category_id }}">{{ category.name }}</option>
+            {% endfor %}
+        </select>
+
+        <br>
+        <label for="category_id">Filtrar por item</label>
+        <select name="item_id" id="item_id">
+            <option value="0"></option>
+            {% for item in items|sort(attribute='category_id')|sort(attribute='name') %}
+                {% if loop.changed(item.category_id) %}
+                <optgroup label="{{ item.category.name }}">
+                {% endif %}
+                    <option value="{{ item.item_id }}">{{ item.name }}</option>
+                {% if loop.changed(item.category_id) %}
+                </optgroup>
+                {% endif %}
+            {% endfor %}
+        </select>
+
+        <br>
+        <input class="form-text" type="text" size="40" id="search_text" name="search_text" placeholder="Pesquise por qualquer texto">
+        <button class="btn btn-primary mb-2" type="submit">Pesquisar</button>
+    </form>
+    </div>
+{% endblock %}
+
+{% block content_out_div %}
+    <table class="table table-striped table-bordered">
+        <thead class="table-dark">
+            <tr>
+                <th class="align_right">ID</th>
+                <th class="align_left">Vendedor</th>
+                <th class="align_left">Rúbrica</th>
+                <th class="align_left">Categoria</th>
+                <th class="align_left">Item</th>
+                <th class="align_right">Qtd compra</th>
+                <th class="align_right">Valor compra</th>
+                <th class="align_right">Valor €/uni</th>
+                <th class="align_left">Notas</th>
+                <th class="align_center">V.D.</th>
+                <th class="align_left">Data de pagamento</th>
+                <th class="align_left">Data de actualização</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for si in sellers_items %}
+                <tr>
+                    <td class="align_right"><a href="{{ si.tid }}/update">{{ si.tid }}</a></td>
+                    <td class="align_left">{{ si.seller.name }}</td>
+                    <td class="align_left">{{ si.expense_account.name }}</td>
+                    <td class="align_left">{{ si.item.category.name }}</td>
+                    <td class="align_left">{{ si.item.name }}</td>
+                    <td class="align_right">{{ si.quantity }} €</td>
+                    <td class="align_right">{{ si.total_price }}</td>
+                    <td class="align_right">{{ si.total_price/si.quantity if si.quantity else 0 }} €</td>
+                    <td class="align_left">{{ si.notes }} €</td>
+                    <td class="align_center">{{ show_boolean(si.is_cash) }} </td>
+                    <td class="align_left">{{ si.purchase_date }}</td>
+                    <td class="align_left">{{ si.row_update_time }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

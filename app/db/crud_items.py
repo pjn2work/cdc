@@ -227,13 +227,47 @@ def create_seller_item(db: Session, item_id: int, seller_item_create: schemas.Se
     return db_seller_item
 
 
-def get_seller_items_list(db: Session, item_id: int, skip: int, limit: int, search_text: str) -> List[models.SellerItems]:
+def get_item_sellers_list(db: Session, item_id: int, skip: int, limit: int, search_text: str) -> List[models.SellerItems]:
     _dbq = db.query(models.SellerItems).filter_by(item_id=item_id)
 
     if search_text is not None:
-        _dbq = _dbq.filter(or_(
-            models.Item.name.ilike(f"%{search_text}%"),
+        _dbq = _dbq.join(
+            models.Seller
+        ).filter(or_(
+            models.Seller.name.ilike(f"%{search_text}%"),
             models.SellerItems.notes.ilike(f"%{search_text}%"),
+        ))
+
+    return _dbq.offset(skip).limit(limit).all()
+
+
+def get_sellers_items_list(
+        db: Session,
+        item_id: int, category_id: int,
+        seller_id: int, ea_id: int,
+        tid: int, search_text: str,
+        skip: int = 0, limit: int = 1000
+) -> List[models.SellerItems]:
+    if tid:
+        return [get_seller_item_by_id(db, tid=tid)]
+
+    _dbq = db.query(models.SellerItems).join(models.Item).join(models.Seller)
+
+    if item_id:
+        _dbq = _dbq.filter(models.SellerItems.item_id == item_id)
+    if seller_id:
+        _dbq = _dbq.filter(models.SellerItems.seller_id == seller_id)
+    if ea_id:
+        _dbq = _dbq.filter(models.SellerItems.ea_id == ea_id)
+    if category_id:
+        _dbq = _dbq.filter(models.Item.category_id == category_id)
+
+    if search_text is not None:
+        _dbq = _dbq.filter(or_(
+            models.Seller.name.ilike(f"%{search_text}%"),
+            models.SellerItems.notes.ilike(f"%{search_text}%"),
+            models.Item.name.ilike(f"%{search_text}%"),
+            models.Item.notes.ilike(f"%{search_text}%"),
         ))
 
     return _dbq.offset(skip).limit(limit).all()
@@ -291,15 +325,45 @@ def create_member_item(db: Session, item_id: int, member_item_create: schemas.Me
     return db_member_item
 
 
-def get_member_items_list(db: Session, item_id: int, skip: int, limit: int, search_text: str) -> List[models.MemberItems]:
-    _dbq = db.query(models.MemberItems)
+def get_item_members_list(db: Session, item_id: int, skip: int, limit: int, search_text: str) -> List[models.MemberItems]:
+    _dbq = db.query(models.MemberItems).filter_by(item_id=item_id)
 
     if search_text is not None:
-        _dbq = _dbq.filter_by(
-            item_id=item_id
+        _dbq = _dbq.join(
+            models.Member
         ).filter(or_(
             models.Member.name.ilike(f"%{search_text}%"),
             models.MemberItems.notes.ilike(f"%{search_text}%"),
+        ))
+
+    return _dbq.offset(skip).limit(limit).all()
+
+
+def get_members_items_list(
+        db: Session,
+        item_id: int, category_id: int,
+        member_id: int,
+        tid: int, search_text: str,
+        skip: int, limit: int
+) -> List[models.MemberItems]:
+    if tid:
+        return [get_member_item_by_id(db, tid=tid)]
+
+    _dbq = db.query(models.MemberItems).join(models.Item).join(models.Member)
+
+    if item_id:
+        _dbq = _dbq.filter(models.SellerItems.item_id == item_id)
+    if member_id:
+        _dbq = _dbq.filter(models.SellerItems.member_id == member_id)
+    if category_id:
+        _dbq = _dbq.filter(models.Item.category_id == category_id)
+
+    if search_text is not None:
+        _dbq = _dbq.filter(or_(
+            models.Member.name.ilike(f"%{search_text}%"),
+            models.MemberItems.notes.ilike(f"%{search_text}%"),
+            models.Item.name.ilike(f"%{search_text}%"),
+            models.Item.notes.ilike(f"%{search_text}%"),
         ))
 
     return _dbq.offset(skip).limit(limit).all()
