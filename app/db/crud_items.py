@@ -24,7 +24,7 @@ def create_item(db: Session, item_create: schemas.items.ItemCreate) -> models.It
     return db_item
 
 
-def get_items_list(db: Session, skip: int, limit: int, search_text: str) -> List[models.Item]:
+def get_items_list(db: Session, search_text: str, skip: int = 0, limit: int = 1000) -> List[models.Item]:
     _dbq = db.query(models.Item)
 
     if search_text is not None:

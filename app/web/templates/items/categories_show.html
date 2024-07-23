@@ -23,11 +23,20 @@
                         <textarea class="form-control-plaintext data-text" disabled rows="3" cols="120">{{ category.notes }}</textarea>
                     </div>
                 </div><div class="row mb-0">
-                    <div class="col-md-12">
-                        <hr>
+                    <hr>
+                    <div class="col-md-6">
                         <form class="form-inline" method="get" action="update">
                             <p class="align_center">
                                 <button class="btn btn-primary mb-1" type="submit">Editar Categoria</button>
+                            </p>
+                        </form>
+                    </div>
+                    <div class="col-md-6">
+                        <form class="form-inline" method="get" action="../../items/create">
+                            <p class="align_center">
+                                <input type="hidden" name="category_id" value="{{ category.category_id }}">
+                                <input type="hidden" name="category_name" value="{{ category.name }}">
+                                <button class="btn btn-primary mb-1" type="submit">Criar novo Item</button>
                             </p>
                         </form>
                     </div>
