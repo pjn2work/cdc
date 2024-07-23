@@ -1,10 +1,38 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>TODO</title>
-</head>
-<body>
-<h1>TODO</h1>
-</body>
-</html>
+{% extends "base.html" %}
+{% block title %}Editar Item{% endblock %}
+{% block page_header %}Item {{ item.item_id }}{% endblock %}
+{% block content_in_div %}
+    <div class="card">
+        <div class="card-body">
+            <form method="post" action="update">
+            <div class="row mb-0">
+                <div class="col-md-2">
+                        <label class="form-label label-text align_center">Quantidade comprada</label>
+                        <p class="form-control-plaintext data-text align_center">{{ item.total_quantity_seller_sold }}</p>
+                        <label class="form-label label-text align_center">Valor comprado</label>
+                        <p class="form-control-plaintext data-text align_center">{{ item.total_amount_seller_sold }} €</p>
+                        <label class="form-label label-text align_center">Quantidade vendida</label>
+                        <p class="form-control-plaintext data-text align_center">{{ item.total_quantity_member_sold }}</p>
+                        <label class="form-label label-text align_center">Valor vendido</label>
+                        <p class="form-control-plaintext data-text align_center">{{ item.total_amount_member_sold }} €</p>
+                </div>
+                <div class="col-md-10">
+                    <label class="form-label label-text" for="category_id">Categoria</label>
+                    <select class="form-control-plaintext data-text" name="category_id" id="category_id">
+                        {% for category in categories %}
+                        <option value="{{ category.category_id }}" {{ "selected" if item.category_id == category.category_id }}>{{ category.name }}</option>
+                        {% endfor %}
+                    </select>
+                    <label class="form-label label-text">Nome</label>
+                    <p class="form-control-plaintext data-text"><input class="form-text input_edit" type="text" id="name" name="name" placeholder="Nome do item" value="{{ item.name }}" required></p>
+                    <label class="form-label label-text">Preço base</label>
+                    <p class="form-control-plaintext data-text"><input class="form-text input_edit" type="text" id="base_price" name="base_price" placeholder="Valor base" value="{{ item.base_price }}" required></p>
+                    <label class="form-label label-text">Notas</label>
+                    <p class="form-control-plaintext data-text"><textarea class="form-text input_edit" rows="3" cols="120" id="notes" name="notes" placeholder="Aqui pode escrever as notas sobre esta categoria">{{ item.notes }}</textarea></p>
+                    <p class="align_center"><button class="btn btn-primary mb-2" type="submit">Salvar alterações</button></p>
+                </div>
+            </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}

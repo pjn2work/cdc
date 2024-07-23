@@ -90,9 +90,12 @@ def edit_item(
         current_client: TokenData = GET_CURRENT_WEB_CLIENT):
     are_valid_scopes(["app:update", "item:update"], current_client)
 
+    categories = crud_items.get_categories_list(db, search_text="")
     item = crud_items.get_item(db, item_id=item_id)
+
     return templates.TemplateResponse("items/items_edit.html", {
         "request": request,
+        "categories": categories,
         "item": item
     })
 
