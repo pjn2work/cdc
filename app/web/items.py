@@ -1,3 +1,5 @@
+from typing import Optional
+
 from fastapi import APIRouter, Request
 from sqlalchemy.orm import Session
 from starlette.responses import HTMLResponse, RedirectResponse
@@ -13,16 +15,23 @@ router = APIRouter()
 @router.get("/", response_class=HTMLResponse)
 def list_items(
         request: Request,
+        do_filter: bool = False,
         search_text: str = "",
+        category_id: Optional[str] = "",
         db: Session = DB_SESSION,
         current_client: TokenData = GET_CURRENT_WEB_CLIENT):
     are_valid_scopes(["app:read", "item:read"], current_client)
 
-    items = crud_items.get_items_list(db, search_text=search_text)
+    categories = crud_items.get_categories_list(db, search_text="")
+    if do_filter:
+        items = crud_items.get_items_list(db, search_text=search_text, category_id=category_id)
+    else:
+        items = []
 
     return templates.TemplateResponse("items/items_list.html", {
         "request": request,
         "items": items,
+        "categories": categories,
         "total_results": len(items)
     })
 

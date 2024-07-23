@@ -89,10 +89,11 @@ def create_item(
 def list_items(
         skip: int = 0, limit: int = 1000,
         search_text: str = "",
+        category_id: int = 0,
         db: Session = DB_SESSION,
         current_client: TokenData = GET_CURRENT_API_CLIENT):
     are_valid_scopes(["app:read", "item:read"], current_client)
-    return crud_items.get_items_list(db, skip=skip, limit=limit, search_text=search_text)
+    return crud_items.get_items_list(db, skip=skip, limit=limit, search_text=search_text, category_id=category_id)
 
 
 @router.get(

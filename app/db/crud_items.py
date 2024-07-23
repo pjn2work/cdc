@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 
 from fastapi import HTTPException
 from sqlalchemy import or_
@@ -27,7 +27,7 @@ def create_item(
     return db_item
 
 
-def get_items_list(db: Session, search_text: str, skip: int = 0, limit: int = 1000) -> List[models.Item]:
+def get_items_list(db: Session, search_text: str, skip: int = 0, limit: int = 1000, category_id: Optional[str] = None) -> List[models.Item]:
     _dbq = db.query(models.Item)
 
     if search_text is not None:
@@ -35,6 +35,8 @@ def get_items_list(db: Session, search_text: str, skip: int = 0, limit: int = 10
             models.Item.name.ilike(f"%{search_text}%"),
             models.Item.notes.ilike(f"%{search_text}%"),
         ))
+    if category_id:
+        _dbq = _dbq.filter_by(category_id=category_id)
 
     return _dbq.offset(skip).limit(limit).all()
 
