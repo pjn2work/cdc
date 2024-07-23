@@ -9,7 +9,7 @@
         <select name="category_id" id="category_id">
             <option value=""></option>
             {% for category in categories %}
-            <option value="{{ category.category_id }}">{{ category.name }}</option>
+            <option value="{{ category.category_id }}">{{ category.name }} | [{{ category.items|length }}]</option>
             {% endfor %}
         </select>
         <br>

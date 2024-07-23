@@ -19,6 +19,7 @@
                 <th class="align_right">Valor compra</th>
                 <th class="align_right">Quantidade venda</th>
                 <th class="align_right">Valor venda</th>
+                <th class="align_right">Items</th>
             </tr>
         </thead>
         <tbody>
@@ -31,6 +32,7 @@
                     <td class="align_right">{{ category.total_amount_seller_sold }} €</td>
                     <td class="align_right">{{ category.total_quantity_member_sold }}</td>
                     <td class="align_right">{{ category.total_amount_member_sold }} €</td>
+                    <td class="align_right">{{ category.items|length }}</td>
                 </tr>
             {% endfor %}
         </tbody>

@@ -17,6 +17,7 @@
                 <th>Notas</th>
                 <th class="align_right">Total quantidade</th>
                 <th class="align_right">Total valor</th>
+                <th class="align_right">Vendas</th>
             </tr>
         </thead>
         <tbody>
@@ -27,6 +28,7 @@
                     <td class="align_left">{{ seller.notes }}</td>
                     <td class="align_right">{{ seller.total_quantity_sold }}</td>
                     <td class="align_right">{{ seller.total_amount_sold }} €</td>
+                    <td class="align_right">{{ seller.seller_items|length }}</td>
                 </tr>
             {% endfor %}
         </tbody>
