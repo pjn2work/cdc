@@ -62,7 +62,6 @@ def show_expense_account(
     are_valid_scopes(["app:read", "expense_account:read"], current_client)
 
     expense_account = crud_sellers.get_expense_account(db, ea_id=ea_id)
-    expense_account.expense_account_items = sorted(expense_account.seller_items, key=lambda mh: mh.tid, reverse=True)
     return templates.TemplateResponse("sellers/expense_accounts_show.html", {
         "request": request,
         "expense_account": expense_account,

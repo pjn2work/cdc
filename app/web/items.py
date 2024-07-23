@@ -66,7 +66,6 @@ def show_item(
     are_valid_scopes(["app:read", "item:read"], current_client)
 
     item = crud_items.get_item(db, item_id=item_id)
-    item.item_items = sorted(item.items, key=lambda mh: mh.name, reverse=True)
     return templates.TemplateResponse("items/items_show.html", {
         "request": request,
         "item": item,

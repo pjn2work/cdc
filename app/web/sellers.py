@@ -62,7 +62,6 @@ def show_seller(
     are_valid_scopes(["app:read", "seller:read"], current_client)
 
     seller = crud_sellers.get_seller(db, seller_id=seller_id)
-    seller.seller_items = sorted(seller.seller_items, key=lambda mh: mh.tid, reverse=True)
     return templates.TemplateResponse("sellers/sellers_show.html", {
         "request": request,
         "seller": seller,

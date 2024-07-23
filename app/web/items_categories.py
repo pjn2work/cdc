@@ -62,7 +62,6 @@ def show_category(
     are_valid_scopes(["app:read", "category:read"], current_client)
 
     category = crud_items.get_category(db, category_id=category_id)
-    category.category_items = sorted(category.items, key=lambda mh: mh.name, reverse=True)
     return templates.TemplateResponse("items/categories_show.html", {
         "request": request,
         "category": category,

@@ -99,7 +99,7 @@
             </tr>
         </thead>
         <tbody>
-        {%- for mdp in member.member_due_payment %}
+        {%- for mdp in member.member_due_payment|sort(attribute='id_year_month', reverse = True) %}
             <tr>
                 <td class="align_right">{{ mdp.tid }}</td>
                 <td class="align_center">{{ mdp.id_year_month }}</td>
@@ -136,7 +136,7 @@
             </tr>
         </thead>
         <tbody>
-        {%- for md in member.member_donations %}
+        {%- for md in member.member_donations|sort(attribute='pay_date', reverse = True) %}
             <tr>
                 <td class="align_right">{{ md.tid }}</td>
                 <td class="align_right">{{ md.amount }} €</td>
@@ -169,7 +169,7 @@
             </tr>
         </thead>
         <tbody>
-        {% for mh in member.member_history %}
+        {% for mh in member.member_history|sort(attribute='tid', reverse = True) %}
             <tr>
                 <td class="align_right">{{ mh.tid }}</td>
                 <td>{{ mh.date_time }}</td>

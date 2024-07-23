@@ -7,13 +7,13 @@
             <div class="card-body">
                 <div class="row mb-0">
                     <div class="col-md-2">
-                        <label class="form-label label-text align_center">Quantidade vendida</label>
-                        <p class="form-control-plaintext data-text align_center">{{ category.total_quantity_seller_sold }}</p>
-                        <label class="form-label label-text align_center">Valor vendido</label>
-                        <p class="form-control-plaintext data-text align_center">{{ category.total_amount_seller_sold }} €</p>
                         <label class="form-label label-text align_center">Quantidade comprada</label>
-                        <p class="form-control-plaintext data-text align_center">{{ category.total_quantity_member_sold }}</p>
+                        <p class="form-control-plaintext data-text align_center">{{ category.total_quantity_seller_sold }}</p>
                         <label class="form-label label-text align_center">Valor comprado</label>
+                        <p class="form-control-plaintext data-text align_center">{{ category.total_amount_seller_sold }} €</p>
+                        <label class="form-label label-text align_center">Quantidade vendida</label>
+                        <p class="form-control-plaintext data-text align_center">{{ category.total_quantity_member_sold }}</p>
+                        <label class="form-label label-text align_center">Valor vendido</label>
                         <p class="form-control-plaintext data-text align_center">{{ category.total_amount_member_sold }} €</p>
                     </div>
                     <div class="col-md-10">
@@ -65,7 +65,7 @@
             </tr>
         </thead>
         <tbody>
-        {%- for md in category.items %}
+        {%- for md in category.items|sort(attribute='name', reverse = False) %}
             <tr>
                 <td class="align_right">{{ md.item_id }}</td>
                 <td class="align_left">{{ md.name }}</td>

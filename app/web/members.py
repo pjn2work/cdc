@@ -68,8 +68,6 @@ def show_member(
     are_valid_scopes(["app:read", "member:read"], current_client)
 
     member = crud_member.get_member(db, member_id=member_id)
-    member.member_due_payment = sorted(member.member_due_payment, key=lambda mdp: mdp.id_year_month, reverse=True)
-    member.member_history = sorted(member.member_history, key=lambda mh: mh.tid, reverse=True)
     return templates.TemplateResponse("members/members_show.html", {
         "request": request,
         "member": member,
