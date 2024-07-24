@@ -18,17 +18,13 @@
                 </div>
                 <div class="col-md-10">
                     <label class="form-label label-text" for="category_id">Categoria</label>
-                    <select class="form-control-plaintext data-text" name="category_id" id="category_id">
-                        {% for category in categories %}
-                        <option value="{{ category.category_id }}" {{ "selected" if item.category_id == category.category_id }}>{{ category.name }}</option>
-                        {% endfor %}
-                    </select>
+                    <p class="form-control-plaintext data-text">{{ selector("category_id", categories, "category_id", "name", item.category_id) }}</p>
                     <label class="form-label label-text">Nome</label>
-                    <p class="form-control-plaintext data-text"><input class="form-text input_edit" type="text" id="name" name="name" placeholder="Nome do item" value="{{ item.name }}" required></p>
+                    <p class="form-control-plaintext data-text"><input class="form-text input_edit" size="80" type="text" id="name" name="name" placeholder="Nome do item" value="{{ item.name }}" required></p>
                     <label class="form-label label-text">Preço base</label>
-                    <p class="form-control-plaintext data-text"><input class="form-text input_edit" type="text" id="base_price" name="base_price" placeholder="Valor base" value="{{ item.base_price }}" required></p>
+                    <p class="form-control-plaintext data-text"><input class="form-text input_edit" type="number" step="0.01" id="base_price" name="base_price" placeholder="Valor base" value="{{ item.base_price }}" required></p>
                     <label class="form-label label-text">Notas</label>
-                    <p class="form-control-plaintext data-text"><textarea class="form-text input_edit" rows="3" cols="120" id="notes" name="notes" placeholder="Aqui pode escrever as notas sobre esta categoria">{{ item.notes }}</textarea></p>
+                    <p class="form-control-plaintext data-text"><textarea class="form-text input_edit" rows="3" cols="81" id="notes" name="notes" placeholder="Aqui pode escrever as notas sobre esta categoria">{{ item.notes }}</textarea></p>
                     <p class="align_center"><button class="btn btn-primary mb-2" type="submit">Salvar alterações</button></p>
                 </div>
             </div>

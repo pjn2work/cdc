@@ -20,7 +20,7 @@
                         <label class="form-label label-text">Email</label>
                         <p class="form-control-plaintext data-text">{{ seller.email }}</p>
                         <label class="form-label label-text">Notas</label>
-                        <textarea class="form-control-plaintext data-text" disabled rows="3" cols="120">{{ seller.notes }}</textarea>
+                        <textarea class="form-control-plaintext data-text" disabled rows="3" cols="81">{{ seller.notes }}</textarea>
                     </div>
                 </div><div class="row mb-0">
                     <div class="col-md-12">
@@ -60,7 +60,7 @@
                 <td class="align_right">{{ md.tid }}</td>
                 <td class="align_right">{{ md.quantity }}</td>
                 <td class="align_right">{{ md.total_price }} €</td>
-                <td class="align_right">{{ md.total_price/md.quantity if md.quantity else 0 }} €</td>
+                <td class="align_right">{{ (md.total_price/md.quantity)|round(2) if md.quantity else 0 }} €</td>
                 <td class="align_left">{{ md.item.name }}</td>
                 <td class="align_left">{{ md.expense_account.name }}</td>
                 <td class="align_center">{{ show_boolean(md.is_cash) }}</td>

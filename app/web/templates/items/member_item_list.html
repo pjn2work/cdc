@@ -16,7 +16,7 @@
             </tr><tr>
                 <td class="padding-5 align_right"><label for="item_id">Filtrar por item</label></td>
                 <td class="padding-5 align_left">
-                    <select name="item_id" id="item_id" class="form-text">
+                    <select name="item_id" id="item_id" class="form-text input_edit">
                         <option value="0"></option>
                         {% for item in items|sort(attribute='category_id')|sort(attribute='name') %}
                             {% if loop.changed(item.category_id) %}
@@ -31,10 +31,10 @@
                 </td>
             </tr><tr>
                 <td class="padding-5 align_right"><label class="form-check-label" for="since">Filtrar por data desde</label></td>
-                <td class="padding-5 align_left"><input class="form-text" type="date" id="since" name="since" value="{{ since }}"></td>
+                <td class="padding-5 align_left"><input class="form-text input_edit" type="date" id="since" name="since" value="{{ since }}"></td>
             </tr><tr>
                 <td class="padding-5 align_right"><label class="form-check-label" for="until">Filtrar por data até</label></td>
-                <td class="padding-5 align_left"><input class="form-text" type="date" id="until" name="until" value="{{ until }}"></td>
+                <td class="padding-5 align_left"><input class="form-text input_edit" type="date" id="until" name="until" value="{{ until }}"></td>
             </tr><tr>
                 <td class="padding-5 align_right"><label class="form-check-label" for="just_download">Download de ficheiro</label></td>
                 <td class="padding-5 align_left"><input class="form-check-input" type="checkbox" id="just_download" name="just_download"></td>
@@ -43,7 +43,7 @@
                     <button class="btn btn-primary mb-2" type="button" onclick="clearForm();">Limpar campos</button>
                 </td>
                 <td class="padding-5 align_left">
-                    <input class="form-text" type="text" size="40" id="search_text" name="search_text" value="{{ search_text }}" placeholder="Pesquise por qualquer texto">
+                    <input class="form-text input_edit" type="text" size="40" id="search_text" name="search_text" value="{{ search_text }}" placeholder="Pesquise por qualquer texto">
                     <button class="btn btn-primary mb-2" type="submit">Pesquisar</button>
                 </td>
             </tr>
@@ -79,7 +79,7 @@
                     <td class="align_left">{{ si.item.name }}</td>
                     <td class="align_right">{{ si.quantity }} €</td>
                     <td class="align_right">{{ si.total_price }}</td>
-                    <td class="align_right">{{ si.total_price/si.quantity if si.quantity else 0 }} €</td>
+                    <td class="align_right">{{ (si.total_price/si.quantity)|round(2) if si.quantity else 0 }} €</td>
                     <td class="align_left">{{ si.notes }} €</td>
                     <td class="align_center">{{ show_boolean(si.is_cash) }} </td>
                     <td class="align_left">{{ si.purchase_date }}</td>

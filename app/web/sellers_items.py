@@ -11,7 +11,7 @@ router = APIRouter()
 
 
 @router.get("/", response_class=HTMLResponse)
-def list_seller_item(
+def list_sellers_items(
         request: Request,
         do_filter: bool = False,
         search_text: str = "",
@@ -89,12 +89,13 @@ async def create_seller_item_submit(
     are_valid_scopes(["app:create", "seller_item:create"], current_client)
 
     data = {**await request.form()}
+    data["is_cash"] = data.get("is_cash", False)
     item_id = int(data["item_id"])
     del data["item_id"]
 
     seller_item_create: schemas.SellerItemsCreate = schemas.SellerItemsCreate(**data)
     seller_item = crud_items.create_seller_item(db=db, item_id=item_id, seller_item_create=seller_item_create)
-    return RedirectResponse(url=f"../items/?do_filter=on&tid={seller_item.tid}", status_code=303)
+    return RedirectResponse(url=f"../sellers/?do_filter=on&tid={seller_item.tid}", status_code=303)
 
 
 @router.get("/{tid}/update", response_class=HTMLResponse)
@@ -106,9 +107,17 @@ def edit_seller_item(
     are_valid_scopes(["app:update", "seller_item:update"], current_client)
 
     seller_item = crud_items.get_seller_item(db, tid=tid)
+
+    items = crud_items.get_items_list(db, search_text="")
+    sellers = crud_sellers.get_sellers_list(db, search_text="")
+    expense_accounts = crud_sellers.get_expense_accounts_list(db, search_text="")
+
     return templates.TemplateResponse("items/seller_item_edit.html", {
         "request": request,
-        "seller_item": seller_item
+        "seller_item": seller_item,
+        "items": items,
+        "sellers": sellers,
+        "expense_accounts": expense_accounts
     })
 
 
@@ -120,9 +129,11 @@ async def update_seller_item(
         current_client: TokenData = GET_CURRENT_WEB_CLIENT):
     are_valid_scopes(["app:update", "seller_item:update"], current_client)
 
-    data = await request.form()
+    data = {**await request.form()}
+    if "is_cash" not in data:
+        data["is_cash"] = False
     seller_item_update: schemas.SellerItemsUpdate = schemas.SellerItemsUpdate(**data)
 
     db_seller_item = crud_items.get_seller_item(db, tid=tid)
     _ = crud_items.update_seller_item(db, db_seller_item=db_seller_item, seller_item_update=seller_item_update)
-    return RedirectResponse(url=f"?tid={tid}", status_code=303)
+    return RedirectResponse(url=f"../?do_filter=on&tid={tid}", status_code=303)

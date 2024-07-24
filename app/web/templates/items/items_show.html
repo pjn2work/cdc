@@ -24,7 +24,7 @@
                         <label class="form-label label-text">Preço base</label>
                         <p class="form-control-plaintext data-text">{{ item.base_price }}</p>
                         <label class="form-label label-text">Notas</label>
-                        <textarea class="form-control-plaintext data-text" disabled rows="3" cols="120">{{ item.notes }}</textarea>
+                        <textarea class="form-control-plaintext data-text" disabled rows="3" cols="81">{{ item.notes }}</textarea>
                     </div>
                 </div><div class="row mb-0">
                     <hr>
@@ -36,7 +36,7 @@
                         </form>
                     </div>
                     <div class="col-md-4">
-                        <form class="form-inline" method="get" action="../../sellers/items/create">
+                        <form class="form-inline" method="get" action="../sellers/create">
                             <p class="align_center">
                                 <input type="hidden" name="item_id" value="{{ item.item_id }}">
                                 <input type="hidden" name="item_base_price" value="{{ item.base_price }}">
@@ -45,7 +45,7 @@
                         </form>
                     </div>
                     <div class="col-md-4">
-                        <form class="form-inline" method="get" action="../../members/items/create">
+                        <form class="form-inline" method="get" action="../members/create">
                             <p class="align_center">
                                 <input type="hidden" name="item_id" value="{{ item.item_id }}">
                                 <input type="hidden" name="item_base_price" value="{{ item.base_price }}">
@@ -84,7 +84,7 @@
                 <td class="align_left">{{ md.expense_account.name }}</td>
                 <td class="align_right">{{ md.quantity }}</td>
                 <td class="align_right">{{ md.total_price }} €</td>
-                <td class="align_right">{{ md.total_price/md.quantity if md.quantity else 0.0 }} €</td>
+                <td class="align_right">{{ (md.total_price/md.quantity)|round(2) if md.quantity else 0.0 }} €</td>
                 <td class="align_center">{{ show_boolean(md.is_cash) }}</td>
                 <td class="align_left">{{ md.purchase_date }}</td>
                 <td class="align_left">{{ md.notes }}</td>
@@ -117,7 +117,7 @@
                 <td class="align_left">{{ md.member.name }}</td>
                 <td class="align_right">{{ md.quantity }}</td>
                 <td class="align_right">{{ md.total_price }} €</td>
-                <td class="align_right">{{ md.total_price/md.quantity if md.quantity else 0.0 }} €</td>
+                <td class="align_right">{{ (md.total_price/md.quantity)|round(2) if md.quantity else 0.0 }} €</td>
                 <td class="align_center">{{ show_boolean(md.is_cash) }}</td>
                 <td class="align_left">{{ md.purchase_date }}</td>
                 <td class="align_left">{{ md.notes }}</td>

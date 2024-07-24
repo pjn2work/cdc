@@ -8,7 +8,7 @@
         <label for="category_id">Filtrar por categoria</label>
         {{ selector("category_id", categories, "category_id", "name", category_id|int, "items") }}
         <br>
-        <input class="form-text" type="text" size="40" id="search_text" name="search_text" value="{{ search_text }}" placeholder="Pesquise por qualquer texto">
+        <input class="form-text input_edit" type="text" size="40" id="search_text" name="search_text" value="{{ search_text }}" placeholder="Pesquise por qualquer texto">
         <button class="btn btn-primary mb-2" type="submit">Pesquisar</button>
     </form>
     </div>
@@ -39,10 +39,10 @@
                     <td class="align_left">{{ item.category.name }}</td>
                     <td class="align_right">{{ item.total_quantity_seller_sold }}</td>
                     <td class="align_right">{{ item.total_amount_seller_sold }} €</td>
-                    <td class="align_right">{{ item.total_amount_seller_sold/item.total_quantity_seller_sold if item.total_quantity_seller_sold else 0 }} €</td>
+                    <td class="align_right">{{ (item.total_amount_seller_sold/item.total_quantity_seller_sold)|round(2) if item.total_quantity_seller_sold else 0 }} €</td>
                     <td class="align_right">{{ item.total_quantity_member_sold }}</td>
                     <td class="align_right">{{ item.total_amount_member_sold }} €</td>
-                    <td class="align_right">{{ item.total_amount_member_sold/item.total_quantity_member_sold if item.total_quantity_member_sold else 0 }} €</td>
+                    <td class="align_right">{{ (item.total_amount_member_sold/item.total_quantity_member_sold)|round(2) if item.total_quantity_member_sold else 0 }} €</td>
                 </tr>
             {% endfor %}
         </tbody>

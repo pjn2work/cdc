@@ -20,7 +20,7 @@
                         <label class="form-label label-text">Nome</label>
                         <p class="form-control-plaintext data-text">{{ category.name }}</p>
                         <label class="form-label label-text">Notas</label>
-                        <textarea class="form-control-plaintext data-text" disabled rows="3" cols="120">{{ category.notes }}</textarea>
+                        <textarea class="form-control-plaintext data-text" disabled rows="3" cols="81">{{ category.notes }}</textarea>
                     </div>
                 </div><div class="row mb-0">
                     <hr>
@@ -73,10 +73,10 @@
                 <td class="align_left">{{ md.notes }}</td>
                 <td class="align_right">{{ md.total_quantity_seller_sold }}</td>
                 <td class="align_right">{{ md.total_amount_seller_sold }} €</td>
-                <td class="align_right">{{ md.total_amount_seller_sold/md.total_quantity_seller_sold if md.total_quantity_seller_sold else 0.0 }} €</td>
+                <td class="align_right">{{ (md.total_amount_seller_sold/md.total_quantity_seller_sold)|round(2) if md.total_quantity_seller_sold else 0.0 }} €</td>
                 <td class="align_right">{{ md.total_quantity_member_sold }}</td>
                 <td class="align_right">{{ md.total_amount_member_sold }} €</td>
-                <td class="align_right">{{ md.total_amount_member_sold/md.total_quantity_member_sold if md.total_quantity_member_sold else 0.0 }} €</td>
+                <td class="align_right">{{ (md.total_amount_member_sold/md.total_quantity_member_sold)|round(2) if md.total_quantity_member_sold else 0.0 }} €</td>
             </tr>
         {%- endfor %}
         </tbody>

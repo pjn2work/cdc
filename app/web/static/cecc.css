@@ -42,10 +42,9 @@ table, pre {
 
 .input_edit {
     padding: 5px;
-    width: 100%;
     vertical-align: middle;
     font-family: Montserrat, Verdana, "Helvetica Neue", Helvetica, Arial, sans-serif;
-    font-size: 20px;
+    font-size: 18px;
 }
 
 .label-text {

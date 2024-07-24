@@ -11,7 +11,7 @@ router = APIRouter()
 
 
 @router.get("/", response_class=HTMLResponse)
-def list_member_item(
+def list_members_items(
         request: Request,
         do_filter: bool = False,
         search_text: str = "",

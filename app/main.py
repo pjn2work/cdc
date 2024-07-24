@@ -61,8 +61,8 @@ app.include_router(web_items_router, prefix="/web/items", tags=["/web/items"])
 app.include_router(web_items_categories_router, prefix="/web/categories", tags=["/web/categories"])
 app.include_router(web_sellers_router, prefix="/web/sellers", tags=["/web/sellers"])
 app.include_router(web_sellers_ea_router, prefix="/web/expense-accounts", tags=["/web/expense-accounts"])
-app.include_router(web_sellers_items_router, prefix="/web/sellers/items", tags=["/web/sellers/items"])
-app.include_router(web_members_items_router, prefix="/web/members/items", tags=["/web/members/items"])
+app.include_router(web_sellers_items_router, prefix="/web/items/sellers", tags=["/web/items/sellers"])
+app.include_router(web_members_items_router, prefix="/web/items/members", tags=["/web/items/members"])
 
 # Web dashboards
 #app.mount("/web/dashboard1", WSGIMiddleware(dashboard1.server))

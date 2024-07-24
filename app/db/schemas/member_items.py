@@ -23,7 +23,7 @@ class MemberItemsUpdate(BaseModel):
     total_price: Optional[float] = Field(ge=0.0, default=None)
     notes: Optional[str] = Field(default=None)
     purchase_date: Optional[date] = Field(default=None)
-    is_cash: Optional[bool] = Field(default=None)
+    is_cash: Optional[bool] = Field(default=False)
 
 
 class MemberItemsCreate(MemberItemsBase):
