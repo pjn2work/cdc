@@ -150,6 +150,40 @@
 
     <br><hr><br>
 
+    <h5 class="card-title">Lista de vendas</h5>
+    <table class="table table-striped table-bordered">
+        <thead class="table-dark">
+            <tr>
+                <th class="align_right">ID</th>
+                <th class="align_left">Item</th>
+                <th class="align_left">Categoria</th>
+                <th class="align_right">Quantidade</th>
+                <th class="align_right">Valor</th>
+                <th class="align_right">€/uni</th>
+                <th class="align_center">V.D.</th>
+                <th class="align_left">Data de pagamento</th>
+                <th class="align_left">Data de actualização</th>
+            </tr>
+        </thead>
+        <tbody>
+        {%- for md in member.member_items|sort(attribute='purchase_date', reverse = True) %}
+            <tr>
+                <td class="align_right"><a href="../../items/members/{{ md.tid }}/update">{{ md.tid }}</a></td>
+                <td class="align_left">{{ md.item.name }}</td>
+                <td class="align_left">{{ md.item.category.name }}</td>
+                <td class="align_right">{{ md.quantity }}</td>
+                <td class="align_right">{{ md.total_price }} €</td>
+                <td class="align_right">{{ (md.total_price/md.quantity)|round(2) if md.quantity else 0 }} €</td>
+                <td class="align_center">{{ show_boolean(md.is_cash) }}</td>
+                <td class="align_left">{{ md.purchase_date }}</td>
+                <td class="align_left">{{ md.row_update_time }}</td>
+            </tr>
+        {%- endfor %}
+        </tbody>
+    </table>
+
+    <br><hr><br>
+
     <h5 class="card-title">Lista de histórico de alterações do Associado</h5>
     <table class="table table-striped table-bordered">
         <thead class="table-secondary">

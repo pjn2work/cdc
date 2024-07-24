@@ -27,7 +27,7 @@
                     <td class="align_left">{{ ea.name }}</td>
                     <td class="align_left">{{ ea.notes }}</td>
                     <td class="align_right">{{ ea.total_quantity_seller_sold }}</td>
-                    <td class="align_right">{{ ea.total_amount_seller_sold }} €</td>
+                    <td class="align_right">{{ ea.total_amount_seller_sold|round(2) }} €</td>
                     <td class="align_right">{{ ea.seller_items|length }}</td>
                 </tr>
             {% endfor %}

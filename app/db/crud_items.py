@@ -1,7 +1,7 @@
 from typing import List, Optional
 
 from fastapi import HTTPException
-from sqlalchemy import or_
+from sqlalchemy import or_, desc
 from sqlalchemy.orm import Session
 
 from app.db import models, schemas
@@ -238,7 +238,7 @@ def get_item_sellers_list(db: Session, item_id: int, skip: int, limit: int, sear
             models.SellerItems.notes.ilike(f"%{search_text}%"),
         ))
 
-    return _dbq.offset(skip).limit(limit).all()
+    return _dbq.order_by(desc(models.SellerItems.purchase_date)).offset(skip).limit(limit).all()
 
 
 def get_sellers_items_list(
@@ -275,7 +275,7 @@ def get_sellers_items_list(
             models.Item.notes.ilike(f"%{search_text}%"),
         ))
 
-    return _dbq.offset(skip).limit(limit).all()
+    return _dbq.order_by(desc(models.SellerItems.purchase_date)).offset(skip).limit(limit).all()
 
 
 def get_seller_item_by_id(db: Session, tid: int) -> models.SellerItems:
@@ -290,6 +290,10 @@ def get_seller_item(db: Session, tid: int) -> models.SellerItems:
 
 
 def update_seller_item(db: Session, db_seller_item: models.SellerItems, seller_item_update: schemas.SellerItemsUpdate) -> models.SellerItems:
+    old_ea_id = db_seller_item.ea_id
+    old_seller_id = db_seller_item.seller_id
+    old_item_id = db_seller_item.item_id
+
     db_seller_item.row_update_time = get_now()
     update_data = seller_item_update.model_dump(exclude_unset=True)
     for key, value in update_data.items():
@@ -298,6 +302,13 @@ def update_seller_item(db: Session, db_seller_item: models.SellerItems, seller_i
     try:
         db.add(db_seller_item)
         db.commit()
+
+        if "ea_id" in update_data and update_data["ea_id"] != old_ea_id:
+            update_expense_account_stats(db, old_ea_id)
+        if "seller_id" in update_data and update_data["seller_id"] != old_seller_id:
+            update_seller_stats(db, old_seller_id)
+        if "item_id" in update_data and update_data["item_id"] != old_item_id:
+            _update_item_and_category_stats(db, old_item_id)
 
         update_expense_account_stats(db, db_seller_item.ea_id)
         update_seller_stats(db, db_seller_item.seller_id)
@@ -341,7 +352,7 @@ def get_item_members_list(db: Session, item_id: int, skip: int, limit: int, sear
             models.MemberItems.notes.ilike(f"%{search_text}%"),
         ))
 
-    return _dbq.offset(skip).limit(limit).all()
+    return _dbq.order_by(desc(models.MemberItems.purchase_date)).offset(skip).limit(limit).all()
 
 
 def get_members_items_list(
@@ -376,7 +387,7 @@ def get_members_items_list(
             models.Item.notes.ilike(f"%{search_text}%"),
         ))
 
-    return _dbq.offset(skip).limit(limit).all()
+    return _dbq.order_by(desc(models.MemberItems.purchase_date)).offset(skip).limit(limit).all()
 
 
 def get_member_item_by_id(db: Session, tid: int) -> models.MemberItems:
@@ -403,9 +414,9 @@ def update_member_item(db: Session, db_member_item: models.MemberItems, member_i
         db.add(db_member_item)
         db.commit()
 
-        if "member_id" in update_data:
+        if "member_id" in update_data and update_data["member_id"] != old_member_id:
             update_member_stats(db, old_member_id)
-        if "item_id" in update_data:
+        if "item_id" in update_data and update_data["item_id"] != old_item_id:
             _update_item_and_category_stats(db, old_item_id)
         _update_item_and_category_stats(db, db_member_item.item_id)
         update_member_stats(db, db_member_item.member_id)
