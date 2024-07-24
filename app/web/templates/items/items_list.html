@@ -6,14 +6,9 @@
     <form class="form-inline" method="get">
         <input class="hidden" type="checkbox" id="do_filter" name="do_filter" checked>
         <label for="category_id">Filtrar por categoria</label>
-        <select name="category_id" id="category_id">
-            <option value=""></option>
-            {% for category in categories %}
-            <option value="{{ category.category_id }}">{{ category.name }} | [{{ category.items|length }}]</option>
-            {% endfor %}
-        </select>
+        {{ selector("category_id", categories, "category_id", "name", category_id|int, "items") }}
         <br>
-        <input class="form-text" type="text" size="40" id="search_text" name="search_text" placeholder="Pesquise por qualquer texto">
+        <input class="form-text" type="text" size="40" id="search_text" name="search_text" value="{{ search_text }}" placeholder="Pesquise por qualquer texto">
         <button class="btn btn-primary mb-2" type="submit">Pesquisar</button>
     </form>
     </div>

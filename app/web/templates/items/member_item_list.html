@@ -8,14 +8,14 @@
 
         <table class="table table-hover table-sm">
             <tr>
-                <td class="padding-5 align_left"><label for="member_id">Filtrar por Associado</label></td>
-                <td class="padding-5 align-left">{{ selector("member_id", members, "member_id", "name") }}</td>
+                <td class="padding-5 align_right"><label for="member_id">Filtrar por Associado</label></td>
+                <td class="padding-5 align_left">{{ selector("member_id", members, "member_id", "name") }}</td>
             </tr><tr>
-                <td class="padding-5 align_left"><label for="category_id">Filtrar por categoria</label></td>
-                <td class="padding-5 align-left">{{ selector("category_id", categories, "category_id", "name") }}</td>
+                <td class="padding-5 align_right"><label for="category_id">Filtrar por categoria</label></td>
+                <td class="padding-5 align_left">{{ selector("category_id", categories, "category_id", "name") }}</td>
             </tr><tr>
-                <td class="padding-5 align_left"><label for="item_id">Filtrar por item</label></td>
-                <td class="padding-5 align-left">
+                <td class="padding-5 align_right"><label for="item_id">Filtrar por item</label></td>
+                <td class="padding-5 align_left">
                     <select name="item_id" id="item_id">
                         <option value="0"></option>
                         {% for item in items|sort(attribute='category_id')|sort(attribute='name') %}
@@ -30,17 +30,22 @@
                     </select>
                 </td>
             </tr><tr>
-                <td class="padding-5 align_left"><label class="form-check-label" for="since">Filtrar por data desde</label></td>
-                <td class="padding-5 align-left"><input class="form-text" type="date" id="since" name="since" value="{{ since }}"></td>
+                <td class="padding-5 align_right"><label class="form-check-label" for="since">Filtrar por data desde</label></td>
+                <td class="padding-5 align_left"><input class="form-text" type="date" id="since" name="since" value="{{ since }}"></td>
             </tr><tr>
-                <td class="padding-5 align_left"><label class="form-check-label" for="until">Filtrar por data até</label></td>
-                <td class="padding-5 align-left"><input class="form-text" type="date" id="until" name="until" value="{{ until }}"></td>
+                <td class="padding-5 align_right"><label class="form-check-label" for="until">Filtrar por data até</label></td>
+                <td class="padding-5 align_left"><input class="form-text" type="date" id="until" name="until" value="{{ until }}"></td>
             </tr><tr>
-                <td class="padding-5 align_left"><label class="form-check-label" for="just_download">Download de ficheiro</label></td>
-                <td class="padding-5 align-left"><input class="form-check-input" type="checkbox" id="just_download" name="just_download"></td>
+                <td class="padding-5 align_right"><label class="form-check-label" for="just_download">Download de ficheiro</label></td>
+                <td class="padding-5 align_left"><input class="form-check-input" type="checkbox" id="just_download" name="just_download"></td>
             </tr><tr>
-                <td class="padding-5 left"><input class="form-text" type="text" size="40" id="search_text" name="search_text" placeholder="Pesquise por qualquer texto"></td>
-                <td class="padding-5 align-left"><button class="btn btn-primary mb-2" type="submit">Pesquisar</button></td>
+                <td class="padding-5 align_center">
+                    <button class="btn btn-primary mb-2" type="button" onclick="clearForm();">Limpar campos</button>
+                </td>
+                <td class="padding-5 align_left">
+                    <input class="form-text" type="text" size="40" id="search_text" name="search_text" value="{{ search_text }}" placeholder="Pesquise por qualquer texto">
+                    <button class="btn btn-primary mb-2" type="submit">Pesquisar</button>
+                </td>
             </tr>
         </table>
 

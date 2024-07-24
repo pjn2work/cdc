@@ -32,6 +32,8 @@ def list_items(
         "request": request,
         "items": items,
         "categories": categories,
+        "category_id": category_id,
+        "search_text": search_text,
         "total_results": len(items)
     })
 

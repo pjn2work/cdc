@@ -44,6 +44,11 @@ def list_seller_item(
         "sellers_items": sellers_items,
         "since": since,
         "until": until,
+        "seller_id": seller_id,
+        "ea_id": ea_id,
+        "item_id": item_id,
+        "category_id": category_id,
+        "search_text": search_text,
         "total_results": len(sellers_items)
     })
 
