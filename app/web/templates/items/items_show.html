@@ -79,7 +79,7 @@
         <tbody>
         {%- for md in item.seller_items|sort(attribute='purchase_date', reverse = True) %}
             <tr>
-                <td class="align_right">{{ md.tid }}</td>
+                <td class="align_right"><a href="../../items/sellers/{{ md.tid }}/update">{{ md.tid }}</a></td>
                 <td class="align_left">{{ md.seller.name }}</td>
                 <td class="align_left">{{ md.expense_account.name }}</td>
                 <td class="align_right">{{ md.quantity }}</td>
@@ -113,7 +113,7 @@
         <tbody>
         {%- for md in item.member_items|sort(attribute='purchase_date', reverse = True) %}
             <tr>
-                <td class="align_right">{{ md.tid }}</td>
+                <td class="align_right"><a href="../../items/members/{{ md.tid }}/update">{{ md.tid }}</a></td>
                 <td class="align_left">{{ md.member.name }}</td>
                 <td class="align_right">{{ md.quantity }}</td>
                 <td class="align_right">{{ md.total_price }} €</td>

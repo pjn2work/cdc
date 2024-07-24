@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}Editar Venda{% endblock %}
+{% block page_header %}Editar venda {{ member_item.tid }} de item a associado{% endblock %}
+{% block content_in_div %}
+    <div class="card">
+        <div class="card-body">
+            <form method="post" action="update">
+            <div class="row mb-0">
+                <div class="col-md-12">
+                    <label class="form-label label-text" for="category_id">Associado</label>
+                    <p class="form-control-plaintext data-text">{{ selector("member_id", members, "member_id", "name", member_item.member_id) }}</p>
+                    <label class="form-label label-text" for="category_id">Item</label>
+                    <p class="form-control-plaintext data-text">{{ selector("item_id", items, "item_id", "name", member_item.item_id) }}</p>
+                    <label class="form-label label-text">Quantidade de venda</label>
+                    <p class="form-control-plaintext data-text"><input class="form-text input_edit" type="number" id="quantity" name="quantity" placeholder="Quantidade total de venda" value="{{ member_item.quantity }}" required></p>
+                    <label class="form-label label-text">valor de venda</label>
+                    <p class="form-control-plaintext data-text"><input class="form-text input_edit" type="number" step="0.01" id="total_price" name="total_price" placeholder="Valor total de venda" value="{{ member_item.total_price }}" required></p>
+                    <label class="form-label label-text">V.D.</label>
+                    <p class="form-control-plaintext data-text"><input class="form-text input_edit" type="checkbox" id="is_cash" name="is_cash"{{ " checked" if member_item.is_cash }}></p>
+                    <label class="form-label label-text">Data de venda</label>
+                    <p class="form-control-plaintext data-text"><input class="form-text input_edit" type="date" size="10" id="purchase_date" name="purchase_date" value="{{ member_item.purchase_date }}" required></p>
+                    <label class="form-label label-text">Notas</label>
+                    <p class="form-control-plaintext data-text"><textarea class="form-text input_edit" rows="3" cols="81" id="notes" name="notes" placeholder="Aqui pode escrever as notas sobre esta venda">{{ member_item.notes }}</textarea></p>
+                    <p class="align_center"><button class="btn btn-primary mb-2" type="submit">Salvar alterações</button></p>
+                </div>
+            </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}

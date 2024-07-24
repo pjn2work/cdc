@@ -80,10 +80,14 @@ async def create_member_item_submit(
         current_client: TokenData = GET_CURRENT_WEB_CLIENT):
     are_valid_scopes(["app:create", "member_item:create"], current_client)
 
-    data = await request.form()
+    data = {**await request.form()}
+    data["is_cash"] = data.get("is_cash", False)
+    item_id = int(data["item_id"])
+    del data["item_id"]
+
     member_item_create: schemas.MemberItemsCreate = schemas.MemberItemsCreate(**data)
 
-    member = crud_items.create_member_item(db=db, member_item_create=member_item_create)
+    member = crud_items.create_member_item(db=db, item_id=item_id, member_item_create=member_item_create)
     return RedirectResponse(url=f"{member.member_id}/show", status_code=303)
 
 
@@ -96,9 +100,15 @@ def edit_member_item(
     are_valid_scopes(["app:update", "member_item:update"], current_client)
 
     member_item = crud_items.get_member_item(db, tid=tid)
+
+    items = crud_items.get_items_list(db, search_text="")
+    members = crud_member.get_members_list(db, search_text="")
+
     return templates.TemplateResponse("items/member_item_edit.html", {
         "request": request,
-        "member_item": member_item
+        "member_item": member_item,
+        "items": items,
+        "members": members,
     })
 
 
@@ -110,9 +120,12 @@ async def update_member_item(
         current_client: TokenData = GET_CURRENT_WEB_CLIENT):
     are_valid_scopes(["app:update", "member_item:update"], current_client)
 
-    data = await request.form()
+    data = {**await request.form()}
+    if "is_cash" not in data:
+        data["is_cash"] = False
+
     member_item_update: schemas.MemberItemsUpdate = schemas.MemberItemsUpdate(**data)
 
     db_member_item = crud_items.get_member_item(db, tid=tid)
     _ = crud_items.update_member_item(db, db_member_item=db_member_item, member_item_update=member_item_update)
-    return RedirectResponse(url=f"?tid={tid}", status_code=303)
+    return RedirectResponse(url=f"../?do_filter=on&tid={tid}", status_code=303)

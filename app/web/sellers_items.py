@@ -132,6 +132,7 @@ async def update_seller_item(
     data = {**await request.form()}
     if "is_cash" not in data:
         data["is_cash"] = False
+
     seller_item_update: schemas.SellerItemsUpdate = schemas.SellerItemsUpdate(**data)
 
     db_seller_item = crud_items.get_seller_item(db, tid=tid)
