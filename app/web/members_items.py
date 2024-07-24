@@ -41,6 +41,10 @@ def list_members_items(
         "members_items": members_items,
         "since": since,
         "until": until,
+        "member_id": member_id,
+        "item_id": item_id,
+        "category_id": category_id,
+        "search_text": search_text,
         "total_results": len(members_items)
     })
 
@@ -48,11 +52,23 @@ def list_members_items(
 @router.get("/create", response_class=HTMLResponse)
 def create_member_item(
         request: Request,
+        item_id: int = 0,
+        member_id: int = 0,
+        item_base_price: float = 0.0,
+        db: Session = DB_SESSION,
         current_client: TokenData = GET_CURRENT_WEB_CLIENT):
     are_valid_scopes(["app:create", "member_item:create"], current_client)
 
+    items = crud_items.get_items_list(db, search_text="")
+    members = crud_member.get_members_list(db, search_text="")
+
     return templates.TemplateResponse("items/member_item_create.html", {
         "request": request,
+        "item_id": item_id,
+        "member_id": member_id,
+        "item_base_price": item_base_price,
+        "items": items,
+        "members": members,
         "today": str(get_today())
     })
 
