@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}Lista de Categorias{% endblock %}
+{% block page_header %}Lista de Categorias - {{ total_results }}{% endblock %}
+{% block content_in_div %}
+    <div class="padding-15">
+    <form class="form-inline" method="get">
+        <input class="form-text input_edit" type="text" size="40" id="search_text" name="search_text" placeholder="Pesquise por qualquer texto">
+        <button class="btn btn-primary mb-2" type="submit">Pesquisar</button>
+    </form>
+    </div>
+
+    <table class="table table-striped table-bordered">
+        <thead class="table-dark">
+            <tr>
+                <th class="align_right">Categoria ID</th>
+                <th>Nome</th>
+                <th>Notas</th>
+                <th class="align_right">Quantidade compra</th>
+                <th class="align_right">Valor compra</th>
+                <th class="align_right">Quantidade venda</th>
+                <th class="align_right">Valor venda</th>
+                <th class="align_right">Items</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for category in categories %}
+                <tr>
+                    <td class="align_right"><a href="{{ category.category_id }}/show">{{ category.category_id }}</a></td>
+                    <td class="align_left">{{ category.name }}</td>
+                    <td class="align_left">{{ category.notes }}</td>
+                    <td class="align_right">{{ category.total_quantity_seller_sold }}</td>
+                    <td class="align_right">{{ category.total_amount_seller_sold }} €</td>
+                    <td class="align_right">{{ category.total_quantity_member_sold }}</td>
+                    <td class="align_right">{{ category.total_amount_member_sold }} €</td>
+                    <td class="align_right">{{ category.items|length }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

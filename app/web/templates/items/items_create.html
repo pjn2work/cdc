@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}Criar Item{% endblock %}
+{% block page_header %}Criar novo Item{% endblock %}
+{% block content_in_div %}
+    <form method="post" action="create">
+        <input type="hidden" name="category_id" value="{{ category_id }}">
+        <table class="full_width table table-bordered">
+            <tr>
+                <td class="label-text align_right">Categoria</td>
+                <td>{{ category_name }}</td>
+            </tr>
+            <tr>
+                <td class="label-text align_right">Nome</td>
+                <td><input class="form-text input_edit" type="text" size="80" id="name" name="name" placeholder="Nome do Item" required></td>
+            </tr>
+            <tr>
+                <td class="label-text align_right">Preço base</td>
+                <td><input class="form-text input_edit" type="number" step="0.01" size="20" id="base_price" name="base_price" placeholder="Preço unitário do item" required></td>
+            </tr>
+            <tr>
+                <td class="label-text align_right">Notas</td>
+                <td><textarea class="form-text input_edit" rows="3" cols="81" id="notes" name="notes" placeholder="Notas do Item"></textarea></td>
+            </tr>
+            <tr>
+                <td class="align_center" colspan="2">
+                    <button class="btn btn-primary mb-2" type="submit">Criar novo Item</button>
+                </td>
+            </tr>
+        </table>
+    </form>
+{% endblock %}

@@ -12,11 +12,17 @@ from app.api.sellers import router as sellers_router
 from app.api.tests import router as tests_router
 from app.db import init_db, get_db
 from app.sec import router as sec_router
+from app.web.categories import router as web_items_categories_router
 from app.web.dues_payments import router as web_dues_payments_router
+from app.web.expense_accounts import router as web_sellers_ea_router
 from app.web.index import router as web_index
+from app.web.items import router as web_items_router
 from app.web.login import router as login_router
 from app.web.member_due_payment import router as web_member_due_payment_router
 from app.web.members import router as web_members_router
+from app.web.members_items import router as web_members_items_router
+from app.web.sellers import router as web_sellers_router
+from app.web.sellers_items import router as web_sellers_items_router
 
 
 @asynccontextmanager
@@ -51,6 +57,12 @@ app.include_router(login_router, prefix="/web/login", tags=["/web/login"])
 app.include_router(web_members_router, prefix="/web/members", tags=["/web/members"])
 app.include_router(web_dues_payments_router, prefix="/web/dues_payments", tags=["/web/dues_payments"])
 app.include_router(web_member_due_payment_router, prefix="/web/member_due_payment", tags=["/web/member_due_payment"])
+app.include_router(web_items_router, prefix="/web/items", tags=["/web/items"])
+app.include_router(web_items_categories_router, prefix="/web/categories", tags=["/web/categories"])
+app.include_router(web_sellers_router, prefix="/web/sellers", tags=["/web/sellers"])
+app.include_router(web_sellers_ea_router, prefix="/web/expense-accounts", tags=["/web/expense-accounts"])
+app.include_router(web_sellers_items_router, prefix="/web/items/sellers", tags=["/web/items/sellers"])
+app.include_router(web_members_items_router, prefix="/web/items/members", tags=["/web/items/members"])
 
 # Web dashboards
 #app.mount("/web/dashboard1", WSGIMiddleware(dashboard1.server))

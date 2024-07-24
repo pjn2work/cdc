@@ -12,11 +12,11 @@ router = APIRouter()
 
 @router.post(
     path="/",
-    response_model=schemas.members.MemberView,
+    response_model=schemas.MemberView,
     status_code=status.HTTP_201_CREATED
 )
 def create_member(
-        member_create: schemas.members.MemberCreate,
+        member_create: schemas.MemberCreate,
         db: Session = DB_SESSION,
         current_client: TokenData = GET_CURRENT_API_CLIENT):
     are_valid_scopes(["app:create", "member:create"], current_client)
@@ -25,7 +25,7 @@ def create_member(
 
 @router.get(
     path="/donations",
-    response_model=List[schemas.members.MemberDonation],
+    response_model=List[schemas.MemberDonation],
     status_code = status.HTTP_200_OK
 )
 def list_members_donations(
@@ -38,7 +38,7 @@ def list_members_donations(
 
 @router.get(
     path="/",
-    response_model=List[schemas.members.Member],
+    response_model=List[schemas.Member],
     status_code=status.HTTP_200_OK
 )
 async def list_members(
@@ -54,7 +54,7 @@ async def list_members(
 
 @router.get(
     path="/{member_id}",
-    response_model=schemas.members.MemberView,
+    response_model=schemas.MemberView,
     status_code=status.HTTP_200_OK
 )
 def get_member(
@@ -67,12 +67,12 @@ def get_member(
 
 @router.put(
     path="/{member_id}",
-    response_model=schemas.members.MemberView,
+    response_model=schemas.MemberView,
     status_code = status.HTTP_200_OK
 )
 def update_member(
         member_id: int,
-        member_update: schemas.members.MemberUpdate,
+        member_update: schemas.MemberUpdate,
         db: Session = DB_SESSION,
         current_client: TokenData = GET_CURRENT_API_CLIENT):
     are_valid_scopes(["app:update", "member:update"], current_client)
@@ -82,12 +82,12 @@ def update_member(
 
 @router.put(
     path="/{member_id}/active",
-    response_model=schemas.members.MemberView,
+    response_model=schemas.MemberView,
     status_code = status.HTTP_200_OK
 )
 def update_member_active(
         member_id: int,
-        member_update: schemas.members.MemberUpdateActive,
+        member_update: schemas.MemberUpdateActive,
         db: Session = DB_SESSION,
         current_client: TokenData = GET_CURRENT_API_CLIENT):
     are_valid_scopes(["app:update", "member:update"], current_client)
@@ -97,12 +97,12 @@ def update_member_active(
 
 @router.put(
     path="/{member_id}/amount",
-    response_model=schemas.members.MemberView,
+    response_model=schemas.MemberView,
     status_code = status.HTTP_200_OK
 )
 def update_member_amount(
         member_id: int,
-        member_update: schemas.members.MemberUpdateAmount,
+        member_update: schemas.MemberUpdateAmount,
         db: Session = DB_SESSION,
         current_client: TokenData = GET_CURRENT_API_CLIENT):
     are_valid_scopes(["app:update", "member:update"], current_client)
@@ -112,12 +112,12 @@ def update_member_amount(
 
 @router.post(
     path="/{member_id}/donation",
-    response_model=schemas.members.MemberView,
+    response_model=schemas.MemberView,
     status_code = status.HTTP_200_OK
 )
 def post_member_donation(
         member_id: int,
-        member_donation_create: schemas.member_donations.MemberDonationCreate,
+        member_donation_create: schemas.MemberDonationCreate,
         db: Session = DB_SESSION,
         current_client: TokenData = GET_CURRENT_API_CLIENT):
     are_valid_scopes(["app:create", "member_donation:create"], current_client)

@@ -10,7 +10,7 @@ router = APIRouter()
 
 @router.get(
     path="/{tid}",
-    response_model=schemas.member_due_payment.MemberDuesPayment,
+    response_model=schemas.MemberDuesPayment,
     status_code=status.HTTP_200_OK
 )
 def get_member_due_payment(
@@ -23,12 +23,12 @@ def get_member_due_payment(
 
 @router.put(
     path="/{tid}",
-    response_model=schemas.member_due_payment.MemberDuesPayment,
+    response_model=schemas.MemberDuesPayment,
     status_code=status.HTTP_200_OK
 )
 def pay_member_due_payment(
         tid: int,
-        mdpc: schemas.member_due_payment.MemberDuesPaymentCreate,
+        mdpc: schemas.MemberDuesPaymentCreate,
         db: Session = DB_SESSION,
         current_client: TokenData = GET_CURRENT_API_CLIENT):
     are_valid_scopes(["app:update", "member_due_payment:update"], current_client)

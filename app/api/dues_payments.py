@@ -12,11 +12,11 @@ router = APIRouter()
 
 @router.post(
     path="/",
-    response_model=schemas.dues_payments.DuesPaymentView,
+    response_model=schemas.DuesPaymentView,
     status_code=status.HTTP_201_CREATED
 )
 def create_dues_payment_year_month(
-        dues_payment_create: schemas.dues_payments.DuesPaymentCreate,
+        dues_payment_create: schemas.DuesPaymentCreate,
         db: Session = DB_SESSION,
         current_client: TokenData = GET_CURRENT_API_CLIENT):
     are_valid_scopes(["app:create", "due_payment:create"], current_client)
@@ -25,7 +25,7 @@ def create_dues_payment_year_month(
 
 @router.get(
     path="/",
-    response_model=List[schemas.dues_payments.DuesPaymentStats],
+    response_model=List[schemas.DuesPaymentStats],
     status_code=status.HTTP_200_OK
 )
 def list_dues_payment_year_month_stats(
@@ -38,7 +38,7 @@ def list_dues_payment_year_month_stats(
 
 @router.get(
     path="/{id_year_month}/show",
-    response_model=schemas.dues_payments.DuesPaymentView,
+    response_model=schemas.DuesPaymentView,
     status_code=status.HTTP_200_OK
 )
 def get_dues_payment_year_month_stats(

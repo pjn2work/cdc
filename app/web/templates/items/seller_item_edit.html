@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Editar Compra{% endblock %}
+{% block page_header %}Editar compra {{ seller_item.tid }} de item a vendedor{% endblock %}
+{% block content_in_div %}
+    <div class="card">
+        <div class="card-body">
+            <form method="post" action="update">
+            <div class="row mb-0">
+                <div class="col-md-12">
+                    <label class="form-label label-text" for="category_id">Vendedor</label>
+                    <p class="form-control-plaintext data-text">{{ selector("seller_id", sellers, "seller_id", "name", seller_item.seller_id) }}</p>
+                    <label class="form-label label-text" for="category_id">Rúbrica</label>
+                    <p class="form-control-plaintext data-text">{{ selector("ea_id", expense_accounts, "ea_id", "name", seller_item.ea_id) }}</p>
+                    <label class="form-label label-text" for="category_id">Item</label>
+                    <p class="form-control-plaintext data-text">{{ selector("item_id", items, "item_id", "name", seller_item.item_id) }}</p>
+                    <label class="form-label label-text">Quantidade de compra</label>
+                    <p class="form-control-plaintext data-text"><input class="form-text input_edit" type="number" id="quantity" name="quantity" placeholder="Quantidade total de compra" value="{{ seller_item.quantity }}" required></p>
+                    <label class="form-label label-text">valor de compra</label>
+                    <p class="form-control-plaintext data-text"><input class="form-text input_edit" type="number" step="0.01" id="total_price" name="total_price" placeholder="Valor total de compra" value="{{ seller_item.total_price }}" required></p>
+                    <label class="form-label label-text">V.D.</label>
+                    <p class="form-control-plaintext data-text"><input class="form-text input_edit" type="checkbox" id="is_cash" name="is_cash"{{ " checked" if seller_item.is_cash }}></p>
+                    <label class="form-label label-text">Data de compra</label>
+                    <p class="form-control-plaintext data-text"><input class="form-text input_edit" type="date" size="10" id="purchase_date" name="purchase_date" value="{{ seller_item.purchase_date }}" required></p>
+                    <label class="form-label label-text">Notas</label>
+                    <p class="form-control-plaintext data-text"><textarea class="form-text input_edit" rows="3" cols="81" id="notes" name="notes" placeholder="Aqui pode escrever as notas sobre esta compra">{{ seller_item.notes }}</textarea></p>
+                    <p class="align_center"><button class="btn btn-primary mb-2" type="submit">Salvar alterações</button></p>
+                </div>
+            </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}

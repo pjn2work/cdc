@@ -14,9 +14,9 @@ class MemberItems(Base):
     quantity = Column(Integer)
     total_price = Column(Float)
     notes = Column(String, default="")
-    buy_date = Column(Date)
+    purchase_date = Column(Date)
     is_cash = Column(Boolean)
     row_update_time = Column(DateTime)
 
     member = relationship("Member", back_populates="member_items")
-    items = relationship("Item", back_populates="member_items")
+    item = relationship("Item", back_populates="member_items")

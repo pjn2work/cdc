@@ -2,9 +2,9 @@
 {% block title %}Editar Associado{% endblock %}
 {% block page_header %}Associado {{ member.member_id }}{% endblock %}
 {% block content_in_div %}
-    <form method="post" action="update">
     <div class="card">
         <div class="card-body">
+            <form method="post" action="update">
             <div class="row mb-0">
                 <div class="col-md-2">
                     <label class="form-label label-text align_center">Activo</label>
@@ -31,12 +31,12 @@
                     <label class="form-label label-text">Email</label>
                     <p class="form-control-plaintext data-text"><input class="form-text input_edit" type="email" id="email" name="email" placeholder="10.0" value="{{ member.email }}" required></p>
                     <label class="form-label label-text">Notas</label>
-                    <p class="form-control-plaintext data-text"><textarea class="form-text input_edit" rows="3" cols="120" id="notes" name="notes" placeholder="Aqui pode escrever as notas sobre este associado">{{ member.notes }}</textarea></p>
+                    <p class="form-control-plaintext data-text"><textarea class="form-text input_edit" rows="3" cols="81" id="notes" name="notes" placeholder="Aqui pode escrever as notas sobre este associado">{{ member.notes }}</textarea></p>
                     <hr>
                     <p class="align_center"><button class="btn btn-primary mb-2" type="submit">Salvar alterações</button></p>
                 </div>
             </div>
+            </form>
         </div>
     </div>
-    </form>
 {% endblock %}

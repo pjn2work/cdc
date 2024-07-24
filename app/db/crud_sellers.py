@@ -8,7 +8,7 @@ from app.db import models, schemas
 from app.utils import get_now
 
 
-def create_seller(db: Session, seller_create: schemas.sellers.SellerCreate) -> models.Seller:
+def create_seller(db: Session, seller_create: schemas.SellerCreate) -> models.Seller:
     db_seller = models.Seller(**seller_create.model_dump())
     db_seller.row_update_time = get_now()
     try:
@@ -43,7 +43,7 @@ def update_seller_stats(db: Session, seller_id: int) -> models.Seller:
         models.SellerItems
     ).filter_by(
         seller_id=seller_id
-    ).order_by(models.SellerItems.sell_date).all()
+    ).order_by(models.SellerItems.purchase_date).all()
 
     db_seller.total_quantity_sold = sum([row.quantity for row in _results])
     db_seller.total_amount_sold = sum([row.total_price for row in _results])
@@ -70,7 +70,7 @@ def get_seller(db: Session, seller_id: int) -> models.Seller:
     return get_seller_by_id(db, seller_id)
 
 
-def update_seller(db: Session, db_seller: models.Seller, seller_update: schemas.sellers.SellerUpdate) -> models.Seller:
+def update_seller(db: Session, db_seller: models.Seller, seller_update: schemas.SellerUpdate) -> models.Seller:
     db_seller.row_update_time = get_now()
     update_data = seller_update.model_dump(exclude_unset=True)
     for key, value in update_data.items():
@@ -91,7 +91,7 @@ def update_seller(db: Session, db_seller: models.Seller, seller_update: schemas.
 # ----------------------------------------------------------
 
 
-def create_expense_account(db: Session, expense_account_create: schemas.sellers.ExpenseAccountCreate) -> models.ExpenseAccount:
+def create_expense_account(db: Session, expense_account_create: schemas.ExpenseAccountCreate) -> models.ExpenseAccount:
     db_expense_account = models.ExpenseAccount(**expense_account_create.model_dump())
     db_expense_account.row_update_time = get_now()
     try:
@@ -105,7 +105,7 @@ def create_expense_account(db: Session, expense_account_create: schemas.sellers.
     return db_expense_account
 
 
-def get_expense_accounts_list(db: Session, skip: int, limit: int, search_text: str) -> List[models.ExpenseAccount]:
+def get_expense_accounts_list(db: Session, search_text: str, skip: int = 0, limit: int = 100) -> List[models.ExpenseAccount]:
     _dbq = db.query(models.ExpenseAccount)
 
     if search_text is not None:
@@ -151,7 +151,7 @@ def get_expense_account(db: Session, ea_id: int) -> models.ExpenseAccount:
     return get_expense_account_by_id(db, ea_id)
 
 
-def update_expense_account(db: Session, db_expense_account: models.ExpenseAccount, expense_account_update: schemas.sellers.ExpenseAccountUpdate) -> models.ExpenseAccount:
+def update_expense_account(db: Session, db_expense_account: models.ExpenseAccount, expense_account_update: schemas.ExpenseAccountUpdate) -> models.ExpenseAccount:
     db_expense_account.row_update_time = get_now()
     update_data = expense_account_update.model_dump(exclude_unset=True)
     for key, value in update_data.items():

@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}Criar Vendedor{% endblock %}
+{% block page_header %}Criar novo Vendedor{% endblock %}
+{% block content_in_div %}
+    <form method="post" action="create">
+        <table class="full_width table table-bordered">
+            <tr>
+                <td class="label-text align_right">Nome</td>
+                <td><input class="form-text input_edit" type="text" size="80" id="name" name="name" placeholder="Nome do vendedor" required></td>
+            </tr>
+            <tr>
+                <td class="label-text align_right">Contacto telefónico</td>
+                <td><input class="form-text input_edit" type="text" size="10" id="tlf" name="tlf" placeholder="Telemóvel" required></td>
+            </tr>
+            <tr>
+                <td class="label-text align_right">Email</td>
+                <td><input class="form-text input_edit" type="text" size="80" id="email" name="email" placeholder="email@domain.com"></td>
+            </tr>
+            <tr>
+                <td class="label-text align_right">Notas</td>
+                <td><textarea class="form-text input_edit" rows="3" cols="81" id="notes" name="notes" placeholder="Notas do vendedor"></textarea></td>
+            </tr>
+            <tr>
+                <td class="align_center" colspan="2">
+                    <button class="btn btn-primary mb-2" type="submit">Criar novo Vendedor</button>
+                </td>
+            </tr>
+        </table>
+    </form>
+{% endblock %}

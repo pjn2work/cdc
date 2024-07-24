@@ -26,7 +26,7 @@ def list_members(
     else:
         members = []
 
-    return templates.TemplateResponse("members_list.html", {
+    return templates.TemplateResponse("members/members_list.html", {
         "request": request,
         "members": members,
         "total_results": len(members)
@@ -39,7 +39,7 @@ def create_member(
         current_client: TokenData = GET_CURRENT_WEB_CLIENT):
     are_valid_scopes(["app:create", "member:create"], current_client)
 
-    return templates.TemplateResponse("members_create.html", {
+    return templates.TemplateResponse("members/members_create.html", {
         "request": request,
         "today": str(get_today())
     })
@@ -53,7 +53,7 @@ async def create_member_submit(
     are_valid_scopes(["app:create", "member:create"], current_client)
 
     data = await request.form()
-    member_create: schemas.members.MemberCreate = schemas.members.MemberCreate(**data)
+    member_create: schemas.MemberCreate = schemas.MemberCreate(**data)
 
     member = crud_member.create_member(db=db, member_create=member_create)
     return RedirectResponse(url=f"{member.member_id}/show", status_code=303)
@@ -68,9 +68,7 @@ def show_member(
     are_valid_scopes(["app:read", "member:read"], current_client)
 
     member = crud_member.get_member(db, member_id=member_id)
-    member.member_due_payment = sorted(member.member_due_payment, key=lambda mdp: mdp.id_year_month, reverse=True)
-    member.member_history = sorted(member.member_history, key=lambda mh: mh.tid, reverse=True)
-    return templates.TemplateResponse("members_show.html", {
+    return templates.TemplateResponse("members/members_show.html", {
         "request": request,
         "member": member,
         "this_month": get_today_year_month_str(),
@@ -87,7 +85,7 @@ async def change_member_active(
     are_valid_scopes(["app:update", "member:update"], current_client)
 
     data = await request.form()
-    member_update: schemas.members.MemberUpdateActive = schemas.members.MemberUpdateActive(**data)
+    member_update: schemas.MemberUpdateActive = schemas.MemberUpdateActive(**data)
 
     db_member = crud_member.get_member_by_id(db, member_id=member_id)
     _ = crud_member.update_member_active(db, db_member=db_member, member_update=member_update)
@@ -103,7 +101,7 @@ async def change_member_due_payment_amount(
     are_valid_scopes(["app:update", "member:update"], current_client)
 
     data = await request.form()
-    member_update: schemas.members.MemberUpdateAmount = schemas.members.MemberUpdateAmount(**data)
+    member_update: schemas.MemberUpdateAmount = schemas.MemberUpdateAmount(**data)
 
     db_member = crud_member.get_member_by_id(db, member_id=member_id)
     _ = crud_member.update_member_amount(db, db_member=db_member, member_update=member_update)
@@ -119,7 +117,7 @@ def edit_member(
     are_valid_scopes(["app:update", "member:update"], current_client)
 
     member = crud_member.get_member(db, member_id=member_id)
-    return templates.TemplateResponse("members_edit.html", {
+    return templates.TemplateResponse("members/members_edit.html", {
         "request": request,
         "member": member
     })
@@ -134,7 +132,7 @@ async def update_member(
     are_valid_scopes(["app:update", "member:update"], current_client)
 
     data = await request.form()
-    member_update: schemas.members.MemberUpdate = schemas.members.MemberUpdate(**data)
+    member_update: schemas.MemberUpdate = schemas.MemberUpdate(**data)
 
     db_member = crud_member.get_member_by_id(db, member_id=member_id)
     _ = crud_member.update_member(db, db_member=db_member, member_update=member_update)
@@ -150,7 +148,7 @@ async def post_member_donation(
     are_valid_scopes(["app:create", "member_donation:create"], current_client)
 
     data = await request.form()
-    member_donation_create: schemas.member_donations.MemberDonationCreate = schemas.member_donations.MemberDonationCreate(**data)
+    member_donation_create: schemas.MemberDonationCreate = schemas.MemberDonationCreate(**data)
 
     _ = crud_member.post_member_donation(db, member_id=member_id, member_donation_create=member_donation_create)
     return RedirectResponse(url=f"show", status_code=303)
@@ -175,7 +173,7 @@ async def list_members_donations(
     else:
         md_list = []
 
-    return templates.TemplateResponse("member_donations_list.html", {
+    return templates.TemplateResponse("due_payments/member_donations_list.html", {
         "request": request,
         "md_list": md_list,
         "total": len(md_list),

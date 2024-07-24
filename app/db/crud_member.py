@@ -9,7 +9,7 @@ from sqlalchemy.orm import Session
 
 from app.db import models, schemas
 from app.db.crud_dues_payments import get_member_due_payment_missing_stats, make_due_payment_for_new_member
-from app.utils import get_now, get_today_year_month_str
+from app.utils import get_now, get_today_year_month_str, str2date
 
 
 def get_member_by_id(db: Session, member_id: int) -> models.Member:
@@ -86,7 +86,7 @@ def get_members_list(
     return result
 
 
-def create_member(db: Session, member_create: schemas.members.MemberCreate) -> models.Member:
+def create_member(db: Session, member_create: schemas.MemberCreate) -> models.Member:
     db_member = models.Member(**member_create.model_dump())
     try:
         db.add(db_member)
@@ -106,7 +106,7 @@ def create_member(db: Session, member_create: schemas.members.MemberCreate) -> m
 def update_member(
         db: Session,
         db_member: models.Member,
-        member_update: schemas.members.MemberUpdate) -> models.Member:
+        member_update: schemas.MemberUpdate) -> models.Member:
     update_data = member_update.model_dump(exclude_unset=True)
     for key, value in update_data.items():
         setattr(db_member, key, value)
@@ -127,7 +127,7 @@ def update_member(
 def update_member_active(
         db: Session,
         db_member: models.Member,
-        member_update: schemas.members.MemberUpdateActive) -> models.Member:
+        member_update: schemas.MemberUpdateActive) -> models.Member:
     since = member_update.since
     now = get_now()
 
@@ -189,7 +189,7 @@ def update_member_active(
 def update_member_amount(
         db: Session,
         db_member: models.Member,
-        member_update: schemas.members.MemberUpdateAmount) -> models.Member:
+        member_update: schemas.MemberUpdateAmount) -> models.Member:
     if not db_member.is_active:
         raise HTTPException(status_code=409, detail=f"Member {db_member.member_id} is not active. You must activate the user first if you want to change the amount.")
 
@@ -216,7 +216,7 @@ def update_member_amount(
     return db_member
 
 
-def _create_member_history(db: Session, member: models.Member) -> schemas.members.MemberHistory:
+def _create_member_history(db: Session, member: models.Member) -> schemas.MemberHistory:
     args = {
         "since": get_today_year_month_str(),
         "date_time": get_now()
@@ -235,7 +235,7 @@ def _create_member_history(db: Session, member: models.Member) -> schemas.member
     return db_member_history
 
 
-def post_member_donation(db: Session, member_id: int, member_donation_create: schemas.member_donations.MemberDonationCreate):
+def post_member_donation(db: Session, member_id: int, member_donation_create: schemas.MemberDonationCreate):
     db_member_donation = models.MemberDonation(member_id=member_id, **member_donation_create.model_dump())
     db_member_donation.pay_update_time = get_now()
     try:
@@ -265,8 +265,10 @@ def list_member_donations_order_by_pay_date(
         models.MemberDonation.pay_update_time.desc(),
     )
     if since:
+        since = str2date(since)
         months_query = months_query.filter(models.MemberDonation.pay_date >= since)
     if until:
+        until = str2date(until)
         months_query = months_query.filter(models.MemberDonation.pay_date <= until)
 
     md_list: List[models.MemberDonation] = months_query.all()
@@ -280,6 +282,7 @@ def list_member_donations_order_by_pay_date(
                 "Associado ID": md.member_id,
                 "Nome": md.member.name,
                 "Valor": md.amount,
+                "V.D.": md.is_cash,
                 "Data Pagamento": md.pay_date,
                 "Data Actualização": md.pay_update_time,
             }

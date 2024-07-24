@@ -11,7 +11,7 @@ from sqlalchemy.orm import Session
 
 from app import logit
 from app.db import models, schemas
-from app.utils import get_now, get_today_year_month_str, format_year_month
+from app.utils import get_now, get_today_year_month_str, format_year_month, str2date
 
 
 def get_member_due_payment_missing_stats(db: Session, member_id: int) -> Tuple[List[str], int]:
@@ -49,7 +49,7 @@ def get_dues_payment_year_month_stats_list(
         db: Session,
         since: str = None,
         until: str = None
-) -> List[schemas.dues_payments.DuesPaymentView]:
+) -> List[schemas.DuesPaymentView]:
     _dp_list = db.query(models.DuesPayment)
     if since:
         since = format_year_month(since)
@@ -66,8 +66,11 @@ def get_dues_payment_year_month_stats_list(
     return results
 
 
-def create_dues_payment_year_month(db: Session, dues_payment_create: schemas.dues_payments.DuesPaymentCreate) -> models.DuesPayment:
-    dp = schemas.dues_payments.DuesPayment(**dues_payment_create.model_dump())
+def create_dues_payment_year_month(
+        db: Session,
+        dues_payment_create: schemas.DuesPaymentCreate
+) -> models.DuesPayment:
+    dp = schemas.DuesPayment(**dues_payment_create.model_dump())
     db_dues_payment = models.DuesPayment(**dp.model_dump())
 
     try:
@@ -161,7 +164,7 @@ def get_member_due_payment(db: Session, tid: int) -> models.MemberDuesPayment:
 def pay_member_due_payment(
         db: Session,
         tid:int,
-        mdpc: schemas.member_due_payment.MemberDuesPaymentCreate
+        mdpc: schemas.MemberDuesPaymentCreate
 ) -> models.MemberDuesPayment:
     mdp: models.MemberDuesPayment = db.get(models.MemberDuesPayment, tid)
     if mdp is None:
@@ -308,11 +311,11 @@ def list_member_dues_payments_order_by_pay_date(
         models.MemberDuesPayment.pay_update_time.desc(),
     )
     if since:
-        since = format_year_month(since)
-        months_query = months_query.filter(models.DuesPayment.date_ym >= since)
+        since = str2date(since)
+        months_query = months_query.filter(models.MemberDuesPayment.pay_date >= since)
     if until:
-        until = format_year_month(until)
-        months_query = months_query.filter(models.DuesPayment.date_ym <= until)
+        until = str2date(until)
+        months_query = months_query.filter(models.MemberDuesPayment.pay_date <= until)
 
     mdp_list: List[models.MemberDuesPayment] = months_query.all()
     if not mdp_list:
@@ -326,6 +329,7 @@ def list_member_dues_payments_order_by_pay_date(
                 "Nome": mdp.member.name,
                 "Quota": mdp.id_year_month,
                 "Valor": mdp.amount,
+                "V.D.": mdp.is_cash,
                 "Data Pagamento": mdp.pay_date,
                 "Data Actualização": mdp.pay_update_time,
             }

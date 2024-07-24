@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}Criar Rúbrica{% endblock %}
+{% block page_header %}Criar nova Rúbrica{% endblock %}
+{% block content_in_div %}
+    <form method="post" action="create">
+        <table class="full_width table table-bordered">
+            <tr>
+                <td class="label-text align_right">Nome</td>
+                <td><input class="form-text input_edit" type="text" size="80" id="name" name="name" placeholder="Nome" required></td>
+            </tr>
+            <tr>
+                <td class="label-text align_right">Notas</td>
+                <td><textarea class="form-text input_edit" rows="3" cols="81" id="notes" name="notes" placeholder="Notas de rúbrica"></textarea></td>
+            </tr>
+            <tr>
+                <td class="align_center" colspan="2">
+                    <button class="btn btn-primary mb-2" type="submit">Criar nova Rúbrica</button>
+                </td>
+            </tr>
+        </table>
+    </form>
+{% endblock %}

@@ -9,7 +9,7 @@ class MemberDuesPaymentBase(BaseModel):
     amount: float = Field(ge=0.0)
     is_paid: bool = Field(default=False)
     is_member_active: bool = Field(default=True)
-    is_cash: Optional[bool] = Field(default=None)
+    is_cash: Optional[bool] = Field(default=False)
     pay_date: Optional[date] = Field(default=None)
 
 

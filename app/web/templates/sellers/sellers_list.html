@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}Lista de Vendedores{% endblock %}
+{% block page_header %}Lista de Vendedores - {{ total_results }}{% endblock %}
+{% block content_in_div %}
+    <div class="padding-15">
+    <form class="form-inline" method="get">
+        <input class="form-text input_edit" type="text" size="40" id="search_text" name="search_text" placeholder="Pesquise por qualquer texto">
+        <button class="btn btn-primary mb-2" type="submit">Pesquisar</button>
+    </form>
+    </div>
+
+    <table class="table table-striped table-bordered">
+        <thead class="table-dark">
+            <tr>
+                <th class="align_right">Vendedor ID</th>
+                <th>Nome</th>
+                <th>Notas</th>
+                <th class="align_right">Total quantidade</th>
+                <th class="align_right">Total valor</th>
+                <th class="align_right">Vendas</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for seller in sellers %}
+                <tr>
+                    <td class="align_right"><a href="{{ seller.seller_id }}/show">{{ seller.seller_id }}</a></td>
+                    <td class="align_left">{{ seller.name }}</td>
+                    <td class="align_left">{{ seller.notes }}</td>
+                    <td class="align_right">{{ seller.total_quantity_sold }}</td>
+                    <td class="align_right">{{ seller.total_amount_sold|round(2) }} €</td>
+                    <td class="align_right">{{ seller.seller_items|length }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

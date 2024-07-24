@@ -19,7 +19,7 @@ def list_dues_payments(
     are_valid_scopes(["app:read", "due_payment:read"], current_client)
 
     dp_list = crud_dues_payments.get_dues_payment_year_month_stats_list(db, since=since, until=until)
-    return templates.TemplateResponse("dues_payments_list.html", {
+    return templates.TemplateResponse("due_payments/dues_payments_list.html", {
         "request": request,
         "dues_payments_list": dp_list,
         "total_results": len(dp_list),
@@ -37,7 +37,7 @@ def get_due_payment(
     are_valid_scopes(["app:read", "due_payment:read"], current_client)
 
     dp = crud_dues_payments.get_due_payment_year_month_stats(db, id_year_month=id_year_month)
-    return templates.TemplateResponse("dues_payments_show.html", {
+    return templates.TemplateResponse("due_payments/dues_payments_show.html", {
         "request": request,
         "dp": dp,
         "today": get_today()
@@ -52,7 +52,7 @@ async def create_due_payment_submit(
     are_valid_scopes(["app:create", "due_payment:create"], current_client)
 
     data = await request.form()
-    dues_payment_create: schemas.dues_payments.DuesPaymentCreate = schemas.dues_payments.DuesPaymentCreate(**data)
+    dues_payment_create: schemas.DuesPaymentCreate = schemas.DuesPaymentCreate(**data)
 
     dp = crud_dues_payments.create_dues_payment_year_month(db=db, dues_payment_create=dues_payment_create)
     return RedirectResponse(url=f"{dp.id_year_month}/show", status_code=303)

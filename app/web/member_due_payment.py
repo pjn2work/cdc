@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from starlette.responses import HTMLResponse, RedirectResponse
 
 from app.db import crud_dues_payments, schemas, DB_SESSION
-from app.sec import GET_CURRENT_API_CLIENT, TokenData, are_valid_scopes
+from app.sec import GET_CURRENT_WEB_CLIENT, TokenData, are_valid_scopes
 from app.web import templates
 
 router = APIRouter()
@@ -17,7 +17,7 @@ async def list_member_dues_payments_order_by_pay_date(
         just_download: bool = False,
         do_filter: bool = False,
         db: Session = DB_SESSION,
-        current_client: TokenData = GET_CURRENT_API_CLIENT):
+        current_client: TokenData = GET_CURRENT_WEB_CLIENT):
     are_valid_scopes(["app:read", "member_due_payment:read"], current_client)
 
     if do_filter:
@@ -28,7 +28,7 @@ async def list_member_dues_payments_order_by_pay_date(
     else:
         mdp_list = []
 
-    return templates.TemplateResponse("member_due_payment_list.html", {
+    return templates.TemplateResponse("due_payments/member_due_payment_list.html", {
         "request": request,
         "mdp_list": mdp_list,
         "total": len(mdp_list),
@@ -40,11 +40,11 @@ async def pay_member_due_payment(
         request: Request,
         tid: int,
         db: Session = DB_SESSION,
-        current_client: TokenData = GET_CURRENT_API_CLIENT):
+        current_client: TokenData = GET_CURRENT_WEB_CLIENT):
     are_valid_scopes(["app:create", "member_due_payment:create"], current_client)
 
     data = await request.form()
-    mdpc: schemas.member_due_payment.MemberDuesPaymentCreate = schemas.member_due_payment.MemberDuesPaymentCreate(**data)
+    mdpc: schemas.MemberDuesPaymentCreate = schemas.MemberDuesPaymentCreate(**data)
 
     mdp = crud_dues_payments.pay_member_due_payment(db, tid=tid, mdpc=mdpc)
     return RedirectResponse(url=f"../members/{mdp.member_id}/show", status_code=303)
@@ -58,7 +58,7 @@ def table_dues_paid_for_all_members(
         just_download: bool = False,
         do_filter: bool = False,
         db: Session = DB_SESSION,
-        current_client: TokenData = GET_CURRENT_API_CLIENT):
+        current_client: TokenData = GET_CURRENT_WEB_CLIENT):
     are_valid_scopes(["app:read", "member_due_payment:read"], current_client)
 
     if do_filter:
@@ -79,7 +79,7 @@ def table_dues_paid_for_all_members(
         df_paid, df_missing = [{}], [{}]
         columns = []
 
-    return templates.TemplateResponse("member_due_payment_pivot.html", {
+    return templates.TemplateResponse("due_payments/member_due_payment_pivot.html", {
         "request": request,
         "columns": columns,
         "df_paid": df_paid,
