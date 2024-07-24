@@ -86,9 +86,8 @@ async def create_member_item_submit(
     del data["item_id"]
 
     member_item_create: schemas.MemberItemsCreate = schemas.MemberItemsCreate(**data)
-
-    member = crud_items.create_member_item(db=db, item_id=item_id, member_item_create=member_item_create)
-    return RedirectResponse(url=f"{member.member_id}/show", status_code=303)
+    member_item = crud_items.create_member_item(db=db, item_id=item_id, member_item_create=member_item_create)
+    return RedirectResponse(url=f"../members/?do_filter=on&tid={member_item.tid}", status_code=303)
 
 
 @router.get("/{tid}/update", response_class=HTMLResponse)
