@@ -36,20 +36,18 @@
                         </form>
                     </div>
                     <div class="col-md-4">
-                        <form class="form-inline" method="get" action="../../items/create">
+                        <form class="form-inline" method="get" action="../../sellers/items/create">
                             <p class="align_center">
                                 <input type="hidden" name="item_id" value="{{ item.item_id }}">
-                                <input type="hidden" name="item_name" value="{{ item.name }}">
                                 <input type="hidden" name="item_base_price" value="{{ item.base_price }}">
                                 <button class="btn btn-primary mb-1" type="submit">Criar nova compra a vendedor</button>
                             </p>
                         </form>
                     </div>
                     <div class="col-md-4">
-                        <form class="form-inline" method="get" action="../../items/create">
+                        <form class="form-inline" method="get" action="../../members/items/create">
                             <p class="align_center">
                                 <input type="hidden" name="item_id" value="{{ item.item_id }}">
-                                <input type="hidden" name="item_name" value="{{ item.name }}">
                                 <input type="hidden" name="item_base_price" value="{{ item.base_price }}">
                                 <button class="btn btn-primary mb-1" type="submit">Criar nova venda a associado</button>
                             </p>

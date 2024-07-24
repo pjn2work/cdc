@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}Comprar Item{% endblock %}
+{% block page_header %}Comprar novo Item a vendedor{% endblock %}
+{% block content_in_div %}
+    <form method="post" action="create">
+        <table class="full_width table table-bordered">
+            <tr>
+                <td class="label-text align_right">Vendedor</td>
+                <td>{{ selector("seller_id", sellers, "seller_id", "name", seller_id) }}</td>
+            </tr>
+            <tr>
+                <td class="label-text align_right">Rúbrica</td>
+                <td>{{ selector("ea_id", expense_accounts, "ea_id", "name", ea_id) }}</td>
+            </tr>
+            <tr>
+                <td class="label-text align_right">Item</td>
+                <td>{{ selector("item_id", items, "item_id", "name", item_id) }}</td>
+            </tr>
+            <tr>
+                <td class="label-text align_right">Quantidade</td>
+                <td><input class="form-text" type="text" size="120" id="quantity" name="quantity" placeholder="Quantidade de items" required></td>
+            </tr>
+            <tr>
+                <td class="label-text align_right">Preço total</td>
+                <td><input class="form-text" type="text" size="120" id="total_price" name="total_price" placeholder="Preço total de compra" value="{{ item_base_price }}" required></td>
+            </tr>
+            <tr>
+                <td class="label-text align_right">V.D.</td>
+                <td><input class="form-text" type="checkbox" id="is_cash" name="is_cash"></td>
+            </tr>
+            <tr>
+                <td class="label-text align_right">Data de compra</td>
+                <td><input class="form-text" type="date" size="10" id="purchase_date" name="purchase_date" placeholder="{{ today }}" required></td>
+            </tr>
+            <tr>
+                <td class="label-text align_right">Notas</td>
+                <td><textarea class="form-text" rows="3" cols="120" id="notes" name="notes" placeholder="Notas do Item"></textarea></td>
+            </tr>
+            <tr>
+                <td class="align_center" colspan="2">
+                    <button class="btn btn-primary mb-2" type="submit">Criar novo Item</button>
+                </td>
+            </tr>
+        </table>
+    </form>
+{% endblock %}

@@ -16,7 +16,7 @@
             </tr><tr>
                 <td class="padding-5 align_right"><label for="item_id">Filtrar por item</label></td>
                 <td class="padding-5 align_left">
-                    <select name="item_id" id="item_id">
+                    <select name="item_id" id="item_id" class="form-text">
                         <option value="0"></option>
                         {% for item in items|sort(attribute='category_id')|sort(attribute='name') %}
                             {% if loop.changed(item.category_id) %}

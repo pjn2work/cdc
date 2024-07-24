@@ -17,7 +17,7 @@ def list_items(
         request: Request,
         do_filter: bool = False,
         search_text: str = "",
-        category_id: Optional[str] = "",
+        category_id: Optional[int] = 0,
         db: Session = DB_SESSION,
         current_client: TokenData = GET_CURRENT_WEB_CLIENT):
     are_valid_scopes(["app:read", "item:read"], current_client)

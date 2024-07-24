@@ -56,11 +56,27 @@ def list_seller_item(
 @router.get("/create", response_class=HTMLResponse)
 def create_seller_item(
         request: Request,
+        item_id: int = 0,
+        seller_id: int = 0,
+        ea_id: int = 0,
+        item_base_price: float = 0.0,
+        db: Session = DB_SESSION,
         current_client: TokenData = GET_CURRENT_WEB_CLIENT):
     are_valid_scopes(["app:create", "seller_item:create"], current_client)
 
+    items = crud_items.get_items_list(db, search_text="")
+    sellers = crud_sellers.get_sellers_list(db, search_text="")
+    expense_accounts = crud_sellers.get_expense_accounts_list(db, search_text="")
+
     return templates.TemplateResponse("items/seller_item_create.html", {
         "request": request,
+        "item_id": item_id,
+        "seller_id": seller_id,
+        "ea_id": ea_id,
+        "item_base_price": item_base_price,
+        "items": items,
+        "sellers": sellers,
+        "expense_accounts": expense_accounts,
         "today": str(get_today())
     })
 
@@ -72,11 +88,13 @@ async def create_seller_item_submit(
         current_client: TokenData = GET_CURRENT_WEB_CLIENT):
     are_valid_scopes(["app:create", "seller_item:create"], current_client)
 
-    data = await request.form()
-    seller_item_create: schemas.SellerItemsCreate = schemas.SellerItemsCreate(**data)
+    data = {**await request.form()}
+    item_id = int(data["item_id"])
+    del data["item_id"]
 
-    seller = crud_items.create_seller_item(db=db, seller_item_create=seller_item_create)
-    return RedirectResponse(url=f"{seller.seller_id}/show", status_code=303)
+    seller_item_create: schemas.SellerItemsCreate = schemas.SellerItemsCreate(**data)
+    seller_item = crud_items.create_seller_item(db=db, item_id=item_id, seller_item_create=seller_item_create)
+    return RedirectResponse(url=f"../items/?do_filter=on&tid={seller_item.tid}", status_code=303)
 
 
 @router.get("/{tid}/update", response_class=HTMLResponse)

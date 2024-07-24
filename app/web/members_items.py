@@ -16,7 +16,6 @@ def list_member_item(
         do_filter: bool = False,
         search_text: str = "",
         member_id: int = 0,
-        ea_id: int = 0,
         item_id: int = 0,
         category_id: int = 0,
         tid: int = 0,

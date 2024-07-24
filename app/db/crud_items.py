@@ -27,7 +27,7 @@ def create_item(
     return db_item
 
 
-def get_items_list(db: Session, search_text: str, skip: int = 0, limit: int = 1000, category_id: Optional[str] = None) -> List[models.Item]:
+def get_items_list(db: Session, search_text: str, skip: int = 0, limit: int = 1000, category_id: Optional[int] = None) -> List[models.Item]:
     _dbq = db.query(models.Item)
 
     if search_text is not None:
