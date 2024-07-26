@@ -7,9 +7,9 @@
     <img src="/red.png" alt="Não" width="30" height="30">
 {% endif %}
 {%- endmacro -%}
-{% macro selector(name, values, field_value, field_description, default=0, show_length="") %}
+{% macro selector(name, values, field_value, field_description, default=0, show_length="", nullable=false) %}
                     <select name="{{ name }}" id="{{ name }}" class="form-text input_edit">
-                        <option value="0"></option>
+                        <option value="{{ 0 if nullable }}"></option>
                         {%- for v in values %}
                         <option value="{{ v[field_value] }}"{{ " selected" if v[field_value] == default }}>{{ v[field_description] }}{{ " [" + v[show_length]|length|string + "]" if show_length }}</option>
                         {%- endfor %}

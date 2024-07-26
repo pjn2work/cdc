@@ -6,7 +6,7 @@
     <form class="form-inline" method="get">
         <input class="hidden" type="checkbox" id="do_filter" name="do_filter" checked>
         <label for="category_id">Filtrar por categoria</label>
-        {{ selector("category_id", categories, "category_id", "name", category_id|int, "items") }}
+        {{ selector("category_id", categories, "category_id", "name", category_id|int, "items", nullable=true) }}
         <br>
         <input class="form-text input_edit" type="text" size="40" id="search_text" name="search_text" value="{{ search_text }}" placeholder="Pesquise por qualquer texto">
         <button class="btn btn-primary mb-2" type="submit">Pesquisar</button>
