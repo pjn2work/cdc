@@ -77,8 +77,8 @@
                     <td class="align_left">{{ si.member.name }}</td>
                     <td class="align_left">{{ si.item.category.name }}</td>
                     <td class="align_left">{{ si.item.name }}</td>
-                    <td class="align_right">{{ si.quantity }} €</td>
-                    <td class="align_right">{{ si.total_price }}</td>
+                    <td class="align_right">{{ si.quantity }}</td>
+                    <td class="align_right">{{ si.total_price }} €</td>
                     <td class="align_right">{{ (si.total_price/si.quantity)|round(2) if si.quantity else 0 }} €</td>
                     <td class="align_left">{{ si.notes }}</td>
                     <td class="align_center">{{ show_boolean(si.is_cash) }} </td>
