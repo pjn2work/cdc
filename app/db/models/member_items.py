@@ -8,8 +8,8 @@ class MemberItems(Base):
     __tablename__ = "member_items"
     tid = Column(Integer, primary_key=True, autoincrement=True, index=True)
 
-    member_id = Column(Integer, ForeignKey("members.member_id"), index=True)
-    item_id = Column(Integer, ForeignKey("items.item_id"), index=True)
+    member_id = Column(Integer, ForeignKey(column="members.member_id", onupdate="CASCADE", ondelete="CASCADE"), index=True)
+    item_id = Column(Integer, ForeignKey(column="items.item_id", onupdate="CASCADE", ondelete="CASCADE"), index=True)
 
     quantity = Column(Integer)
     total_price = Column(Float)

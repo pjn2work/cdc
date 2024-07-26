@@ -9,9 +9,9 @@ class Item(Base):
     __table_args__ = (UniqueConstraint("category_id", "name", name="uix_2"), )
     item_id = Column(Integer, primary_key=True, autoincrement=True, index=True)
 
-    category_id = Column(Integer, ForeignKey("categories.category_id"), index=True)
+    category_id = Column(Integer, ForeignKey(column="categories.category_id", onupdate="CASCADE", ondelete="CASCADE"), index=True)
 
-    name = Column(String, index=True)
+    name = Column(String, nullable=False, index=True)
     base_price = Column(Float)
     notes = Column(String, default="")
     row_update_time = Column(DateTime)
