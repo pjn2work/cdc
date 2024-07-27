@@ -45,14 +45,15 @@ def update_seller_stats(db: Session, seller_id: int) -> models.Seller:
         seller_id=seller_id
     ).order_by(models.SellerItems.purchase_date).all()
 
-    db_seller.total_quantity_sold = sum([row.quantity for row in _results])
-    db_seller.total_amount_sold = sum([row.total_price for row in _results])
-
+    _trans = db.begin(nested=db.in_transaction())
     try:
-        db.add(db_seller)
-        db.commit()
+        db_seller.total_quantity_sold = sum([row.quantity for row in _results])
+        db_seller.total_amount_sold = sum([row.total_price for row in _results])
+
+        _trans.session.add(db_seller)
+        _trans.commit()
     except:
-        db.rollback()
+        _trans.rollback()
         raise
 
     db.refresh(db_seller)
@@ -126,14 +127,15 @@ def update_expense_account_stats(db: Session, ea_id: int) -> models.ExpenseAccou
         ea_id=ea_id
     ).all()
 
-    db_expense_account.total_quantity_seller_sold = sum([row.quantity for row in _results])
-    db_expense_account.total_amount_seller_sold = sum([row.total_price for row in _results])
-
+    _trans = db.begin(nested=db.in_transaction())
     try:
-        db.add(db_expense_account)
-        db.commit()
+        db_expense_account.total_quantity_seller_sold = sum([row.quantity for row in _results])
+        db_expense_account.total_amount_seller_sold = sum([row.total_price for row in _results])
+
+        _trans.session.add(db_expense_account)
+        _trans.commit()
     except:
-        db.rollback()
+        _trans.rollback()
         raise
 
     db.refresh(db_expense_account)

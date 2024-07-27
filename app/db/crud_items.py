@@ -5,8 +5,9 @@ from sqlalchemy import or_, desc
 from sqlalchemy.orm import Session
 
 from app.db import models, schemas
-from app.db.crud_member import update_member_stats
-from app.db.crud_sellers import update_expense_account_stats, update_seller_stats
+from app.db.crud_member import update_member_stats, get_member_by_id
+from app.db.crud_sellers import update_expense_account_stats, update_seller_stats, get_seller_by_id, \
+    get_expense_account_by_id
 from app.utils import get_now
 
 
@@ -16,14 +17,17 @@ def create_item(
 ) -> models.Item:
     db_item = models.Item(**item_create.model_dump())
     db_item.row_update_time = get_now()
+
+    get_category_by_id(db, db_item.category_id)
+
     try:
         db.add(db_item)
         db.commit()
-        db.refresh(db_item)
     except:
         db.rollback()
         raise
 
+    db.refresh(db_item)
     return db_item
 
 
@@ -41,32 +45,35 @@ def get_items_list(db: Session, search_text: str, skip: int = 0, limit: int = 10
     return _dbq.offset(skip).limit(limit).all()
 
 def _update_item_and_category_stats(db: Session, item_id: int) -> models.Item:
-    db_item = get_item_by_id(db, item_id)
-
-    _result_sellers = db.query(
-        models.SellerItems
-    ).filter_by(
-        item_id=item_id
-    ).all()
-
-    _result_members = db.query(
-        models.MemberItems
-    ).filter_by(
-        item_id=item_id
-    ).all()
-
-    db_item.total_quantity_seller_sold = sum([row.quantity for row in _result_sellers])
-    db_item.total_amount_seller_sold = sum([row.total_price for row in _result_sellers])
-    db_item.total_quantity_member_sold = sum([row.quantity for row in _result_members])
-    db_item.total_amount_member_sold = sum([row.total_price for row in _result_members])
+    _trans = db.begin(nested=db.in_transaction())
 
     try:
-        db.add(db_item)
-        db.commit()
+        db_item = get_item_by_id(db, item_id)
+
+        _result_sellers = db.query(
+            models.SellerItems
+        ).filter_by(
+            item_id=item_id
+        ).all()
+
+        _result_members = db.query(
+            models.MemberItems
+        ).filter_by(
+            item_id=item_id
+        ).all()
+
+        db_item.total_quantity_seller_sold = sum([row.quantity for row in _result_sellers])
+        db_item.total_amount_seller_sold = sum([row.total_price for row in _result_sellers])
+        db_item.total_quantity_member_sold = sum([row.quantity for row in _result_members])
+        db_item.total_amount_member_sold = sum([row.total_price for row in _result_members])
+
+        _trans.session.add(db_item)
 
         _update_category_stats(db, db_item.category_id)
+
+        _trans.commit()
     except:
-        db.rollback()
+        _trans.rollback()
         raise
 
     db.refresh(db_item)
@@ -89,21 +96,24 @@ def update_item(
         db_item: models.Item,
         item_update: schemas.ItemUpdate
 ) -> models.Item:
-    old_category = db_item.category_id
-    db_item.row_update_time = get_now()
-    update_data = item_update.model_dump(exclude_unset=True)
-    for key, value in update_data.items():
-        setattr(db_item, key, value)
+    _trans = db.begin(nested=db.in_transaction())
 
     try:
-        db.add(db_item)
-        db.commit()
+        old_category = db_item.category_id
+        db_item.row_update_time = get_now()
+        update_data = item_update.model_dump(exclude_unset=True)
+        for key, value in update_data.items():
+            setattr(db_item, key, value)
+
+        _trans.session.add(db_item)
 
         if "category_id" in update_data:
             _update_category_stats(db, old_category)
         _update_item_and_category_stats(db, db_item.item_id)
+
+        _trans.commit()
     except:
-        db.rollback()
+        _trans.rollback()
         raise
 
     db.refresh(db_item)
@@ -122,11 +132,11 @@ def create_category(
     try:
         db.add(db_category)
         db.commit()
-        db.refresh(db_category)
     except:
         db.rollback()
         raise
 
+    db.refresh(db_category)
     return db_category
 
 
@@ -143,34 +153,36 @@ def get_categories_list(db: Session, search_text: str, skip: int = 0, limit: int
 
 
 def _update_category_stats(db: Session, category_id: int) -> models.Category:
-    db_category = get_category_by_id(db, category_id)
-
-    _result_sellers = db.query(
-        models.SellerItems
-    ).join(
-        models.Item
-    ).filter(
-        models.Item.category_id == category_id
-    ).all()
-
-    _result_members = db.query(
-        models.MemberItems
-    ).join(
-        models.Item
-    ).filter(
-        models.Item.category_id == category_id
-    ).all()
-
-    db_category.total_quantity_seller_sold = sum([row.quantity for row in _result_sellers])
-    db_category.total_amount_seller_sold = sum([row.total_price for row in _result_sellers])
-    db_category.total_quantity_member_sold = sum([row.quantity for row in _result_members])
-    db_category.total_amount_member_sold = sum([row.total_price for row in _result_members])
+    _trans = db.begin(nested=db.in_transaction())
 
     try:
-        db.add(db_category)
-        db.commit()
+        db_category = get_category_by_id(db, category_id)
+
+        _result_sellers = db.query(
+            models.SellerItems
+        ).join(
+            models.Item
+        ).filter(
+            models.Item.category_id == category_id
+        ).all()
+
+        _result_members = db.query(
+            models.MemberItems
+        ).join(
+            models.Item
+        ).filter(
+            models.Item.category_id == category_id
+        ).all()
+
+        db_category.total_quantity_seller_sold = sum([row.quantity for row in _result_sellers])
+        db_category.total_amount_seller_sold = sum([row.total_price for row in _result_sellers])
+        db_category.total_quantity_member_sold = sum([row.quantity for row in _result_members])
+        db_category.total_amount_member_sold = sum([row.total_price for row in _result_members])
+
+        _trans.session.add(db_category)
+        _trans.commit()
     except:
-        db.rollback()
+        _trans.rollback()
         raise
 
     db.refresh(db_category)
@@ -197,11 +209,11 @@ def update_category(db: Session, db_category: models.Category, category_update: 
     try:
         db.add(db_category)
         db.commit()
-        db.refresh(db_category)
     except:
         db.rollback()
         raise
 
+    db.refresh(db_category)
     return db_category
 
 
@@ -209,18 +221,25 @@ def update_category(db: Session, db_category: models.Category, category_update: 
 
 
 def create_seller_item(db: Session, item_id: int, seller_item_create: schemas.SellerItemsCreate) -> models.SellerItems:
-    db_seller_item = models.SellerItems(item_id=item_id, **seller_item_create.model_dump())
-    db_seller_item.row_update_time = get_now()
+    _trans = db.begin(nested=db.in_transaction())
 
     try:
-        db.add(db_seller_item)
-        db.commit()
+        db_seller_item = models.SellerItems(item_id=item_id, **seller_item_create.model_dump())
+        db_seller_item.row_update_time = get_now()
+
+        get_item_by_id(db, item_id)
+        get_seller_by_id(db, db_seller_item.seller_id)
+        get_expense_account_by_id(db, db_seller_item.ea_id)
+
+        _trans.session.add(db_seller_item)
 
         update_expense_account_stats(db, db_seller_item.ea_id)
         update_seller_stats(db, db_seller_item.seller_id)
         _update_item_and_category_stats(db, db_seller_item.item_id)
+
+        _trans.commit()
     except:
-        db.rollback()
+        _trans.rollback()
         raise
 
     db.refresh(db_seller_item)
@@ -294,14 +313,14 @@ def update_seller_item(db: Session, db_seller_item: models.SellerItems, seller_i
     old_seller_id = db_seller_item.seller_id
     old_item_id = db_seller_item.item_id
 
-    db_seller_item.row_update_time = get_now()
-    update_data = seller_item_update.model_dump(exclude_unset=True)
-    for key, value in update_data.items():
-        setattr(db_seller_item, key, value)
-
+    _trans = db.begin(nested=db.in_transaction())
     try:
-        db.add(db_seller_item)
-        db.commit()
+        db_seller_item.row_update_time = get_now()
+        update_data = seller_item_update.model_dump(exclude_unset=True)
+        for key, value in update_data.items():
+            setattr(db_seller_item, key, value)
+
+        _trans.session.add(db_seller_item)
 
         if "ea_id" in update_data and update_data["ea_id"] != old_ea_id:
             update_expense_account_stats(db, old_ea_id)
@@ -313,8 +332,10 @@ def update_seller_item(db: Session, db_seller_item: models.SellerItems, seller_i
         update_expense_account_stats(db, db_seller_item.ea_id)
         update_seller_stats(db, db_seller_item.seller_id)
         _update_item_and_category_stats(db, db_seller_item.item_id)
+
+        _trans.commit()
     except:
-        db.rollback()
+        _trans.rollback()
         raise
 
     db.refresh(db_seller_item)
@@ -327,14 +348,21 @@ def update_seller_item(db: Session, db_seller_item: models.SellerItems, seller_i
 def create_member_item(db: Session, item_id: int, member_item_create: schemas.MemberItemsCreate) -> models.MemberItems:
     db_member_item = models.MemberItems(item_id=item_id, **member_item_create.model_dump())
     db_member_item.row_update_time = get_now()
+
+    get_item_by_id(db, item_id)
+    get_member_by_id(db, db_member_item.member_id)
+
+    _trans = db.begin(nested=db.in_transaction())
+
     try:
-        db.add(db_member_item)
-        db.commit()
+        _trans.session.add(db_member_item)
 
         _update_item_and_category_stats(db, db_member_item.item_id)
         update_member_stats(db, db_member_item.member_id)
+
+        _trans.commit()
     except:
-        db.rollback()
+        _trans.rollback()
         raise
 
     db.refresh(db_member_item)
@@ -405,23 +433,27 @@ def update_member_item(db: Session, db_member_item: models.MemberItems, member_i
     old_item_id = db_member_item.item_id
     old_member_id = db_member_item.member_id
 
-    db_member_item.row_update_time = get_now()
-    update_data = member_item_update.model_dump(exclude_unset=True)
-    for key, value in update_data.items():
-        setattr(db_member_item, key, value)
+    _trans = db.begin(nested=db.in_transaction())
 
     try:
-        db.add(db_member_item)
-        db.commit()
+        db_member_item.row_update_time = get_now()
+        update_data = member_item_update.model_dump(exclude_unset=True)
+        for key, value in update_data.items():
+            setattr(db_member_item, key, value)
+
+        _trans.session.add(db_member_item)
 
         if "member_id" in update_data and update_data["member_id"] != old_member_id:
             update_member_stats(db, old_member_id)
         if "item_id" in update_data and update_data["item_id"] != old_item_id:
             _update_item_and_category_stats(db, old_item_id)
+
         _update_item_and_category_stats(db, db_member_item.item_id)
         update_member_stats(db, db_member_item.member_id)
+
+        _trans.commit()
     except:
-        db.rollback()
+        _trans.rollback()
         raise
 
     db.refresh(db_member_item)
