@@ -155,8 +155,8 @@
         <thead class="table-dark">
             <tr>
                 <th class="align_right">ID</th>
-                <th class="align_left">Item</th>
                 <th class="align_left">Categoria</th>
+                <th class="align_left">Item</th>
                 <th class="align_right">Quantidade</th>
                 <th class="align_right">Valor</th>
                 <th class="align_right">€/uni</th>
@@ -169,8 +169,8 @@
         {%- for md in member.member_items|sort(attribute='purchase_date', reverse = True) %}
             <tr>
                 <td class="align_right"><a href="../../items/members/{{ md.tid }}/update">{{ md.tid }}</a></td>
-                <td class="align_left">{{ md.item.name }}</td>
                 <td class="align_left">{{ md.item.category.name }}</td>
+                <td class="align_left">{{ md.item.name }}</td>
                 <td class="align_right">{{ md.quantity }}</td>
                 <td class="align_right">{{ md.total_price }} €</td>
                 <td class="align_right">{{ (md.total_price/md.quantity)|round(2) if md.quantity else 0 }} €</td>

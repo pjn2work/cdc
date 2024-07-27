@@ -30,7 +30,7 @@
             </tr>
         </thead>
         <tbody>
-            {% for member in members %}
+            {% for member in members|sort(attribute='name') %}
                 <tr>
                     <td class="align_right"><a href="{{ member.member_id }}/show">{{ member.member_id }}</a></td>
                     <td>{{ member.start_date }}</td>

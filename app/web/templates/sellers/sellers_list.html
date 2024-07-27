@@ -21,7 +21,7 @@
             </tr>
         </thead>
         <tbody>
-            {% for seller in sellers %}
+            {% for seller in sellers|sort(attribute='name') %}
                 <tr>
                     <td class="align_right"><a href="{{ seller.seller_id }}/show">{{ seller.seller_id }}</a></td>
                     <td class="align_left">{{ seller.name }}</td>

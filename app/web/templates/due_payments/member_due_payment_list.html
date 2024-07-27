@@ -21,7 +21,7 @@
             </tr>
         </thead>
         <tbody>
-        {%- for mdp in mdp_list|sort(attribute='pay_date', reverse = True)|sort(attribute='id_year_month', reverse = True) %}
+        {%- for mdp in mdp_list|sort(attribute='pay_date,id_year_month', reverse = True) %}
             <tr>
                 <td class="align_right"><a href="../members/{{ mdp.member_id }}/show">{{ mdp.member_id }}</a></td>
                 <td class="align_left">{{ mdp.member.name }}</td>
