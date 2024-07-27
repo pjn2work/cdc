@@ -37,16 +37,16 @@ def get_sellers_list(db: Session, skip: int = 0, limit: int = 1000, search_text:
 
 
 def update_seller_stats(db: Session, seller_id: int) -> models.Seller:
-    db_seller = get_seller_by_id(db, seller_id)
-
-    _results = db.query(
-        models.SellerItems
-    ).filter_by(
-        seller_id=seller_id
-    ).order_by(models.SellerItems.purchase_date).all()
-
     _trans = db.begin(nested=db.in_transaction())
     try:
+        db_seller = get_seller_by_id(db, seller_id)
+
+        _results = db.query(
+            models.SellerItems
+        ).filter_by(
+            seller_id=seller_id
+        ).order_by(models.SellerItems.purchase_date).all()
+
         db_seller.total_quantity_sold = sum([row.quantity for row in _results])
         db_seller.total_amount_sold = sum([row.total_price for row in _results])
 
@@ -119,16 +119,16 @@ def get_expense_accounts_list(db: Session, search_text: str, skip: int = 0, limi
 
 
 def update_expense_account_stats(db: Session, ea_id: int) -> models.ExpenseAccount:
-    db_expense_account = get_expense_account_by_id(db, ea_id)
-
-    _results = db.query(
-        models.SellerItems
-    ).filter_by(
-        ea_id=ea_id
-    ).all()
-
     _trans = db.begin(nested=db.in_transaction())
     try:
+        db_expense_account = get_expense_account_by_id(db, ea_id)
+
+        _results = db.query(
+            models.SellerItems
+        ).filter_by(
+            ea_id=ea_id
+        ).all()
+
         db_expense_account.total_quantity_seller_sold = sum([row.quantity for row in _results])
         db_expense_account.total_amount_seller_sold = sum([row.total_price for row in _results])
 

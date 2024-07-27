@@ -46,7 +46,6 @@ def get_items_list(db: Session, search_text: str, skip: int = 0, limit: int = 10
 
 def _update_item_and_category_stats(db: Session, item_id: int) -> models.Item:
     _trans = db.begin(nested=db.in_transaction())
-
     try:
         db_item = get_item_by_id(db, item_id)
 
@@ -97,7 +96,6 @@ def update_item(
         item_update: schemas.ItemUpdate
 ) -> models.Item:
     _trans = db.begin(nested=db.in_transaction())
-
     try:
         old_category = db_item.category_id
         db_item.row_update_time = get_now()
@@ -154,7 +152,6 @@ def get_categories_list(db: Session, search_text: str, skip: int = 0, limit: int
 
 def _update_category_stats(db: Session, category_id: int) -> models.Category:
     _trans = db.begin(nested=db.in_transaction())
-
     try:
         db_category = get_category_by_id(db, category_id)
 
@@ -222,7 +219,6 @@ def update_category(db: Session, db_category: models.Category, category_update: 
 
 def create_seller_item(db: Session, item_id: int, seller_item_create: schemas.SellerItemsCreate) -> models.SellerItems:
     _trans = db.begin(nested=db.in_transaction())
-
     try:
         db_seller_item = models.SellerItems(item_id=item_id, **seller_item_create.model_dump())
         db_seller_item.row_update_time = get_now()
@@ -309,12 +305,12 @@ def get_seller_item(db: Session, tid: int) -> models.SellerItems:
 
 
 def update_seller_item(db: Session, db_seller_item: models.SellerItems, seller_item_update: schemas.SellerItemsUpdate) -> models.SellerItems:
-    old_ea_id = db_seller_item.ea_id
-    old_seller_id = db_seller_item.seller_id
-    old_item_id = db_seller_item.item_id
-
     _trans = db.begin(nested=db.in_transaction())
     try:
+        old_ea_id = db_seller_item.ea_id
+        old_seller_id = db_seller_item.seller_id
+        old_item_id = db_seller_item.item_id
+
         db_seller_item.row_update_time = get_now()
         update_data = seller_item_update.model_dump(exclude_unset=True)
         for key, value in update_data.items():
@@ -346,15 +342,14 @@ def update_seller_item(db: Session, db_seller_item: models.SellerItems, seller_i
 
 
 def create_member_item(db: Session, item_id: int, member_item_create: schemas.MemberItemsCreate) -> models.MemberItems:
-    db_member_item = models.MemberItems(item_id=item_id, **member_item_create.model_dump())
-    db_member_item.row_update_time = get_now()
-
-    get_item_by_id(db, item_id)
-    get_member_by_id(db, db_member_item.member_id)
-
     _trans = db.begin(nested=db.in_transaction())
-
     try:
+        db_member_item = models.MemberItems(item_id=item_id, **member_item_create.model_dump())
+        db_member_item.row_update_time = get_now()
+
+        get_item_by_id(db, item_id)
+        get_member_by_id(db, db_member_item.member_id)
+
         _trans.session.add(db_member_item)
 
         _update_item_and_category_stats(db, db_member_item.item_id)
@@ -430,12 +425,11 @@ def get_member_item(db: Session, tid: int) -> models.MemberItems:
 
 
 def update_member_item(db: Session, db_member_item: models.MemberItems, member_item_update: schemas.MemberItemsUpdate) -> models.MemberItems:
-    old_item_id = db_member_item.item_id
-    old_member_id = db_member_item.member_id
-
     _trans = db.begin(nested=db.in_transaction())
-
     try:
+        old_item_id = db_member_item.item_id
+        old_member_id = db_member_item.member_id
+
         db_member_item.row_update_time = get_now()
         update_data = member_item_update.model_dump(exclude_unset=True)
         for key, value in update_data.items():
