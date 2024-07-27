@@ -1,6 +1,7 @@
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
+from fastapi.responses import JSONResponse
 from starlette.staticfiles import StaticFiles
 
 from app import logit, logging
@@ -12,6 +13,7 @@ from app.api.sellers import router as sellers_router
 from app.api.tests import router as tests_router
 from app.db import init_db, get_db
 from app.sec import router as sec_router
+from app.web import templates
 from app.web.categories import router as web_items_categories_router
 from app.web.dues_payments import router as web_dues_payments_router
 from app.web.expense_accounts import router as web_sellers_ea_router
@@ -36,9 +38,19 @@ async def lifespan(_: FastAPI):
 
 app = FastAPI(lifespan=lifespan, debug=False)
 
+
 @app.get(path="/health")
 def health():
     return "I'm alive"
+
+
+@app.exception_handler(Exception)
+async def custom_exception_handler(request: Request, exc: Exception):
+    #tb = traceback.format_exc()
+    if request.url.path.startswith("/web/"):
+        return templates.TemplateResponse("error.html", {"request": request, "error_message": str(exc)})
+    return JSONResponse(status_code=500, content={"detail": str(exc)})
+
 
 # Security
 app.include_router(sec_router, prefix="/oauth", tags=["/oauth"])
