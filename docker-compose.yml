@@ -19,4 +19,4 @@ services:
       - base
     environment:
       - NAME=CECC
-    restart: no
+    restart: "no"
