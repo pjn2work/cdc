@@ -168,7 +168,7 @@
         <tbody>
         {%- for md in member.member_items|sort(attribute='purchase_date', reverse = True) %}
             <tr>
-                <td class="align_right"><a href="../../items/members/{{ md.tid }}/update">{{ md.tid }}</a></td>
+                <td class="align_right"><a href="../../members-items/{{ md.tid }}/update">{{ md.tid }}</a></td>
                 <td class="align_left">{{ md.item.category.name }}</td>
                 <td class="align_left">{{ md.item.name }}</td>
                 <td class="align_right">{{ md.quantity }}</td>

@@ -47,9 +47,20 @@ def health():
 @app.exception_handler(Exception)
 async def custom_exception_handler(request: Request, exc: Exception):
     #tb = traceback.format_exc()
+    if isinstance(exc, ValueError):
+        status_code = 404
+    elif isinstance(exc, IndexError):
+        status_code = 409
+    else:
+        status_code = 500
+
     if request.url.path.startswith("/web/"):
-        return templates.TemplateResponse("error.html", {"request": request, "error_message": str(exc)})
-    return JSONResponse(status_code=500, content={"detail": str(exc)})
+        return templates.TemplateResponse("error.html", {
+            "request": request,
+            "error_message": str(exc),
+            "status_code": status_code
+        })
+    return JSONResponse(status_code=status_code, content={"detail": str(exc)})
 
 
 # Security
@@ -73,8 +84,8 @@ app.include_router(web_items_router, prefix="/web/items", tags=["/web/items"])
 app.include_router(web_items_categories_router, prefix="/web/categories", tags=["/web/categories"])
 app.include_router(web_sellers_router, prefix="/web/sellers", tags=["/web/sellers"])
 app.include_router(web_sellers_ea_router, prefix="/web/expense-accounts", tags=["/web/expense-accounts"])
-app.include_router(web_sellers_items_router, prefix="/web/items/sellers", tags=["/web/items/sellers"])
-app.include_router(web_members_items_router, prefix="/web/items/members", tags=["/web/items/members"])
+app.include_router(web_sellers_items_router, prefix="/web/sellers-items", tags=["/web/sellers-items"])
+app.include_router(web_members_items_router, prefix="/web/members-items", tags=["/web/members-items"])
 
 # Web dashboards
 #app.mount("/web/dashboard1", WSGIMiddleware(dashboard1.server))

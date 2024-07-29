@@ -3,6 +3,10 @@
 {% block page_header %}Erro interno{% endblock %}
 {% block content_in_div %}
     <br><hr><br>
-    <pre>{{ error_message }}</pre>
+    <pre>
+    Status code: {{ status_code }}
+    Message:
+        {{ error_message }}
+    </pre>
     <br><hr><br>
 {% endblock %}

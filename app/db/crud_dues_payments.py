@@ -4,7 +4,6 @@ from io import BytesIO
 from typing import List, Tuple
 
 import pandas as pd
-from fastapi import HTTPException
 from fastapi.responses import StreamingResponse
 from sqlalchemy import func, and_, case as case_
 from sqlalchemy.orm import Session
@@ -41,7 +40,7 @@ def _calc_dues_payment_stats(db: Session, dp: models.DuesPayment) -> models.Dues
 def get_due_payment_year_month_stats(db: Session, id_year_month: str) -> models.DuesPayment:
     _dp = db.get(models.DuesPayment, id_year_month)
     if _dp is None:
-        raise HTTPException(status_code=404, detail=f"Due Payment {id_year_month} not found")
+        raise ValueError(f"Due Payment {id_year_month} not found")
     return _calc_dues_payment_stats(db, _dp)
 
 
@@ -78,7 +77,7 @@ def create_dues_payment_year_month(
         db.commit()
     except:
         db.rollback()
-        raise HTTPException(status_code=409, detail=f"Due Payment {dp.date_ym} was already created, no need to create a new one.")
+        raise IndexError(f"Due Payment {dp.date_ym} was already created, no need to create a new one.")
 
     _make_due_payment_for_active_members(db=db, id_year_month=db_dues_payment.id_year_month, date_ym=db_dues_payment.date_ym)
     _make_due_payment_for_non_active_members(db=db, id_year_month=db_dues_payment.id_year_month, date_ym=db_dues_payment.date_ym)
@@ -157,7 +156,7 @@ def _make_due_payment_for_member(db: Session, id_year_month: str, member: models
 def get_member_due_payment(db: Session, tid: int) -> models.MemberDuesPayment:
     mdp: models.MemberDuesPayment = db.get(models.MemberDuesPayment, tid)
     if mdp is None:
-        raise HTTPException(status_code=404, detail=f"MemberDuesPayment {tid} not found")
+        raise ValueError(f"MemberDuesPayment {tid} not found")
     return mdp
 
 

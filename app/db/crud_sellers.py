@@ -1,6 +1,5 @@
 from typing import List
 
-from fastapi import HTTPException
 from sqlalchemy import or_
 from sqlalchemy.orm import Session
 
@@ -63,7 +62,7 @@ def update_seller_stats(db: Session, seller_id: int) -> models.Seller:
 def get_seller_by_id(db: Session, seller_id: int) -> models.Seller:
     db_seller = db.get(models.Seller, seller_id)
     if db_seller is None:
-        raise HTTPException(status_code=404, detail=f"Seller {seller_id} not found")
+        raise ValueError(f"Seller {seller_id} not found")
     return db_seller
 
 
@@ -145,7 +144,7 @@ def update_expense_account_stats(db: Session, ea_id: int) -> models.ExpenseAccou
 def get_expense_account_by_id(db: Session, ea_id: int) -> models.ExpenseAccount:
     db_expense_account = db.get(models.ExpenseAccount, ea_id)
     if db_expense_account is None:
-        raise HTTPException(status_code=404, detail=f"Expense Account {ea_id} not found")
+        raise ValueError(f"Expense Account {ea_id} not found")
     return db_expense_account
 
 
