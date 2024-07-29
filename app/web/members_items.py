@@ -127,4 +127,4 @@ async def update_member_item(
 
     db_member_item = crud_items.get_member_item(db, tid=tid)
     _ = crud_items.update_member_item(db, db_member_item=db_member_item, member_item_update=member_item_update)
-    return RedirectResponse(url=f"../members-items/?do_filter=on&tid={tid}", status_code=303)
+    return RedirectResponse(url=f"../../members-items/?do_filter=on&tid={tid}", status_code=303)
