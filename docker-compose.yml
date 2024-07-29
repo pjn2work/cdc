@@ -1,20 +1,22 @@
 version: '3'
 services:
-  web:
-    build: .
+  base:
+    build:
+      context: .
+      dockerfile: Dockerfile.base
+    image: cecc-base:latest
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: cecc:latest
     ports:
-      - "8000:80"
+      - "8443:443"
     volumes:
       - ./data:/cecc/data
     depends_on:
-      - db
-  db:
-    image: postgres
+      - base
     environment:
-      POSTGRES_DB: cecc
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: password
-    volumes:
-      - db_data:/var/lib/postgresql/data
-volumes:
-  db_data:
+      - NAME=CECC
+    restart: no

@@ -41,7 +41,7 @@ app = FastAPI(lifespan=lifespan, debug=False)
 
 @app.get(path="/health")
 def health():
-    return "I'm alive"
+    return "I'm alive running v0.9"
 
 
 @app.exception_handler(Exception)
