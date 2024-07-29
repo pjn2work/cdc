@@ -9,12 +9,13 @@ from sqlalchemy.orm import Session
 from app.db import models, schemas
 from app.db.crud_dues_payments import get_member_due_payment_missing_stats, make_due_payment_for_new_member
 from app.utils import get_now, get_today_year_month_str, str2date
+from app.utils.errors import NotFound404, Conflict409
 
 
 def get_member_by_id(db: Session, member_id: int) -> models.Member:
     member = db.get(models.Member, member_id)
     if member is None:
-        raise ValueError(f"Member {member_id} not found")
+        raise NotFound404(f"Member {member_id} not found")
     return member
 
 
@@ -131,7 +132,7 @@ def update_member_active(
     now = get_now()
 
     if db_member.is_active == member_update.is_active:
-        raise IndexError(f"Member {db_member.member_id} was already active set to {member_update.is_active}.")
+        raise Conflict409(f"Member {db_member.member_id} was already active set to {member_update.is_active}.")
 
     try:
         db_member.is_active = member_update.is_active
@@ -190,7 +191,7 @@ def update_member_amount(
         db_member: models.Member,
         member_update: schemas.MemberUpdateAmount) -> models.Member:
     if not db_member.is_active:
-        raise IndexError(f"Member {db_member.member_id} is not active. You must activate the user first if you want to change the amount.")
+        raise Conflict409(f"Member {db_member.member_id} is not active. You must activate the user first if you want to change the amount.")
 
     mdpl = db.query(models.MemberDuesPayment).filter_by(
         member_id=db_member.member_id,

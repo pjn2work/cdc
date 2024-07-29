@@ -11,6 +11,7 @@ from sqlalchemy.orm import Session
 from app import logit
 from app.db import models, schemas
 from app.utils import get_now, get_today_year_month_str, format_year_month, str2date
+from app.utils.errors import NotFound404, Conflict409
 
 
 def get_member_due_payment_missing_stats(db: Session, member_id: int) -> Tuple[List[str], int]:
@@ -40,7 +41,7 @@ def _calc_dues_payment_stats(db: Session, dp: models.DuesPayment) -> models.Dues
 def get_due_payment_year_month_stats(db: Session, id_year_month: str) -> models.DuesPayment:
     _dp = db.get(models.DuesPayment, id_year_month)
     if _dp is None:
-        raise ValueError(f"Due Payment {id_year_month} not found")
+        raise NotFound404(f"Due Payment {id_year_month} not found")
     return _calc_dues_payment_stats(db, _dp)
 
 
@@ -77,7 +78,7 @@ def create_dues_payment_year_month(
         db.commit()
     except:
         db.rollback()
-        raise IndexError(f"Due Payment {dp.date_ym} was already created, no need to create a new one.")
+        raise Conflict409(f"Due Payment {dp.date_ym} was already created, no need to create a new one.")
 
     _make_due_payment_for_active_members(db=db, id_year_month=db_dues_payment.id_year_month, date_ym=db_dues_payment.date_ym)
     _make_due_payment_for_non_active_members(db=db, id_year_month=db_dues_payment.id_year_month, date_ym=db_dues_payment.date_ym)
@@ -156,7 +157,7 @@ def _make_due_payment_for_member(db: Session, id_year_month: str, member: models
 def get_member_due_payment(db: Session, tid: int) -> models.MemberDuesPayment:
     mdp: models.MemberDuesPayment = db.get(models.MemberDuesPayment, tid)
     if mdp is None:
-        raise ValueError(f"MemberDuesPayment {tid} not found")
+        raise NotFound404(f"MemberDuesPayment {tid} not found")
     return mdp
 
 
@@ -167,13 +168,13 @@ def pay_member_due_payment(
 ) -> models.MemberDuesPayment:
     mdp: models.MemberDuesPayment = db.get(models.MemberDuesPayment, tid)
     if mdp is None:
-        raise ValueError(f"MemberDuesPayment={tid} not found.")
+        raise NotFound404(f"MemberDuesPayment={tid} not found.")
 
     if mdp.is_paid:
-        raise ValueError(f"MemberDuesPayment={tid} {mdp.id_year_month} was already paid for member={mdp.member_id} and the amount {mdp.amount}€.")
+        raise Conflict409(f"MemberDuesPayment={tid} {mdp.id_year_month} was already paid for member={mdp.member_id} and the amount {mdp.amount}€.")
 
     if not mdp.is_member_active:
-        raise ValueError(f"Member={mdp.member_id} is not active for payment at {mdp.id_year_month} MemberDuesPayment={tid}.")
+        raise Conflict409(f"Member={mdp.member_id} is not active for payment at {mdp.id_year_month} MemberDuesPayment={tid}.")
 
     try:
         mdp.is_paid = True

@@ -13,6 +13,7 @@ from app.api.sellers import router as sellers_router
 from app.api.tests import router as tests_router
 from app.db import init_db, get_db
 from app.sec import router as sec_router
+from app.utils.errors import NotFound404, Conflict409
 from app.web import templates
 from app.web.categories import router as web_items_categories_router
 from app.web.dues_payments import router as web_dues_payments_router
@@ -47,12 +48,12 @@ def health():
 @app.exception_handler(Exception)
 async def custom_exception_handler(request: Request, exc: Exception):
     #tb = traceback.format_exc()
-    if isinstance(exc, ValueError):
+    if isinstance(exc, NotFound404):
         status_code = 404
-    elif isinstance(exc, IndexError):
+    elif isinstance(exc, Conflict409):
         status_code = 409
     else:
-        status_code = 500
+        status_code = 400
 
     if request.url.path.startswith("/web/"):
         return templates.TemplateResponse("error.html", {

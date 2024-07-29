@@ -8,6 +8,7 @@ from app.db.crud_member import update_member_stats, get_member_by_id
 from app.db.crud_sellers import update_expense_account_stats, update_seller_stats, get_seller_by_id, \
     get_expense_account_by_id
 from app.utils import get_now
+from app.utils.errors import NotFound404
 
 
 def create_item(
@@ -81,7 +82,7 @@ def _update_item_and_category_stats(db: Session, item_id: int) -> models.Item:
 def get_item_by_id(db: Session, item_id: int) -> models.Item:
     db_item = db.get(models.Item, item_id)
     if db_item is None:
-        raise ValueError(f"Item {item_id} not found")
+        raise NotFound404(f"Item {item_id} not found")
     return db_item
 
 
@@ -188,7 +189,7 @@ def _update_category_stats(db: Session, category_id: int) -> models.Category:
 def get_category_by_id(db: Session, category_id: int) -> models.Category:
     db_category = db.get(models.Category, category_id)
     if db_category is None:
-        raise ValueError(f"Category {category_id} not found")
+        raise NotFound404(f"Category {category_id} not found")
     return db_category
 
 
@@ -295,7 +296,7 @@ def get_sellers_items_list(
 def get_seller_item_by_id(db: Session, tid: int) -> models.SellerItems:
     db_seller_item = db.get(models.SellerItems, tid)
     if db_seller_item is None:
-        raise ValueError(f"Seller Item {tid} not found")
+        raise NotFound404(f"Seller Item {tid} not found")
     return db_seller_item
 
 
@@ -415,7 +416,7 @@ def get_members_items_list(
 def get_member_item_by_id(db: Session, tid: int) -> models.MemberItems:
     db_member_item = db.get(models.MemberItems, tid)
     if db_member_item is None:
-        raise ValueError(f"Member Item {tid} not found")
+        raise NotFound404(f"Member Item {tid} not found")
     return db_member_item
 
 

@@ -5,6 +5,7 @@ from sqlalchemy.orm import Session
 
 from app.db import models, schemas
 from app.utils import get_now
+from app.utils.errors import NotFound404
 
 
 def create_seller(db: Session, seller_create: schemas.SellerCreate) -> models.Seller:
@@ -62,7 +63,7 @@ def update_seller_stats(db: Session, seller_id: int) -> models.Seller:
 def get_seller_by_id(db: Session, seller_id: int) -> models.Seller:
     db_seller = db.get(models.Seller, seller_id)
     if db_seller is None:
-        raise ValueError(f"Seller {seller_id} not found")
+        raise NotFound404(f"Seller {seller_id} not found")
     return db_seller
 
 
@@ -144,7 +145,7 @@ def update_expense_account_stats(db: Session, ea_id: int) -> models.ExpenseAccou
 def get_expense_account_by_id(db: Session, ea_id: int) -> models.ExpenseAccount:
     db_expense_account = db.get(models.ExpenseAccount, ea_id)
     if db_expense_account is None:
-        raise ValueError(f"Expense Account {ea_id} not found")
+        raise NotFound404(f"Expense Account {ea_id} not found")
     return db_expense_account
 
 
