@@ -9,19 +9,19 @@
         <table class="table table-hover table-sm">
             <tr>
                 <td class="padding-5 align_right"><label for="seller_id">Filtrar por Vendedor</label></td>
-                <td class="padding-5 align_left">{{ selector("seller_id", sellers, "seller_id", "name", seller_id) }}</td>
+                <td class="padding-5 align_left">{{ selector("seller_id", sellers, "seller_id", "name", seller_id, nullable=true) }}</td>
             </tr><tr>
                 <td class="padding-5 align_right"><label for="ea_id">Filtrar por Rúbrica</label></td>
-                <td class="padding-5 align_left">{{ selector("ea_id", expense_accounts, "ea_id", "name", ea_id) }}</td>
+                <td class="padding-5 align_left">{{ selector("ea_id", expense_accounts, "ea_id", "name", ea_id, nullable=true) }}</td>
             </tr><tr>
                 <td class="padding-5 align_right"><label for="category_id">Filtrar por categoria</label></td>
-                <td class="padding-5 align_left">{{ selector("category_id", categories, "category_id", "name", category_id) }}</td>
+                <td class="padding-5 align_left">{{ selector("category_id", categories, "category_id", "name", category_id, nullable=true) }}</td>
             </tr><tr>
                 <td class="padding-5 align_right"><label for="item_id">Filtrar por item</label></td>
                 <td class="padding-5 align_left">
                     <select name="item_id" id="item_id" class="form-text input_edit">
                         <option value="0"></option>
-                        {% for item in items|sort(attribute='category_id')|sort(attribute='name') %}
+                        {% for item in items|sort(attribute='category.name,name') %}
                             {% if loop.changed(item.category_id) %}
                             <optgroup label="{{ item.category.name }}">
                             {% endif %}
@@ -75,7 +75,7 @@
             </tr>
         </thead>
         <tbody>
-            {% for si in sellers_items %}
+            {% for si in sellers_items|sort(attribute='purchase_date', reverse = True) %}
                 <tr>
                     <td class="align_right"><a href="{{ si.tid }}/update">{{ si.tid }}</a></td>
                     <td class="align_left">{{ si.seller.name }}</td>

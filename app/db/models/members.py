@@ -11,7 +11,7 @@ class MemberAbs(Base):
     is_active = Column(Boolean, index=True, default=True)
     amount = Column(Float)
 
-    name = Column(String, index=True)
+    name = Column(String, nullable=False, index=True)
     tlf = Column(String)
     email = Column(String, default="")
     notes = Column(String, default="")
@@ -39,7 +39,7 @@ class MemberHistory(MemberAbs):
     __tablename__ = "member_history"
     tid = Column(Integer, primary_key=True, autoincrement=True, index=True)
 
-    member_id = Column(Integer, ForeignKey("members.member_id"), index=True)
+    member_id = Column(Integer, ForeignKey(column="members.member_id", onupdate="CASCADE", ondelete="CASCADE"), index=True)
     since = Column(String)
     date_time = Column(DateTime, index=True)
 

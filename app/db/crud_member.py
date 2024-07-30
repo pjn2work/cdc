@@ -1,21 +1,20 @@
-from io import BytesIO
 from typing import List
 
 import pandas as pd
-from fastapi import HTTPException
-from fastapi.responses import StreamingResponse
 from sqlalchemy import or_
 from sqlalchemy.orm import Session
 
 from app.db import models, schemas
 from app.db.crud_dues_payments import get_member_due_payment_missing_stats, make_due_payment_for_new_member
-from app.utils import get_now, get_today_year_month_str, str2date
+from app.utils import get_now, get_today_year_month_str, str2date, save_to_excel_sheets, DataframeSheet, \
+    StreamingResponse
+from app.utils.errors import NotFound404, Conflict409
 
 
 def get_member_by_id(db: Session, member_id: int) -> models.Member:
     member = db.get(models.Member, member_id)
     if member is None:
-        raise HTTPException(status_code=404, detail=f"Member {member_id} not found")
+        raise NotFound404(f"Member {member_id} not found")
     return member
 
 
@@ -132,7 +131,7 @@ def update_member_active(
     now = get_now()
 
     if db_member.is_active == member_update.is_active:
-        raise HTTPException(status_code=409, detail=f"Member {db_member.member_id} was already active set to {member_update.is_active}.")
+        raise Conflict409(f"Member {db_member.member_id} was already active set to {member_update.is_active}.")
 
     try:
         db_member.is_active = member_update.is_active
@@ -191,7 +190,7 @@ def update_member_amount(
         db_member: models.Member,
         member_update: schemas.MemberUpdateAmount) -> models.Member:
     if not db_member.is_active:
-        raise HTTPException(status_code=409, detail=f"Member {db_member.member_id} is not active. You must activate the user first if you want to change the amount.")
+        raise Conflict409(f"Member {db_member.member_id} is not active. You must activate the user first if you want to change the amount.")
 
     mdpl = db.query(models.MemberDuesPayment).filter_by(
         member_id=db_member.member_id,
@@ -294,39 +293,33 @@ def list_member_donations_order_by_pay_date(
 
         # Create file
         filename = f"CECC Lista de donativos de {since} a {until}.xlsx"
-
-        # Save the DataFrame to an Excel file
-        _output = BytesIO()
-        with pd.ExcelWriter(_output, engine="openpyxl") as writer:
-            _df.to_excel(writer, index=False, sheet_name="Donativos")
-        _output.seek(0)
-
-        return StreamingResponse(
-            _output,
-            media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-            headers={"Content-Disposition": f"attachment; filename={filename}"}
+        xls = save_to_excel_sheets(
+            DataframeSheet(_df, "Donativos"),
+            filename=filename
         )
+        return xls
 
     return md_list
 
 
 def update_member_stats(db: Session, member_id: int) -> models.Member:
-    db_member = get_member_by_id(db, member_id)
-
-    _results = db.query(
-        models.MemberItems
-    ).filter_by(
-        member_id=member_id
-    ).all()
-
-    db_member.total_quantity_bought = sum([row.quantity for row in _results])
-    db_member.total_amount_bought = sum([row.total_price for row in _results])
-
+    _trans = db.begin(nested=db.in_transaction())
     try:
-        db.add(db_member)
-        db.commit()
+        db_member = get_member_by_id(db, member_id)
+
+        _results = db.query(
+            models.MemberItems
+        ).filter_by(
+            member_id=member_id
+        ).all()
+
+        db_member.total_quantity_bought = sum([row.quantity for row in _results])
+        db_member.total_amount_bought = sum([row.total_price for row in _results])
+
+        _trans.session.add(db_member)
+        _trans.commit()
     except:
-        db.rollback()
+        _trans.rollback()
         raise
 
     db.refresh(db_member)

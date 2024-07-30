@@ -9,6 +9,7 @@ from jose import JWTError, jwt
 from passlib.context import CryptContext
 from pydantic import BaseModel
 
+from app import logit
 from app.utils import read_json_file, b64decode_str
 
 cred = read_json_file("../../credentials.json", same_as=__file__)
@@ -17,7 +18,7 @@ SALT = cred.get("salt", "")
 APP_CLIENTS = cred["app_clients"]
 SECRET_KEY = cred["app_secret_key"] or os.getenv("CECC_SECRET_KEY", "not_secured")
 ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE = timedelta(hours=30)
+MAX_ACCESS_TOKEN_EXPIRE = 24
 
 
 router = APIRouter()
@@ -30,6 +31,7 @@ class Client(BaseModel):
     client_name: str | None = None
     client_secret: str | None = None
     scopes: List[str] = []
+    expire_after: float = 1.0
 
 
 class Token(BaseModel):
@@ -71,8 +73,8 @@ def _verify_client(client_id: str, client_secret: str) -> Client | None:
     return None
 
 
-def _create_access_token(data: dict) -> str:
-    expire = datetime.utcnow() + ACCESS_TOKEN_EXPIRE
+def _create_access_token(data: dict, expire_hours: float) -> str:
+    expire = datetime.utcnow() + timedelta(hours=min(expire_hours, MAX_ACCESS_TOKEN_EXPIRE))
     to_encode = data.copy()
     to_encode.update({"exp": expire})
 
@@ -80,7 +82,7 @@ def _create_access_token(data: dict) -> str:
     return encoded_jwt
 
 
-def get_access_token(client_id: str, client_secret: str) -> str:
+def get_access_token(client_id: str, client_secret: str) -> dict:
     client: Client = _verify_client(client_id, client_secret)
     if client is None:
         raise HTTPException(
@@ -92,8 +94,10 @@ def get_access_token(client_id: str, client_secret: str) -> str:
         data={
             "sub": client_id,
             "scopes": client.scopes
-        }
+        },
+        expire_hours=client.expire_after
     )
+    logit(f"Client Successful login: {client.client_name} - expire after {client.expire_after}h")
     return {"access_token": access_token, "token_type": "bearer"}
 
 

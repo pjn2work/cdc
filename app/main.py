@@ -1,6 +1,7 @@
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
+from fastapi.responses import JSONResponse
 from starlette.staticfiles import StaticFiles
 
 from app import logit, logging
@@ -12,6 +13,8 @@ from app.api.sellers import router as sellers_router
 from app.api.tests import router as tests_router
 from app.db import init_db, get_db
 from app.sec import router as sec_router
+from app.utils.errors import NotFound404, Conflict409
+from app.web import templates
 from app.web.categories import router as web_items_categories_router
 from app.web.dues_payments import router as web_dues_payments_router
 from app.web.expense_accounts import router as web_sellers_ea_router
@@ -36,9 +39,30 @@ async def lifespan(_: FastAPI):
 
 app = FastAPI(lifespan=lifespan, debug=False)
 
+
 @app.get(path="/health")
 def health():
-    return "I'm alive"
+    return "I'm alive running v0.9"
+
+
+@app.exception_handler(Exception)
+async def custom_exception_handler(request: Request, exc: Exception):
+    #tb = traceback.format_exc()
+    if isinstance(exc, NotFound404):
+        status_code = 404
+    elif isinstance(exc, Conflict409):
+        status_code = 409
+    else:
+        status_code = 400
+
+    if request.url.path.startswith("/web/"):
+        return templates.TemplateResponse("error.html", {
+            "request": request,
+            "error_message": str(exc),
+            "status_code": status_code
+        })
+    return JSONResponse(status_code=status_code, content={"detail": str(exc)})
+
 
 # Security
 app.include_router(sec_router, prefix="/oauth", tags=["/oauth"])
@@ -61,8 +85,8 @@ app.include_router(web_items_router, prefix="/web/items", tags=["/web/items"])
 app.include_router(web_items_categories_router, prefix="/web/categories", tags=["/web/categories"])
 app.include_router(web_sellers_router, prefix="/web/sellers", tags=["/web/sellers"])
 app.include_router(web_sellers_ea_router, prefix="/web/expense-accounts", tags=["/web/expense-accounts"])
-app.include_router(web_sellers_items_router, prefix="/web/items/sellers", tags=["/web/items/sellers"])
-app.include_router(web_members_items_router, prefix="/web/items/members", tags=["/web/items/members"])
+app.include_router(web_sellers_items_router, prefix="/web/sellers-items", tags=["/web/sellers-items"])
+app.include_router(web_members_items_router, prefix="/web/members-items", tags=["/web/members-items"])
 
 # Web dashboards
 #app.mount("/web/dashboard1", WSGIMiddleware(dashboard1.server))

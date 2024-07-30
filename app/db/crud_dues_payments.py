@@ -1,17 +1,16 @@
 import datetime
 import logging
-from io import BytesIO
 from typing import List, Tuple
 
 import pandas as pd
-from fastapi import HTTPException
-from fastapi.responses import StreamingResponse
 from sqlalchemy import func, and_, case as case_
 from sqlalchemy.orm import Session
 
 from app import logit
 from app.db import models, schemas
-from app.utils import get_now, get_today_year_month_str, format_year_month, str2date
+from app.utils import get_now, get_today_year_month_str, format_year_month, str2date, save_to_excel_sheets, \
+    DataframeSheet, StreamingResponse
+from app.utils.errors import NotFound404, Conflict409
 
 
 def get_member_due_payment_missing_stats(db: Session, member_id: int) -> Tuple[List[str], int]:
@@ -41,7 +40,7 @@ def _calc_dues_payment_stats(db: Session, dp: models.DuesPayment) -> models.Dues
 def get_due_payment_year_month_stats(db: Session, id_year_month: str) -> models.DuesPayment:
     _dp = db.get(models.DuesPayment, id_year_month)
     if _dp is None:
-        raise HTTPException(status_code=404, detail=f"Due Payment {id_year_month} not found")
+        raise NotFound404(f"Due Payment {id_year_month} not found")
     return _calc_dues_payment_stats(db, _dp)
 
 
@@ -78,7 +77,7 @@ def create_dues_payment_year_month(
         db.commit()
     except:
         db.rollback()
-        raise HTTPException(status_code=409, detail=f"Due Payment {dp.date_ym} was already created, no need to create a new one.")
+        raise Conflict409(f"Due Payment {dp.date_ym} was already created, no need to create a new one.")
 
     _make_due_payment_for_active_members(db=db, id_year_month=db_dues_payment.id_year_month, date_ym=db_dues_payment.date_ym)
     _make_due_payment_for_non_active_members(db=db, id_year_month=db_dues_payment.id_year_month, date_ym=db_dues_payment.date_ym)
@@ -96,7 +95,7 @@ def _make_due_payment_for_non_active_members(db: Session, id_year_month: str, da
     now = get_now()
     try:
         for member in _member_list:
-            logit(f"Creating 0.0€ Due Payment for member={member.member_id} for {id_year_month} month.", logging.INFO)
+            logit(f"Creating 0.0€ Due Payment for member={member.member_id} for {id_year_month} month.", logging.DEBUG)
             mdp = models.MemberDuesPayment(
                 member_id=member.member_id,
                 id_year_month=id_year_month,
@@ -137,7 +136,7 @@ def make_due_payment_for_new_member(db: Session, member: models.Member) -> None:
 
 
 def _make_due_payment_for_member(db: Session, id_year_month: str, member: models.Member) -> None:
-    logit(f"Creating missing {member.amount}€ Due Payment for member={member.member_id} for {id_year_month} month.", logging.INFO)
+    logit(f"Creating missing {member.amount}€ Due Payment for member={member.member_id} for {id_year_month} month.", logging.DEBUG)
     mdp = models.MemberDuesPayment(
         member_id=member.member_id,
         id_year_month=id_year_month,
@@ -157,7 +156,7 @@ def _make_due_payment_for_member(db: Session, id_year_month: str, member: models
 def get_member_due_payment(db: Session, tid: int) -> models.MemberDuesPayment:
     mdp: models.MemberDuesPayment = db.get(models.MemberDuesPayment, tid)
     if mdp is None:
-        raise HTTPException(status_code=404, detail=f"MemberDuesPayment {tid} not found")
+        raise NotFound404(f"MemberDuesPayment {tid} not found")
     return mdp
 
 
@@ -168,13 +167,13 @@ def pay_member_due_payment(
 ) -> models.MemberDuesPayment:
     mdp: models.MemberDuesPayment = db.get(models.MemberDuesPayment, tid)
     if mdp is None:
-        raise ValueError(f"MemberDuesPayment={tid} not found.")
+        raise NotFound404(f"MemberDuesPayment={tid} not found.")
 
     if mdp.is_paid:
-        raise ValueError(f"MemberDuesPayment={tid} {mdp.id_year_month} was already paid for member={mdp.member_id} and the amount {mdp.amount}€.")
+        raise Conflict409(f"MemberDuesPayment={tid} {mdp.id_year_month} was already paid for member={mdp.member_id} and the amount {mdp.amount}€.")
 
     if not mdp.is_member_active:
-        raise ValueError(f"Member={mdp.member_id} is not active for payment at {mdp.id_year_month} MemberDuesPayment={tid}.")
+        raise Conflict409(f"Member={mdp.member_id} is not active for payment at {mdp.id_year_month} MemberDuesPayment={tid}.")
 
     try:
         mdp.is_paid = True
@@ -272,23 +271,13 @@ def pivot_table_dues_paid_for_all_members(
     df_missing = get_df_pivot_table_dues_paid_for_all_members(db, months=months, month_cases=month_cases, is_paid=False)
 
     if just_download:
-        filename = f"CECC Associados Quotas de {since or months[0]} a {until or months[-1]}.xlsx"
-
-        # Save the DataFrame to an Excel file
-        output = BytesIO()
-        with pd.ExcelWriter(output, engine="openpyxl") as writer:
-            if df_paid is not None:
-                df_paid.to_excel(writer, index=False, sheet_name="Quotas pagas")
-            if df_missing is not None:
-                df_missing.to_excel(writer, index=False, sheet_name="Quotas em atraso")
-        output.seek(0)
-
-        # Send the Excel file as a response
-        return StreamingResponse(
-            output,
-            media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-            headers={"Content-Disposition": f"attachment; filename={filename}"}
+        filename = f"CECC Pivot Associados Quotas de {since or months[0]} a {until or months[-1]}.xlsx"
+        xls = save_to_excel_sheets(
+            DataframeSheet(df_paid, "Quotas pagas"),
+            DataframeSheet(df_missing, "Quotas em atraso"),
+            filename = filename,
         )
+        return xls
 
     return df_paid, df_missing
 
@@ -341,17 +330,10 @@ def list_member_dues_payments_order_by_pay_date(
 
         # Create file
         filename = f"CECC Lista de pagamento de Quotas de {since} a {until}.xlsx"
-
-        # Save the DataFrame to an Excel file
-        _output = BytesIO()
-        with pd.ExcelWriter(_output, engine="openpyxl") as writer:
-            _df.to_excel(writer, index=False, sheet_name="Quotas pagas")
-        _output.seek(0)
-
-        return StreamingResponse(
-            _output,
-            media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-            headers={"Content-Disposition": f"attachment; filename={filename}"}
+        xls = save_to_excel_sheets(
+            DataframeSheet(_df, "Quotas pagas"),
+            filename=filename
         )
+        return xls
 
     return mdp_list

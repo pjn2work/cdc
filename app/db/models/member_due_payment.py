@@ -9,8 +9,8 @@ class MemberDuesPayment(Base):
     __table_args__ = (UniqueConstraint("member_id", "id_year_month", name="uix_1"), )
     tid = Column(Integer, primary_key=True, autoincrement=True, index=True)
 
-    member_id = Column(Integer, ForeignKey("members.member_id"), index=True)
-    id_year_month = Column(String, ForeignKey("dues_payments.id_year_month"), index=True)
+    member_id = Column(Integer, ForeignKey(column="members.member_id", onupdate="CASCADE", ondelete="CASCADE"), index=True)
+    id_year_month = Column(String, ForeignKey(column="dues_payments.id_year_month", onupdate="CASCADE", ondelete="CASCADE"), index=True)
     is_paid = Column(Boolean, default=False)
     is_member_active = Column(Boolean, default=True)
     amount = Column(Float)

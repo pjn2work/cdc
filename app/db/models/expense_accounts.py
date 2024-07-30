@@ -8,7 +8,7 @@ class ExpenseAccount(Base):
     __tablename__ = "expense_accounts"
     ea_id = Column(Integer, primary_key=True, autoincrement=True, index=True)
 
-    name = Column(String, index=True)
+    name = Column(String, unique=True, nullable=True, index=True)
     notes = Column(String, default="")
     row_update_time = Column(DateTime)
 

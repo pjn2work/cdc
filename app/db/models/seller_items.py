@@ -8,9 +8,9 @@ class SellerItems(Base):
     __tablename__ = "seller_items"
     tid = Column(Integer, primary_key=True, autoincrement=True, index=True)
 
-    seller_id = Column(Integer, ForeignKey("sellers.seller_id"), index=True)
-    item_id = Column(Integer, ForeignKey("items.item_id"), index=True)
-    ea_id = Column(Integer, ForeignKey("expense_accounts.ea_id"), index=True)
+    seller_id = Column(Integer, ForeignKey(column="sellers.seller_id", onupdate="CASCADE", ondelete="CASCADE"), index=True)
+    item_id = Column(Integer, ForeignKey(column="items.item_id", onupdate="CASCADE", ondelete="CASCADE"), index=True)
+    ea_id = Column(Integer, ForeignKey(column="expense_accounts.ea_id", onupdate="CASCADE", ondelete="CASCADE"), index=True)
 
     quantity = Column(Integer)
     total_price = Column(Float)

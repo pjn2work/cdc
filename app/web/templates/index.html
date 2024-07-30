@@ -1,23 +1,8 @@
-<!DOCTYPE html>
-<html lang="pt">
-<head>
-    <title>CECC</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="/cecc.css">
-</head>
-<body>
-    <div class="container">
-        <table class="full_width">
-            <tr>
-                <td style="width: 70%">
-                    <h1 class="my-4">Gestão de Quotas e Livros</h1>
-                </td>
-                <td class="align_right">
-                    <a href="https://www.casadocaminho-ce.pt/"><img src="/cecc_logo.jpg" style="float:right;width:40%;height:40%;" alt="Casa do Caminho"></a>
-                </td>
-            </tr>
-        </table>
-
+{% extends "base.html" %}
+{% block title %}Index{% endblock %}
+{% block page_header %}Gestão de Quotas e Livros{% endblock %}
+{% block icon_href %}login/{% endblock %}
+{% block content_in_div %}
         <table class="full_width">
             <tr>
                 <td class="padding-15">
@@ -60,13 +45,11 @@
                         <br><br>
                         <a href="members/donations"><label class="label-text menu_button">Lista de donativos</label></a>
                         <br><hr>
-                        <a href="items/sellers/"><label class="label-text menu_button">Pesquisa de compras a Vendedores</label></a>
+                        <a href="sellers-items/"><label class="label-text menu_button">Pesquisa de compras a Vendedores</label></a>
                         <br><br>
-                        <a href="items/members/"><label class="label-text menu_button">Pesquisa de vendas a Associados</label></a>
+                        <a href="members-items/"><label class="label-text menu_button">Pesquisa de vendas a Associados</label></a>
                     </fieldset>
                 </td>
             </tr>
         </table>
-
-</body>
-</html>
+{% endblock %}

@@ -6,7 +6,7 @@
     <form class="form-inline" method="get">
         <input class="hidden" type="checkbox" id="do_filter" name="do_filter" checked>
         <label for="category_id">Filtrar por categoria</label>
-        {{ selector("category_id", categories, "category_id", "name", category_id|int, "items") }}
+        {{ selector("category_id", categories, "category_id", "name", category_id|int, "items", nullable=true) }}
         <br>
         <input class="form-text input_edit" type="text" size="40" id="search_text" name="search_text" value="{{ search_text }}" placeholder="Pesquise por qualquer texto">
         <button class="btn btn-primary mb-2" type="submit">Pesquisar</button>
@@ -19,9 +19,9 @@
         <thead class="table-dark">
             <tr>
                 <th class="align_right">Item ID</th>
+                <th>Categoria</th>
                 <th>Nome</th>
                 <th>Notas</th>
-                <th>Categoria</th>
                 <th class="align_right">Qtd compra</th>
                 <th class="align_right">Valor compra</th>
                 <th class="align_right">Média compra €/uni</th>
@@ -31,12 +31,12 @@
             </tr>
         </thead>
         <tbody>
-            {% for item in items %}
+            {% for item in items|sort(attribute='category.name,name') %}
                 <tr>
                     <td class="align_right"><a href="{{ item.item_id }}/show">{{ item.item_id }}</a></td>
+                    <td class="align_left">{{ item.category.name }}</td>
                     <td class="align_left">{{ item.name }}</td>
                     <td class="align_left">{{ item.notes }}</td>
-                    <td class="align_left">{{ item.category.name }}</td>
                     <td class="align_right">{{ item.total_quantity_seller_sold }}</td>
                     <td class="align_right">{{ item.total_amount_seller_sold }} €</td>
                     <td class="align_right">{{ (item.total_amount_seller_sold/item.total_quantity_seller_sold)|round(2) if item.total_quantity_seller_sold else 0 }} €</td>

@@ -8,7 +8,7 @@ class Seller(Base):
     __tablename__ = "sellers"
     seller_id = Column(Integer, primary_key=True, autoincrement=True, index=True)
 
-    name = Column(String, index=True)
+    name = Column(String, unique=True, nullable=False, index=True)
     tlf = Column(String)
     email = Column(String, default="")
     notes = Column(String, default="")

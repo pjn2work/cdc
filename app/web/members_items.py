@@ -20,12 +20,16 @@ def list_members_items(
         category_id: int = 0,
         tid: int = 0,
         since: str = "", until: str = "",
+        just_download: bool = False,
         db: Session = DB_SESSION,
         current_client: TokenData = GET_CURRENT_WEB_CLIENT):
     are_valid_scopes(["app:read", "member_item:read"], current_client)
 
     if do_filter:
-        members_items = crud_items.get_members_items_list(db, member_id=member_id, item_id=item_id, category_id=category_id, tid=tid, since=since, until=until, search_text=search_text)
+        members_items = crud_items.get_members_items_list(db, member_id=member_id, item_id=item_id, category_id=category_id, tid=tid, since=since, until=until, just_download=just_download, search_text=search_text)
+
+        if just_download:
+            return members_items
     else:
         members_items = []
 
@@ -87,7 +91,7 @@ async def create_member_item_submit(
 
     member_item_create: schemas.MemberItemsCreate = schemas.MemberItemsCreate(**data)
     member_item = crud_items.create_member_item(db=db, item_id=item_id, member_item_create=member_item_create)
-    return RedirectResponse(url=f"../members/?do_filter=on&tid={member_item.tid}", status_code=303)
+    return RedirectResponse(url=f"../members-items/?do_filter=on&tid={member_item.tid}", status_code=303)
 
 
 @router.get("/{tid}/update", response_class=HTMLResponse)
@@ -127,4 +131,4 @@ async def update_member_item(
 
     db_member_item = crud_items.get_member_item(db, tid=tid)
     _ = crud_items.update_member_item(db, db_member_item=db_member_item, member_item_update=member_item_update)
-    return RedirectResponse(url=f"../?do_filter=on&tid={tid}", status_code=303)
+    return RedirectResponse(url=f"../../members-items/?do_filter=on&tid={tid}", status_code=303)
