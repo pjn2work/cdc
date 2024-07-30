@@ -1,5 +1,6 @@
 from typing import List, Optional
 
+import pandas as pd
 from sqlalchemy import or_, desc
 from sqlalchemy.orm import Session
 
@@ -7,7 +8,7 @@ from app.db import models, schemas
 from app.db.crud_member import update_member_stats, get_member_by_id
 from app.db.crud_sellers import update_expense_account_stats, update_seller_stats, get_seller_by_id, \
     get_expense_account_by_id
-from app.utils import get_now
+from app.utils import get_now, save_to_excel_sheets, DataframeSheet, StreamingResponse
 from app.utils.errors import NotFound404
 
 
@@ -261,13 +262,14 @@ def get_sellers_items_list(
         item_id: int, category_id: int,
         seller_id: int, ea_id: int,
         since: str, until: str,
+        just_download: bool,
         tid: int, search_text: str,
         skip: int = 0, limit: int = 1000
-) -> List[models.SellerItems]:
+) -> List[models.SellerItems] | StreamingResponse:
     if tid:
         return [get_seller_item_by_id(db, tid=tid)]
 
-    _dbq = db.query(models.SellerItems).join(models.Item).join(models.Seller)
+    _dbq: db.query = db.query(models.SellerItems).join(models.Item).join(models.Seller)
 
     if since:
         _dbq = _dbq.filter(models.SellerItems.purchase_date >= since)
@@ -290,7 +292,40 @@ def get_sellers_items_list(
             models.Item.notes.ilike(f"%{search_text}%"),
         ))
 
-    return _dbq.order_by(desc(models.SellerItems.purchase_date)).offset(skip).limit(limit).all()
+    results: List[models.SellerItems] = _dbq.order_by(desc(models.SellerItems.purchase_date)).offset(skip).limit(limit).all()
+    if not results:
+        results = []
+
+    if just_download:
+        _data = [
+            {
+                "ID": row.tid,
+                "Vendedor": row.seller.name,
+                "Rúbrica": row.expense_account.name,
+                "Categoria": row.item.category.name,
+                "Item": row.item.name,
+                "Qtd compra": row.quantity,
+                "Valor compra": row.total_price,
+                "Notas": row.notes,
+                "V.D.": row.is_cash,
+                "Data Pagamento": row.purchase_date,
+                "Data Actualização": row.row_update_time,
+            }
+            for row in results
+        ]
+        _df = pd.DataFrame(_data)
+        since = since or _df['Data Pagamento'].min()
+        until = until or _df['Data Pagamento'].max()
+
+        # Create file
+        filename = f"CECC Lista de compras a vendedores de {since} a {until}.xlsx"
+        xls = save_to_excel_sheets(
+            DataframeSheet(_df, "Compras"),
+            filename=filename
+        )
+        return xls
+
+    return results
 
 
 def get_seller_item_by_id(db: Session, tid: int) -> models.SellerItems:
@@ -383,13 +418,14 @@ def get_members_items_list(
         item_id: int, category_id: int,
         member_id: int,
         since: str, until: str,
+        just_download: bool,
         tid: int, search_text: str,
         skip: int = 0, limit: int = 1000
-) -> List[models.MemberItems]:
+) -> List[models.MemberItems] | StreamingResponse:
     if tid:
         return [get_member_item_by_id(db, tid=tid)]
 
-    _dbq = db.query(models.MemberItems).join(models.Item).join(models.Member)
+    _dbq: db.query = db.query(models.MemberItems).join(models.Item).join(models.Member)
 
     if since:
         _dbq = _dbq.filter(models.MemberItems.purchase_date >= since)
@@ -410,7 +446,39 @@ def get_members_items_list(
             models.Item.notes.ilike(f"%{search_text}%"),
         ))
 
-    return _dbq.order_by(desc(models.MemberItems.purchase_date)).offset(skip).limit(limit).all()
+    results: List[models.MemberItems] = _dbq.order_by(desc(models.MemberItems.purchase_date)).offset(skip).limit(limit).all()
+    if not results:
+        results = []
+
+    if just_download:
+        _data = [
+            {
+                "ID": row.tid,
+                "Associado": row.member.name,
+                "Categoria": row.item.category.name,
+                "Item": row.item.name,
+                "Qtd venda": row.quantity,
+                "Valor venda": row.total_price,
+                "Notas": row.notes,
+                "V.D.": row.is_cash,
+                "Data Pagamento": row.purchase_date,
+                "Data Actualização": row.row_update_time,
+            }
+            for row in results
+        ]
+        _df = pd.DataFrame(_data)
+        since = since or _df['Data Pagamento'].min()
+        until = until or _df['Data Pagamento'].max()
+
+        # Create file
+        filename = f"CECC Lista de vendas a associados de {since} a {until}.xlsx"
+        xls = save_to_excel_sheets(
+            DataframeSheet(_df, "Vendas"),
+            filename=filename
+        )
+        return xls
+
+    return results
 
 
 def get_member_item_by_id(db: Session, tid: int) -> models.MemberItems:

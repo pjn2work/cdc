@@ -1,8 +1,12 @@
 import json
 import os.path
 from base64 import urlsafe_b64encode, urlsafe_b64decode
+from dataclasses import dataclass
 from datetime import datetime, date
+from io import BytesIO
 
+import pandas as pd
+from fastapi.responses import StreamingResponse
 from pytz import timezone
 
 TZ = timezone("Europe/Lisbon")
@@ -50,3 +54,26 @@ def b64encode_str(s: str) -> str:
 
 def b64decode_str(s: str) -> str:
     return urlsafe_b64decode(s.encode("utf-8")).decode("utf-8")
+
+
+@dataclass
+class DataframeSheet:
+    df: pd.DataFrame
+    sheet_name: str
+
+
+def save_to_excel_sheets(*df_sheets: DataframeSheet, filename: str = "results.xlsx") -> StreamingResponse:
+    # Save the DataFrame to an Excel file
+    output = BytesIO()
+    with pd.ExcelWriter(output, engine="openpyxl") as writer:
+        for dfs in df_sheets:
+            if dfs.df is not None:
+                dfs.df.to_excel(writer, index=False, sheet_name=dfs.sheet_name)
+    output.seek(0)
+
+    # Send the Excel file as a response
+    return StreamingResponse(
+        output,
+        media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        headers={"Content-Disposition": f"attachment; filename={filename}"}
+    )

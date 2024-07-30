@@ -1,14 +1,13 @@
-from io import BytesIO
 from typing import List
 
 import pandas as pd
-from fastapi.responses import StreamingResponse
 from sqlalchemy import or_
 from sqlalchemy.orm import Session
 
 from app.db import models, schemas
 from app.db.crud_dues_payments import get_member_due_payment_missing_stats, make_due_payment_for_new_member
-from app.utils import get_now, get_today_year_month_str, str2date
+from app.utils import get_now, get_today_year_month_str, str2date, save_to_excel_sheets, DataframeSheet, \
+    StreamingResponse
 from app.utils.errors import NotFound404, Conflict409
 
 
@@ -294,18 +293,11 @@ def list_member_donations_order_by_pay_date(
 
         # Create file
         filename = f"CECC Lista de donativos de {since} a {until}.xlsx"
-
-        # Save the DataFrame to an Excel file
-        _output = BytesIO()
-        with pd.ExcelWriter(_output, engine="openpyxl") as writer:
-            _df.to_excel(writer, index=False, sheet_name="Donativos")
-        _output.seek(0)
-
-        return StreamingResponse(
-            _output,
-            media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-            headers={"Content-Disposition": f"attachment; filename={filename}"}
+        xls = save_to_excel_sheets(
+            DataframeSheet(_df, "Donativos"),
+            filename=filename
         )
+        return xls
 
     return md_list
 

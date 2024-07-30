@@ -21,12 +21,16 @@ def list_sellers_items(
         category_id: int = 0,
         tid: int = 0,
         since: str = "", until: str = "",
+        just_download: bool = False,
         db: Session = DB_SESSION,
         current_client: TokenData = GET_CURRENT_WEB_CLIENT):
     are_valid_scopes(["app:read", "seller_item:read"], current_client)
 
     if do_filter:
-        sellers_items = crud_items.get_sellers_items_list(db, seller_id=seller_id, ea_id=ea_id, item_id=item_id, category_id=category_id, tid=tid, since=since, until=until, search_text=search_text)
+        sellers_items = crud_items.get_sellers_items_list(db, seller_id=seller_id, ea_id=ea_id, item_id=item_id, category_id=category_id, tid=tid, since=since, until=until, just_download=just_download, search_text=search_text)
+
+        if just_download:
+            return sellers_items
     else:
         sellers_items = []
 

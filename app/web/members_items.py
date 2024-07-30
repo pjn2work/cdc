@@ -20,12 +20,16 @@ def list_members_items(
         category_id: int = 0,
         tid: int = 0,
         since: str = "", until: str = "",
+        just_download: bool = False,
         db: Session = DB_SESSION,
         current_client: TokenData = GET_CURRENT_WEB_CLIENT):
     are_valid_scopes(["app:read", "member_item:read"], current_client)
 
     if do_filter:
-        members_items = crud_items.get_members_items_list(db, member_id=member_id, item_id=item_id, category_id=category_id, tid=tid, since=since, until=until, search_text=search_text)
+        members_items = crud_items.get_members_items_list(db, member_id=member_id, item_id=item_id, category_id=category_id, tid=tid, since=since, until=until, just_download=just_download, search_text=search_text)
+
+        if just_download:
+            return members_items
     else:
         members_items = []
 

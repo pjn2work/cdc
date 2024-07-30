@@ -1,16 +1,15 @@
 import datetime
 import logging
-from io import BytesIO
 from typing import List, Tuple
 
 import pandas as pd
-from fastapi.responses import StreamingResponse
 from sqlalchemy import func, and_, case as case_
 from sqlalchemy.orm import Session
 
 from app import logit
 from app.db import models, schemas
-from app.utils import get_now, get_today_year_month_str, format_year_month, str2date
+from app.utils import get_now, get_today_year_month_str, format_year_month, str2date, save_to_excel_sheets, \
+    DataframeSheet, StreamingResponse
 from app.utils.errors import NotFound404, Conflict409
 
 
@@ -272,23 +271,13 @@ def pivot_table_dues_paid_for_all_members(
     df_missing = get_df_pivot_table_dues_paid_for_all_members(db, months=months, month_cases=month_cases, is_paid=False)
 
     if just_download:
-        filename = f"CECC Associados Quotas de {since or months[0]} a {until or months[-1]}.xlsx"
-
-        # Save the DataFrame to an Excel file
-        output = BytesIO()
-        with pd.ExcelWriter(output, engine="openpyxl") as writer:
-            if df_paid is not None:
-                df_paid.to_excel(writer, index=False, sheet_name="Quotas pagas")
-            if df_missing is not None:
-                df_missing.to_excel(writer, index=False, sheet_name="Quotas em atraso")
-        output.seek(0)
-
-        # Send the Excel file as a response
-        return StreamingResponse(
-            output,
-            media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-            headers={"Content-Disposition": f"attachment; filename={filename}"}
+        filename = f"CECC Pivot Associados Quotas de {since or months[0]} a {until or months[-1]}.xlsx"
+        xls = save_to_excel_sheets(
+            DataframeSheet(df_paid, "Quotas pagas"),
+            DataframeSheet(df_missing, "Quotas em atraso"),
+            filename = filename,
         )
+        return xls
 
     return df_paid, df_missing
 
@@ -341,17 +330,10 @@ def list_member_dues_payments_order_by_pay_date(
 
         # Create file
         filename = f"CECC Lista de pagamento de Quotas de {since} a {until}.xlsx"
-
-        # Save the DataFrame to an Excel file
-        _output = BytesIO()
-        with pd.ExcelWriter(_output, engine="openpyxl") as writer:
-            _df.to_excel(writer, index=False, sheet_name="Quotas pagas")
-        _output.seek(0)
-
-        return StreamingResponse(
-            _output,
-            media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-            headers={"Content-Disposition": f"attachment; filename={filename}"}
+        xls = save_to_excel_sheets(
+            DataframeSheet(_df, "Quotas pagas"),
+            filename=filename
         )
+        return xls
 
     return mdp_list
