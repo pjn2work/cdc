@@ -5,15 +5,32 @@
         <div class="card">
             <div class="card-body">
                 <div class="row mb-0">
-                    <div class="col-md-5">
-                        <form method="post">
+                    <div class="col-md-6">
+                        <h3>Fazer login</h3>
+                        <form method="post" action="/web/login/">
                             <label class="form-label label-text align_left" for="client_id">Username</label>
-                            <input class="form-control-plaintext data-text align_left" type="text" id="client_id" name="client_id">
+                            <input class="form-control-plaintext data-text align_left" type="text" id="client_id" name="client_id" required>
                             <br>
                             <label class="form-label label-text align_left" for="client_secret">Password</label>
-                            <input class="form-control-plaintext data-text align_left" type="password" id="client_secret" name="client_secret">
+                            <input class="form-control-plaintext data-text align_left" type="password" id="client_secret" name="client_secret" required>
                             <br>
                             <button class="btn btn-primary mb-1" type="submit">Login</button>
+                        </form>
+                    </div>
+
+                    <div class="col-md-6">
+                        <h3>Alterar password</h3>
+                        <form method="post" action="change_password">
+                            <label class="form-label label-text align_left" for="client_id">Username</label>
+                            <input class="form-control-plaintext data-text align_left" type="text" id="client_id" name="client_id" required>
+                            <br>
+                            <label class="form-label label-text align_left" for="client_secret">Password actual</label>
+                            <input class="form-control-plaintext data-text align_left" type="password" id="client_secret" name="client_secret" required>
+                            <br>
+                            <label class="form-label label-text align_left" for="client_secret">Password nova</label>
+                            <input class="form-control-plaintext data-text align_left" type="password" id="new_client_secret" name="new_client_secret" required>
+                            <br>
+                            <button class="btn btn-primary mb-1" type="submit">Alterar password</button>
                         </form>
                     </div>
                 </div>

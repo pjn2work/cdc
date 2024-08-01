@@ -1,7 +1,7 @@
 from fastapi import HTTPException, status, APIRouter, Request
 from starlette.responses import HTMLResponse, RedirectResponse
 
-from app.sec import get_access_token
+from app.sec import get_access_token, change_client_secret
 from app.web import templates
 
 router = APIRouter()
@@ -21,7 +21,22 @@ async def login(request: Request):
     try:
         token_response = get_access_token(client_id, client_secret)
         response = RedirectResponse(url="/web/", status_code=status.HTTP_302_FOUND)
-        response.set_cookie(key="access_token", value=token_response["access_token"], httponly=True)
+        response.set_cookie(key="access_token", value=token_response.access_token, httponly=True)
+        return response
+    except HTTPException as e:
+        return templates.TemplateResponse("login.html", {"request": request, "error": e.detail})
+
+
+@router.post("/change_password", response_class=HTMLResponse)
+async def login(request: Request):
+    data = await request.form()
+    client_id = data.get("client_id")
+    client_secret = data.get("client_secret")
+    new_client_secret = data.get("new_client_secret")
+
+    try:
+        change_client_secret(client_id, client_secret, new_client_secret)
+        response = RedirectResponse(url="/web/", status_code=status.HTTP_302_FOUND)
         return response
     except HTTPException as e:
         return templates.TemplateResponse("login.html", {"request": request, "error": e.detail})

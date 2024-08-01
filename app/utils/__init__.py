@@ -49,6 +49,15 @@ def read_json_file(file_name: str, same_as: str = "") -> dict:
     with open(file_name, "r") as file:
         return json.load(file)
 
+
+def save_json_file(file_name: str, data: dict, same_as: str = ""):
+    if same_as:
+        file_name = os.path.join(os.path.dirname(same_as), file_name)
+
+    with open(file_name, "w") as file:
+        json.dump(data, file, indent=3)
+
+
 def b64encode_str(s: str) -> str:
     return urlsafe_b64encode(s.encode("utf-8")).decode("utf-8")
 

@@ -72,8 +72,10 @@ The CECC application is a Python-based project that can be run either in a Docke
 │   ├── log.ini
 │   └── ...
 ├── data
+│   ├── credentials.json
+│   ├── privkey.pem
+│   └── fullchain.pem
 ├── requirements.txt
-├── credentials.json
 └── Dockerfile
 ```
 
