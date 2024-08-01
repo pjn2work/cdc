@@ -8,12 +8,8 @@ WORKDIR /cecc
 RUN mkdir -p data/
 
 # Copy the current directory contents into the container at /cecc
-COPY credentials.json /cecc
+COPY data/credentials.json /cecc/data/
 COPY app /cecc/app
-
-# Have the certificate in common shared volume
-#COPY privkey.pem /cecc/data
-#COPY fullchain.pem /cecc/data
 
 # Make port 443 available to the world outside this container
 EXPOSE 443

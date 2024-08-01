@@ -12,7 +12,7 @@ from pydantic import BaseModel
 from app import logit
 from app.utils import read_json_file, b64decode_str
 
-cred = read_json_file("../../credentials.json", same_as=__file__)
+cred = read_json_file("../../data/credentials.json", same_as=__file__)
 
 SALT = cred.get("salt", "")
 APP_CLIENTS = cred["app_clients"]
