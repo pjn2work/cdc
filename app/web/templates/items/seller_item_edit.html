@@ -8,11 +8,11 @@
             <div class="row mb-0">
                 <div class="col-md-12">
                     <label class="form-label label-text" for="category_id">Vendedor</label>
-                    <p class="form-control-plaintext data-text">{{ selector("seller_id", sellers, "seller_id", "name", seller_item.seller_id) }}</p>
+                    <p class="form-control-plaintext data-text">{{ selector("seller_id", sellers, "seller_id", "name", seller_item.seller_id, order_by="name") }}</p>
                     <label class="form-label label-text" for="category_id">Rúbrica</label>
-                    <p class="form-control-plaintext data-text">{{ selector("ea_id", expense_accounts, "ea_id", "name", seller_item.ea_id) }}</p>
+                    <p class="form-control-plaintext data-text">{{ selector("ea_id", expense_accounts, "ea_id", "name", seller_item.ea_id, order_by="name") }}</p>
                     <label class="form-label label-text" for="category_id">Item</label>
-                    <p class="form-control-plaintext data-text">{{ selector("item_id", items, "item_id", "name", seller_item.item_id) }}</p>
+                    <p class="form-control-plaintext data-text">{{ selector("item_id", items, "item_id", "name", seller_item.item_id, order_by="category.name,name", group_category="category_id", group_label="category.name") }}</p>
                     <label class="form-label label-text">Quantidade de compra</label>
                     <p class="form-control-plaintext data-text"><input class="form-text input_edit" type="number" id="quantity" name="quantity" placeholder="Quantidade total de compra" value="{{ seller_item.quantity }}" required></p>
                     <label class="form-label label-text">valor de compra</label>

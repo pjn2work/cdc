@@ -38,11 +38,11 @@ async def lifespan(_: FastAPI):
 
 
 app = FastAPI(lifespan=lifespan, debug=False)
-
+VERSION = "v0.10"
 
 @app.get(path="/health")
 def health():
-    return "I'm alive running v0.9"
+    return f"I'm alive, running {VERSION}"
 
 
 @app.exception_handler(Exception)

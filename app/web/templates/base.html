@@ -7,11 +7,26 @@
     <img src="/red.png" alt="Não" width="30" height="30">
 {% endif %}
 {%- endmacro -%}
-{% macro selector(name, values, field_value, field_description, default=0, show_length="", nullable=false) %}
+{% macro selector(name, values, field_value, field_description, default=0, show_length="", nullable=false, order_by="", group_category="", group_label="") %}
                     <select name="{{ name }}" id="{{ name }}" class="form-text input_edit">
                         <option value="{{ 0 if nullable }}"></option>
-                        {%- for v in values %}
+                        {%- for v in values|sort(attribute=order_by) %}
+                            {%-  if group_category and loop.changed(v[group_category]) %}
+                                {%- if not loop.first %}
+                       </optgroup>
+                                {%- endif %}
+                                {%- set optgroup_label = v %}
+                                {%- for part in group_label.split('.') %}
+                                    {%- set optgroup_label = optgroup_label[part] %}
+                                    {%- if loop.last %}
+                       <optgroup label="{{ optgroup_label }}">
+                                    {%- endif %}
+                                {%- endfor %}
+                            {%- endif %}
                         <option value="{{ v[field_value] }}"{{ " selected" if v[field_value] == default }}>{{ v[field_description] }}{{ " [" + v[show_length]|length|string + "]" if show_length }}</option>
+                            {%- if group_category and loop.last %}
+                       </optgroup>
+                            {%- endif %}
                         {%- endfor %}
                     </select>
 {%- endmacro %}

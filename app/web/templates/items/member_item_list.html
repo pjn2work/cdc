@@ -9,26 +9,13 @@
         <table class="table table-hover table-sm">
             <tr>
                 <td class="padding-5 align_right"><label for="member_id">Filtrar por Associado</label></td>
-                <td class="padding-5 align_left">{{ selector("member_id", members, "member_id", "name", member_id, nullable=true) }}</td>
+                <td class="padding-5 align_left">{{ selector("member_id", members, "member_id", "name", member_id, nullable=true, order_by="name") }}</td>
             </tr><tr>
                 <td class="padding-5 align_right"><label for="category_id">Filtrar por categoria</label></td>
-                <td class="padding-5 align_left">{{ selector("category_id", categories, "category_id", "name", category_id, nullable=true) }}</td>
+                <td class="padding-5 align_left">{{ selector("category_id", categories, "category_id", "name", category_id, nullable=true, order_by="name") }}</td>
             </tr><tr>
                 <td class="padding-5 align_right"><label for="item_id">Filtrar por item</label></td>
-                <td class="padding-5 align_left">
-                    <select name="item_id" id="item_id" class="form-text input_edit">
-                        <option value="0"></option>
-                        {% for item in items|sort(attribute='category.name,name') %}
-                            {% if loop.changed(item.category_id) %}
-                            <optgroup label="{{ item.category.name }}">
-                            {% endif %}
-                                <option value="{{ item.item_id }}"{{ " selected" if item_id|int == item.item_id }}>{{ item.name }}</option>
-                            {% if loop.changed(item.category_id) %}
-                            </optgroup>
-                            {% endif %}
-                        {% endfor %}
-                    </select>
-                </td>
+                <td class="padding-5 align_left">{{ selector("item_id", items, "item_id", "name", item_id, nullable=true, order_by="category.name,name", group_category="category_id", group_label="category.name") }}</td>
             </tr><tr>
                 <td class="padding-5 align_right"><label class="form-check-label" for="since">Filtrar por data desde</label></td>
                 <td class="padding-5 align_left"><input class="form-text input_edit" type="date" id="since" name="since" value="{{ since }}"></td>
