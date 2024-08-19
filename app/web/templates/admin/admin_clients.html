@@ -1,0 +1,147 @@
+{% extends "base.html" %}
+{% block title %}Gerir utilizadores{% endblock %}
+{% block page_header %}Gestão de utilizadores{% endblock %}
+{% block content_in_div %}
+    <table class="table full_width">
+        <tr>
+            <td>
+                <h2>Utilizadores</h2>
+                <form id="clients-form-list" method="post" action="remove" onsubmit="return confirm('Deseja mesmo remover este utilizador?');">
+                    <select class="client-list full_width" id="clients-list" name="client_id" onchange="loadClient()" size="5">
+                        {%- for client_id, client in clients.items() %}
+                        <option value="{{ client_id }}">{{ client_id + " - " + client.client_name }}</option>
+                        {% endfor %}
+                    </select>
+
+                    <br>
+                    <button type="button" class="btn btn-primary" onclick="addNewUser()">Adicionar novo utilizador</button>
+                    <button type="submit" class="btn btn-danger">Remover utilizador</button>
+                </form>
+            </td>
+            <td rowspan="2" style="width: 50%">
+                <form method="post" action="update">
+                    <h5>Username</h5>
+                    <input class="full_width" id="client_new_id" name="client_new_id" required>
+
+                    <h5>Nome</h5>
+                    <input class="full_width" id="client_name" name="client_name" required>
+
+                    <h5>Reset password</h5>
+                    <input class="full_width" id="client_secret" name="client_secret">
+
+                    <h5>Login timeout (horas)</h5>
+                    <input class="full_width" id="expire_after" name="expire_after" required>
+
+                    <h5>Scopes</h5>
+                    <div class="scope-list" id="client-scopes-div" ondragover="allowDrop(event)" ondrop="drop(event)">
+                    </div>
+
+                    <input class="hidden" id="client_original_id" name="client_original_id" value="">
+                    <input class="hidden" id="client_scopes" name="client_scopes" value="">
+
+                    <div class="align_center">
+                        <button type="submit" class="btn btn-primary">Actualizar utilizador</button>
+                    </div>
+                </form>
+            </td>
+        </tr><tr>
+            <td>
+                <h2>Scopes possiveis</h2>
+                <div class="scope-list" id="possible-scopes-div" ondragover="allowDrop(event)" ondrop="drop(event)">
+                </div>
+            </td>
+        </tr>
+    </table>
+
+    <script>
+        var possibleScopes = {{ possible_scopes|sort|list|safe }};
+        var clientsData = {{ clients|tojson|safe }};
+        var currentClientId = "";
+
+        function loadClient() {
+            currentClientId = document.getElementById("clients-list").value;
+            const current_clientData = clientsData[currentClientId];
+
+            document.getElementById("client_new_id").value = currentClientId;
+            document.getElementById("client_name").value = current_clientData["client_name"];
+            document.getElementById("client_secret").value = "";
+            document.getElementById("expire_after").value = current_clientData["expire_after"];
+            document.getElementById("client_original_id").value = currentClientId;
+            document.getElementById("client_scopes").value = current_clientData["scopes"];
+
+            const clientScopesDiv = document.getElementById("client-scopes-div");
+            const possibleScopesDiv = document.getElementById("possible-scopes-div");
+            const scopes = current_clientData["scopes"];
+            updateScopesDiv(clientScopesDiv, scopes);
+            updateScopesDiv(possibleScopesDiv, possibleScopes.filter(n => !scopes.includes(n)) );
+        }
+
+        function updateScopesDiv(targetDiv, scopes) {
+            targetDiv.innerHTML = '';
+            for (let scope of scopes) {
+                targetDiv.innerHTML += '<div class="draggable" draggable="true" ondragstart="drag(event)" id="' + scope + '">' + scope + '</div>';
+            }
+        }
+
+        function addNewUser() {
+            const clients_list = document.getElementById("clients-list");
+            const option = document.createElement("option");
+
+            option.value = "newUsername";
+            option.text = "Novo utilizador";
+            clients_list.add(option, null);
+
+            clientsData[option.value] = {
+                "client_name": "",
+                "client_secret": "",
+                "scopes": [],
+                "expire_after": 12
+            };
+        }
+        
+        function allowDrop(ev) {
+            ev.preventDefault();
+        }
+
+        function drag(ev) {
+            ev.dataTransfer.setData("text", ev.target.id);
+        }
+
+        function drop(event) {
+            event.preventDefault();
+
+            // get dragged text (id)
+            let data = event.dataTransfer.getData("text");
+
+            // get dragged div element
+            let draggedElement = document.getElementById(data);
+
+            // get target to drop
+            let target = event.target;
+            if (event.target.classList.contains("draggable")) {
+                target = event.target.parentNode;
+            }
+
+            // append item in order
+            let children = Array.from(target.children);
+            let inserted = false;
+            for (let child of children) {
+                if (child.id && child.id > draggedElement.id) {
+                    target.insertBefore(draggedElement, child);
+                    inserted = true;
+                    break;
+                }
+            }
+            if (!inserted) {
+                target.appendChild(draggedElement);
+            }
+
+            // update client scopes
+            // let clientId = document.getElementById("client-scopes-div").dataset.clientId;
+            const client_scopes_list = Array.from(document.getElementById("client-scopes-div").children).map(e => e.id);
+
+            document.getElementById("client_scopes").value = client_scopes_list;
+            clientsData[currentClientId]["scopes"] = client_scopes_list;
+        }
+    </script>
+{% endblock %}

@@ -124,3 +124,21 @@ legend {
     all: revert;
     padding: 5px;
 }
+
+.client-list, .scope-list {
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 10px;
+    overflow-y: scroll;
+}
+.scope-list {
+    height: 400px;
+}
+.draggable {
+    cursor: move;
+    padding: 5px;
+    margin: 5px;
+    background-color: #ffc821;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}

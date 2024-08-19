@@ -3,6 +3,7 @@ from typing import List
 
 from pydantic import BaseModel
 
+from app import logit, logging
 from app.utils import read_json_file, save_json_file
 
 CRED_FILENAME = "../../data/credentials.json"
@@ -64,4 +65,36 @@ class ManageCredentials:
 
     def change_client_secret(self, client: Client, client_secret_hashed: str):
         client.client_secret = client_secret_hashed
+        self._save_credentials()
+
+    def admin_get_all_clients(self) -> dict[str, Client]:
+        return self.cred.to_dict()["app_clients"]
+
+    def admin_remove_client(self, client_id: str):
+        if client_id in self.cred.app_clients:
+            logit(f"--> User Admin - Removing '{client_id}'", level=logging.WARNING)
+            self.cred.app_clients.pop(client_id)
+
+            self._save_credentials()
+
+    def admin_update_client(self, client_id: str, new_client_id: str, data: dict):
+        if client_id in self.cred.app_clients:
+
+            if client_id != new_client_id:
+                logit(f"--> User Admin - Renaming '{client_id}' to '{new_client_id}'", level=logging.WARNING)
+                self.cred.app_clients[new_client_id] = self.cred.app_clients.pop(client_id)
+
+            _client = self.cred.app_clients[new_client_id]
+            if data["client_secret"]:
+                logit(f"--> User Admin - Reset Password '{new_client_id}'", level=logging.WARNING)
+                _client.client_secret = data["client_secret"]
+
+            logit(f"--> User Admin - Updating '{new_client_id}'", level=logging.WARNING)
+            _client.client_name = data["client_name"]
+            _client.scopes = data["scopes"]
+            _client.expire_after = data["expire_after"]
+        else:
+            logit(f"--> User Admin - Creating '{new_client_id}'", level=logging.WARNING)
+            self.cred.app_clients[new_client_id] = Client(**data)
+
         self._save_credentials()
