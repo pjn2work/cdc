@@ -6,11 +6,11 @@
         <table class="full_width table table-bordered">
             <tr>
                 <td class="label-text align_right">Associado</td>
-                <td>{{ selector("member_id", members, "member_id", "name", member_id) }}</td>
+                <td>{{ selector("member_id", members, "member_id", "name", member_id, order_by="name") }}</td>
             </tr>
             <tr>
                 <td class="label-text align_right">Item</td>
-                <td>{{ selector("item_id", items, "item_id", "name", item_id) }}</td>
+                <td>{{ selector("item_id", items, "item_id", "name", item_id, order_by="category.name,name", group_category="category_id", group_label="category.name") }}</td>
             </tr>
             <tr>
                 <td class="label-text align_right">Quantidade</td>

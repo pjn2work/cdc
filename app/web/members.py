@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Request
+from fastapi import APIRouter, Request, status
 from sqlalchemy.orm import Session
 from starlette.responses import HTMLResponse, RedirectResponse
 
@@ -56,7 +56,7 @@ async def create_member_submit(
     member_create: schemas.MemberCreate = schemas.MemberCreate(**data)
 
     member = crud_member.create_member(db=db, member_create=member_create)
-    return RedirectResponse(url=f"{member.member_id}/show", status_code=303)
+    return RedirectResponse(url=f"{member.member_id}/show", status_code=status.HTTP_303_SEE_OTHER)
 
 
 @router.get("/{member_id}/show", response_class=HTMLResponse)
@@ -89,7 +89,7 @@ async def change_member_active(
 
     db_member = crud_member.get_member_by_id(db, member_id=member_id)
     _ = crud_member.update_member_active(db, db_member=db_member, member_update=member_update)
-    return RedirectResponse(url=f"show", status_code=303)
+    return RedirectResponse(url=f"show", status_code=status.HTTP_303_SEE_OTHER)
 
 
 @router.post("/{member_id}/amount", response_class=HTMLResponse)
@@ -105,7 +105,7 @@ async def change_member_due_payment_amount(
 
     db_member = crud_member.get_member_by_id(db, member_id=member_id)
     _ = crud_member.update_member_amount(db, db_member=db_member, member_update=member_update)
-    return RedirectResponse(url=f"show", status_code=303)
+    return RedirectResponse(url=f"show", status_code=status.HTTP_303_SEE_OTHER)
 
 
 @router.get("/{member_id}/update", response_class=HTMLResponse)
@@ -136,7 +136,7 @@ async def update_member(
 
     db_member = crud_member.get_member_by_id(db, member_id=member_id)
     _ = crud_member.update_member(db, db_member=db_member, member_update=member_update)
-    return RedirectResponse(url=f"show", status_code=303)
+    return RedirectResponse(url=f"show", status_code=status.HTTP_303_SEE_OTHER)
 
 
 @router.post("/{member_id}/donation", response_class=HTMLResponse)
@@ -151,7 +151,7 @@ async def post_member_donation(
     member_donation_create: schemas.MemberDonationCreate = schemas.MemberDonationCreate(**data)
 
     _ = crud_member.post_member_donation(db, member_id=member_id, member_donation_create=member_donation_create)
-    return RedirectResponse(url=f"show", status_code=303)
+    return RedirectResponse(url=f"show", status_code=status.HTTP_303_SEE_OTHER)
 
 
 @router.get("/donations", response_class=HTMLResponse)

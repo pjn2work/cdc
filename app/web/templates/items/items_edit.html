@@ -18,7 +18,7 @@
                 </div>
                 <div class="col-md-10">
                     <label class="form-label label-text" for="category_id">Categoria</label>
-                    <p class="form-control-plaintext data-text">{{ selector("category_id", categories, "category_id", "name", item.category_id) }}</p>
+                    <p class="form-control-plaintext data-text">{{ selector("category_id", categories, "category_id", "name", item.category_id, order_by="name") }}</p>
                     <label class="form-label label-text">Nome</label>
                     <p class="form-control-plaintext data-text"><input class="form-text input_edit" size="80" type="text" id="name" name="name" placeholder="Nome do item" value="{{ item.name }}" required></p>
                     <label class="form-label label-text">Preço base</label>

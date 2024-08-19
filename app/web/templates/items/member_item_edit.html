@@ -8,9 +8,9 @@
             <div class="row mb-0">
                 <div class="col-md-12">
                     <label class="form-label label-text" for="category_id">Associado</label>
-                    <p class="form-control-plaintext data-text">{{ selector("member_id", members, "member_id", "name", member_item.member_id) }}</p>
+                    <p class="form-control-plaintext data-text">{{ selector("member_id", members, "member_id", "name", member_item.member_id, order_by="name") }}</p>
                     <label class="form-label label-text" for="category_id">Item</label>
-                    <p class="form-control-plaintext data-text">{{ selector("item_id", items, "item_id", "name", member_item.item_id) }}</p>
+                    <p class="form-control-plaintext data-text">{{ selector("item_id", items, "item_id", "name", member_item.item_id, order_by="category.name,name", group_category="category_id", group_label="category.name") }}</p>
                     <label class="form-label label-text">Quantidade de venda</label>
                     <p class="form-control-plaintext data-text"><input class="form-text input_edit" type="number" id="quantity" name="quantity" placeholder="Quantidade total de venda" value="{{ member_item.quantity }}" required></p>
                     <label class="form-label label-text">valor de venda</label>

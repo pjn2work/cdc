@@ -23,11 +23,19 @@
                         <textarea class="form-control-plaintext data-text" disabled rows="3" cols="81">{{ seller.notes }}</textarea>
                     </div>
                 </div><div class="row mb-0">
-                    <div class="col-md-12">
-                        <hr>
+                    <hr>
+                    <div class="col-md-6">
                         <form class="form-inline" method="get" action="update">
                             <p class="align_center">
                                 <button class="btn btn-primary mb-1" type="submit">Editar Vendedor</button>
+                            </p>
+                        </form>
+                    </div>
+                    <div class="col-md-6">
+                        <form class="form-inline" method="get" action="../../sellers-items/create">
+                            <p class="align_center">
+                                <input type="hidden" name="seller_id" value="{{ seller.seller_id }}">
+                                <button class="btn btn-primary mb-1" type="submit">Criar nova compra a vendedor</button>
                             </p>
                         </form>
                     </div>

@@ -15,6 +15,7 @@ from app.db import init_db, get_db
 from app.sec import router as sec_router
 from app.utils.errors import NotFound404, Conflict409
 from app.web import templates
+from app.web.admin import router as admin_router
 from app.web.categories import router as web_items_categories_router
 from app.web.dues_payments import router as web_dues_payments_router
 from app.web.expense_accounts import router as web_sellers_ea_router
@@ -38,11 +39,11 @@ async def lifespan(_: FastAPI):
 
 
 app = FastAPI(lifespan=lifespan, debug=False)
-
+VERSION = "v0.10"
 
 @app.get(path="/health")
 def health():
-    return "I'm alive running v0.9"
+    return f"I'm alive, running {VERSION}"
 
 
 @app.exception_handler(Exception)
@@ -78,6 +79,7 @@ app.include_router(tests_router, prefix="/api/tests", tags=["/api/tests"])
 # Web pages
 app.include_router(web_index, prefix="/web", tags=["/web"])
 app.include_router(login_router, prefix="/web/login", tags=["/web/login"])
+app.include_router(admin_router, prefix="/web/admin", tags=["/web/admin"])
 app.include_router(web_members_router, prefix="/web/members", tags=["/web/members"])
 app.include_router(web_dues_payments_router, prefix="/web/dues_payments", tags=["/web/dues_payments"])
 app.include_router(web_member_due_payment_router, prefix="/web/member_due_payment", tags=["/web/member_due_payment"])
