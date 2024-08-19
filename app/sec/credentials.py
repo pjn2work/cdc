@@ -72,7 +72,7 @@ class ManageCredentials:
 
     def admin_remove_client(self, client_id: str):
         if client_id in self.cred.app_clients:
-            logit(f"--> User Admin - Removing '{client_id}'", level=logging.WARNING)
+            logit(f"> User Admin - Removing '{client_id}'", level=logging.WARNING)
             self.cred.app_clients.pop(client_id)
 
             self._save_credentials()
@@ -81,20 +81,20 @@ class ManageCredentials:
         if client_id in self.cred.app_clients:
 
             if client_id != new_client_id:
-                logit(f"--> User Admin - Renaming '{client_id}' to '{new_client_id}'", level=logging.WARNING)
+                logit(f"> User Admin - Renaming '{client_id}' to '{new_client_id}'", level=logging.WARNING)
                 self.cred.app_clients[new_client_id] = self.cred.app_clients.pop(client_id)
 
             _client = self.cred.app_clients[new_client_id]
             if data["client_secret"]:
-                logit(f"--> User Admin - Reset Password '{new_client_id}'", level=logging.WARNING)
+                logit(f"> User Admin - Reset Password '{new_client_id}'", level=logging.WARNING)
                 _client.client_secret = data["client_secret"]
 
-            logit(f"--> User Admin - Updating '{new_client_id}'", level=logging.WARNING)
+            logit(f"> User Admin - Updating '{new_client_id}'", level=logging.WARNING)
             _client.client_name = data["client_name"]
             _client.scopes = data["scopes"]
             _client.expire_after = data["expire_after"]
         else:
-            logit(f"--> User Admin - Creating '{new_client_id}'", level=logging.WARNING)
+            logit(f"> User Admin - Creating '{new_client_id}'", level=logging.WARNING)
             self.cred.app_clients[new_client_id] = Client(**data)
 
         self._save_credentials()
