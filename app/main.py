@@ -1,4 +1,5 @@
 from contextlib import asynccontextmanager
+from datetime import datetime
 
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
@@ -40,6 +41,24 @@ async def lifespan(_: FastAPI):
 
 app = FastAPI(lifespan=lifespan, debug=False)
 VERSION = "v0.10"
+
+
+@app.middleware("https")
+async def log_traffic(request: Request, call_next):
+    start_time = datetime.now()
+    response = await call_next(request)
+    process_time = (datetime.now() - start_time).total_seconds()
+    client_host = request.client.host
+    log_params = {
+        "method": request.method,
+        "url": str(request.url),
+        "response_status": response.status_code,
+        "process_time": process_time,
+        "client": client_host
+    }
+    logit(str(log_params), level=logging.DEBUG)
+    return response
+
 
 @app.get(path="/health")
 def health():
