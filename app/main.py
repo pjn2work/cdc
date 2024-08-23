@@ -40,23 +40,30 @@ async def lifespan(_: FastAPI):
 
 
 app = FastAPI(lifespan=lifespan, debug=False)
-VERSION = "v0.10"
+VERSION = "v0.11"
 
 
 @app.middleware("https")
 async def log_traffic(request: Request, call_next):
+    def _log_traffic(status_code):
+        process_time = (datetime.now() - start_time).total_seconds()
+        log_params = {
+            "method": request.method,
+            "url": str(request.url),
+            "status": status_code,
+            "process_time": process_time,
+            "client": request.client.host
+        }
+        logit(str(log_params), level=logging.DEBUG)
+
     start_time = datetime.now()
-    response = await call_next(request)
-    process_time = (datetime.now() - start_time).total_seconds()
-    client_host = request.client.host
-    log_params = {
-        "method": request.method,
-        "url": str(request.url),
-        "response_status": response.status_code,
-        "process_time": process_time,
-        "client": client_host
-    }
-    logit(str(log_params), level=logging.DEBUG)
+    try:
+        response = await call_next(request)
+        _log_traffic(status_code=response.status_code)
+    except Exception:
+        _log_traffic(status_code=444)
+        raise
+
     return response
 
 
