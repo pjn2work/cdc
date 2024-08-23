@@ -5,7 +5,8 @@ from starlette.responses import HTMLResponse, RedirectResponse
 from app.db import crud_member, schemas, DB_SESSION
 from app.sec import GET_CURRENT_WEB_CLIENT, TokenData, are_valid_scopes
 from app.utils import get_today_year_month_str, get_today
-from app.web import templates
+from app.utils.errors import CustomException
+from app.web import templates, error_page
 
 router = APIRouter()
 
@@ -87,8 +88,12 @@ async def change_member_active(
     data = await request.form()
     member_update: schemas.MemberUpdateActive = schemas.MemberUpdateActive(**data)
 
-    db_member = crud_member.get_member_by_id(db, member_id=member_id)
-    _ = crud_member.update_member_active(db, db_member=db_member, member_update=member_update)
+    try:
+        db_member = crud_member.get_member_by_id(db, member_id=member_id)
+        _ = crud_member.update_member_active(db, db_member=db_member, member_update=member_update)
+    except CustomException as exc:
+        return error_page(request, exc)
+
     return RedirectResponse(url=f"show", status_code=status.HTTP_303_SEE_OTHER)
 
 
@@ -103,8 +108,12 @@ async def change_member_due_payment_amount(
     data = await request.form()
     member_update: schemas.MemberUpdateAmount = schemas.MemberUpdateAmount(**data)
 
-    db_member = crud_member.get_member_by_id(db, member_id=member_id)
-    _ = crud_member.update_member_amount(db, db_member=db_member, member_update=member_update)
+    try:
+        db_member = crud_member.get_member_by_id(db, member_id=member_id)
+        _ = crud_member.update_member_amount(db, db_member=db_member, member_update=member_update)
+    except CustomException as exc:
+        return error_page(request, exc)
+
     return RedirectResponse(url=f"show", status_code=status.HTTP_303_SEE_OTHER)
 
 

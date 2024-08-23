@@ -4,7 +4,8 @@ from starlette.responses import HTMLResponse, RedirectResponse
 
 from app.db import crud_dues_payments, schemas, DB_SESSION
 from app.sec import GET_CURRENT_WEB_CLIENT, TokenData, are_valid_scopes
-from app.web import templates
+from app.utils.errors import CustomException
+from app.web import templates, error_page
 
 router = APIRouter()
 
@@ -46,7 +47,11 @@ async def pay_member_due_payment(
     data = await request.form()
     mdpc: schemas.MemberDuesPaymentCreate = schemas.MemberDuesPaymentCreate(**data)
 
-    mdp = crud_dues_payments.pay_member_due_payment(db, tid=tid, mdpc=mdpc)
+    try:
+        mdp = crud_dues_payments.pay_member_due_payment(db, tid=tid, mdpc=mdpc)
+    except CustomException as exc:
+        return error_page(request, exc)
+
     return RedirectResponse(url=f"../members/{mdp.member_id}/show", status_code=303)
 
 

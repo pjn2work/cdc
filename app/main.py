@@ -2,10 +2,10 @@ from contextlib import asynccontextmanager
 from datetime import datetime
 
 from fastapi import FastAPI, Request
-from fastapi.responses import JSONResponse
 from starlette.staticfiles import StaticFiles
 
-from app import logit, logging
+from app import logit, logging, log_traffic
+from app.api import error_json
 from app.api.dues_payments import router as dues_payments_router
 from app.api.items import router as items_router
 from app.api.member_due_payment import router as member_due_payment_router
@@ -14,8 +14,7 @@ from app.api.sellers import router as sellers_router
 from app.api.tests import router as tests_router
 from app.db import init_db, get_db
 from app.sec import router as sec_router
-from app.utils.errors import NotFound404, Conflict409
-from app.web import templates
+from app.web import error_page
 from app.web.admin import router as admin_router
 from app.web.categories import router as web_items_categories_router
 from app.web.dues_payments import router as web_dues_payments_router
@@ -44,24 +43,18 @@ VERSION = "v0.11"
 
 
 @app.middleware("https")
-async def log_traffic(request: Request, call_next):
-    def _log_traffic(status_code):
-        process_time = (datetime.now() - start_time).total_seconds()
-        log_params = {
-            "method": request.method,
-            "url": str(request.url),
-            "status": status_code,
-            "process_time": process_time,
-            "client": request.client.host
-        }
-        logit(str(log_params), level=logging.DEBUG)
-
-    start_time = datetime.now()
+async def main_log_traffic(request: Request, call_next):
+    kwargs = {
+        "start_time": datetime.now(),
+        "method": request.method,
+        "url": str(request.url),
+        "client": request.client.host
+    }
     try:
         response = await call_next(request)
-        _log_traffic(status_code=response.status_code)
+        log_traffic(status_code=response.status_code, **kwargs)
     except Exception:
-        _log_traffic(status_code=444)
+        log_traffic(status_code=501, **kwargs)
         raise
 
     return response
@@ -74,21 +67,9 @@ def health():
 
 @app.exception_handler(Exception)
 async def custom_exception_handler(request: Request, exc: Exception):
-    #tb = traceback.format_exc()
-    if isinstance(exc, NotFound404):
-        status_code = 404
-    elif isinstance(exc, Conflict409):
-        status_code = 409
-    else:
-        status_code = 400
-
     if request.url.path.startswith("/web/"):
-        return templates.TemplateResponse("error.html", {
-            "request": request,
-            "error_message": str(exc),
-            "status_code": status_code
-        })
-    return JSONResponse(status_code=status_code, content={"detail": str(exc)})
+        return error_page(request, exc)
+    return error_json(exc)
 
 
 # Security

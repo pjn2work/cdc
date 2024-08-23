@@ -4,8 +4,10 @@ from fastapi import APIRouter
 from sqlalchemy.orm import Session
 from starlette import status
 
+from app.api import error_json
 from app.db import crud_sellers, schemas, DB_SESSION
 from app.sec import GET_CURRENT_API_CLIENT, TokenData, are_valid_scopes
+from app.utils.errors import CustomException
 
 router = APIRouter()
 
@@ -34,7 +36,11 @@ def list_expense_accounts(
         db: Session = DB_SESSION,
         current_client: TokenData = GET_CURRENT_API_CLIENT):
     are_valid_scopes(["app:read", "expense_account:read"], current_client)
-    return crud_sellers.get_expense_accounts_list(db, skip=skip, limit=limit, search_text=search_text)
+
+    try:
+        return crud_sellers.get_expense_accounts_list(db, skip=skip, limit=limit, search_text=search_text)
+    except CustomException as exc:
+        return error_json(exc)
 
 
 @router.get(
@@ -47,7 +53,11 @@ def get_expense_account(
         db: Session = DB_SESSION,
         current_client: TokenData = GET_CURRENT_API_CLIENT):
     are_valid_scopes(["app:read", "expense_account:read"], current_client)
-    return crud_sellers.get_expense_account(db, ea_id=ea_id)
+
+    try:
+        return crud_sellers.get_expense_account(db, ea_id=ea_id)
+    except CustomException as exc:
+        return error_json(exc)
 
 
 @router.put(
@@ -61,8 +71,12 @@ def update_expense_account(
         db: Session = DB_SESSION,
         current_client: TokenData = GET_CURRENT_API_CLIENT):
     are_valid_scopes(["app:update", "expense_account:update"], current_client)
-    db_expense_account = crud_sellers.get_expense_account_by_id(db, ea_id=ea_id)
-    return crud_sellers.update_expense_account(db, db_expense_account=db_expense_account, expense_account_update=expense_account_update)
+
+    try:
+        db_expense_account = crud_sellers.get_expense_account_by_id(db, ea_id=ea_id)
+        return crud_sellers.update_expense_account(db, db_expense_account=db_expense_account, expense_account_update=expense_account_update)
+    except CustomException as exc:
+        return error_json(exc)
 
 
 # ----------------------------------------------------------
@@ -92,7 +106,11 @@ def list_sellers(
         db: Session = DB_SESSION,
         current_client: TokenData = GET_CURRENT_API_CLIENT):
     are_valid_scopes(["app:read", "seller:read"], current_client)
-    return crud_sellers.get_sellers_list(db, skip=skip, limit=limit, search_text=search_text)
+
+    try:
+        return crud_sellers.get_sellers_list(db, skip=skip, limit=limit, search_text=search_text)
+    except CustomException as exc:
+        return error_json(exc)
 
 
 @router.get(
@@ -105,7 +123,11 @@ def get_seller(
         db: Session = DB_SESSION,
         current_client: TokenData = GET_CURRENT_API_CLIENT):
     are_valid_scopes(["app:read", "seller:read"], current_client)
-    return crud_sellers.get_seller(db, seller_id=seller_id)
+
+    try:
+        return crud_sellers.get_seller(db, seller_id=seller_id)
+    except CustomException as exc:
+        return error_json(exc)
 
 
 @router.put(
@@ -119,5 +141,9 @@ def update_seller(
         db: Session = DB_SESSION,
         current_client: TokenData = GET_CURRENT_API_CLIENT):
     are_valid_scopes(["app:update", "seller:update"], current_client)
-    db_seller = crud_sellers.get_seller_by_id(db, seller_id=seller_id)
-    return crud_sellers.update_seller(db, db_seller=db_seller, seller_update=seller_update)
+
+    try:
+        db_seller = crud_sellers.get_seller_by_id(db, seller_id=seller_id)
+        return crud_sellers.update_seller(db, db_seller=db_seller, seller_update=seller_update)
+    except CustomException as exc:
+        return error_json(exc)
