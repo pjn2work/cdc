@@ -19,7 +19,11 @@ def list_dues_payments(
         current_client: TokenData = GET_CURRENT_WEB_CLIENT):
     are_valid_scopes(["app:read", "due_payment:read"], current_client)
 
-    dp_list = crud_dues_payments.get_dues_payment_year_month_stats_list(db, since=since, until=until)
+    try:
+        dp_list = crud_dues_payments.get_dues_payment_year_month_stats_list(db, since=since, until=until)
+    except CustomException as exc:
+        return error_page(request, exc)
+
     return templates.TemplateResponse("due_payments/dues_payments_list.html", {
         "request": request,
         "dues_payments_list": dp_list,
@@ -63,4 +67,5 @@ async def create_due_payment_submit(
         dp = crud_dues_payments.create_dues_payment_year_month(db=db, dues_payment_create=dues_payment_create)
     except CustomException as exc:
         return error_page(request, exc)
+
     return RedirectResponse(url=f"{dp.id_year_month}/show", status_code=303)

@@ -7,7 +7,8 @@ from starlette.responses import HTMLResponse, RedirectResponse
 from app.db import crud_items, schemas, DB_SESSION
 from app.sec import GET_CURRENT_WEB_CLIENT, TokenData, are_valid_scopes
 from app.utils import get_today
-from app.web import templates
+from app.utils.errors import CustomException
+from app.web import templates, error_page
 
 router = APIRouter()
 
@@ -22,11 +23,14 @@ def list_items(
         current_client: TokenData = GET_CURRENT_WEB_CLIENT):
     are_valid_scopes(["app:read", "item:read"], current_client)
 
-    categories = crud_items.get_categories_list(db, search_text="")
-    if do_filter:
-        items = crud_items.get_items_list(db, search_text=search_text, category_id=category_id)
-    else:
-        items = []
+    try:
+        categories = crud_items.get_categories_list(db, search_text="")
+        if do_filter:
+            items = crud_items.get_items_list(db, search_text=search_text, category_id=category_id)
+        else:
+            items = []
+    except CustomException as exc:
+        return error_page(request, exc)
 
     return templates.TemplateResponse("items/items_list.html", {
         "request": request,
@@ -64,7 +68,11 @@ async def create_item_submit(
     data = await request.form()
     item_create: schemas.ItemCreate = schemas.ItemCreate(**data)
 
-    item = crud_items.create_item(db=db, item_create=item_create)
+    try:
+        item = crud_items.create_item(db=db, item_create=item_create)
+    except CustomException as exc:
+        return error_page(request, exc)
+
     return RedirectResponse(url=f"{item.item_id}/show", status_code=303)
 
 
@@ -76,7 +84,11 @@ def show_item(
         current_client: TokenData = GET_CURRENT_WEB_CLIENT):
     are_valid_scopes(["app:read", "item:read"], current_client)
 
-    item = crud_items.get_item(db, item_id=item_id)
+    try:
+        item = crud_items.get_item(db, item_id=item_id)
+    except CustomException as exc:
+        return error_page(request, exc)
+
     return templates.TemplateResponse("items/items_show.html", {
         "request": request,
         "item": item,
@@ -92,8 +104,11 @@ def edit_item(
         current_client: TokenData = GET_CURRENT_WEB_CLIENT):
     are_valid_scopes(["app:update", "item:update"], current_client)
 
-    categories = crud_items.get_categories_list(db, search_text="")
-    item = crud_items.get_item(db, item_id=item_id)
+    try:
+        categories = crud_items.get_categories_list(db, search_text="")
+        item = crud_items.get_item(db, item_id=item_id)
+    except CustomException as exc:
+        return error_page(request, exc)
 
     return templates.TemplateResponse("items/items_edit.html", {
         "request": request,
@@ -113,6 +128,10 @@ async def update_item(
     data = await request.form()
     item_update: schemas.ItemUpdate = schemas.ItemUpdate(**data)
 
-    db_item = crud_items.get_item_by_id(db, item_id=item_id)
-    _ = crud_items.update_item(db, db_item=db_item, item_update=item_update)
+    try:
+        db_item = crud_items.get_item_by_id(db, item_id=item_id)
+        _ = crud_items.update_item(db, db_item=db_item, item_update=item_update)
+    except CustomException as exc:
+        return error_page(request, exc)
+
     return RedirectResponse(url=f"show", status_code=303)

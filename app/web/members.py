@@ -68,7 +68,11 @@ def show_member(
         current_client: TokenData = GET_CURRENT_WEB_CLIENT):
     are_valid_scopes(["app:read", "member:read"], current_client)
 
-    member = crud_member.get_member(db, member_id=member_id)
+    try:
+        member = crud_member.get_member(db, member_id=member_id)
+    except CustomException as exc:
+        return error_page(request, exc)
+
     return templates.TemplateResponse("members/members_show.html", {
         "request": request,
         "member": member,
@@ -125,7 +129,11 @@ def edit_member(
         current_client: TokenData = GET_CURRENT_WEB_CLIENT):
     are_valid_scopes(["app:update", "member:update"], current_client)
 
-    member = crud_member.get_member(db, member_id=member_id)
+    try:
+        member = crud_member.get_member(db, member_id=member_id)
+    except CustomException as exc:
+        return error_page(request, exc)
+
     return templates.TemplateResponse("members/members_edit.html", {
         "request": request,
         "member": member
@@ -143,8 +151,12 @@ async def update_member(
     data = await request.form()
     member_update: schemas.MemberUpdate = schemas.MemberUpdate(**data)
 
-    db_member = crud_member.get_member_by_id(db, member_id=member_id)
-    _ = crud_member.update_member(db, db_member=db_member, member_update=member_update)
+    try:
+        db_member = crud_member.get_member_by_id(db, member_id=member_id)
+        _ = crud_member.update_member(db, db_member=db_member, member_update=member_update)
+    except CustomException as exc:
+        return error_page(request, exc)
+
     return RedirectResponse(url=f"show", status_code=status.HTTP_303_SEE_OTHER)
 
 
@@ -159,7 +171,11 @@ async def post_member_donation(
     data = await request.form()
     member_donation_create: schemas.MemberDonationCreate = schemas.MemberDonationCreate(**data)
 
-    _ = crud_member.post_member_donation(db, member_id=member_id, member_donation_create=member_donation_create)
+    try:
+        _ = crud_member.post_member_donation(db, member_id=member_id, member_donation_create=member_donation_create)
+    except CustomException as exc:
+        return error_page(request, exc)
+
     return RedirectResponse(url=f"show", status_code=status.HTTP_303_SEE_OTHER)
 
 

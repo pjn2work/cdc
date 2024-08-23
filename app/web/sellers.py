@@ -5,7 +5,8 @@ from starlette.responses import HTMLResponse, RedirectResponse
 from app.db import crud_sellers, schemas, DB_SESSION
 from app.sec import GET_CURRENT_WEB_CLIENT, TokenData, are_valid_scopes
 from app.utils import get_today
-from app.web import templates
+from app.utils.errors import CustomException
+from app.web import templates, error_page
 
 router = APIRouter()
 
@@ -61,7 +62,11 @@ def show_seller(
         current_client: TokenData = GET_CURRENT_WEB_CLIENT):
     are_valid_scopes(["app:read", "seller:read"], current_client)
 
-    seller = crud_sellers.get_seller(db, seller_id=seller_id)
+    try:
+        seller = crud_sellers.get_seller(db, seller_id=seller_id)
+    except CustomException as exc:
+        return error_page(request, exc)
+
     return templates.TemplateResponse("sellers/sellers_show.html", {
         "request": request,
         "seller": seller,
@@ -77,7 +82,11 @@ def edit_seller(
         current_client: TokenData = GET_CURRENT_WEB_CLIENT):
     are_valid_scopes(["app:update", "seller:update"], current_client)
 
-    seller = crud_sellers.get_seller(db, seller_id=seller_id)
+    try:
+        seller = crud_sellers.get_seller(db, seller_id=seller_id)
+    except CustomException as exc:
+        return error_page(request, exc)
+
     return templates.TemplateResponse("sellers/sellers_edit.html", {
         "request": request,
         "seller": seller
@@ -95,6 +104,10 @@ async def update_seller(
     data = await request.form()
     seller_update: schemas.SellerUpdate = schemas.SellerUpdate(**data)
 
-    db_seller = crud_sellers.get_seller_by_id(db, seller_id=seller_id)
-    _ = crud_sellers.update_seller(db, db_seller=db_seller, seller_update=seller_update)
+    try:
+        db_seller = crud_sellers.get_seller_by_id(db, seller_id=seller_id)
+        _ = crud_sellers.update_seller(db, db_seller=db_seller, seller_update=seller_update)
+    except CustomException as exc:
+        return error_page(request, exc)
+
     return RedirectResponse(url=f"show", status_code=303)

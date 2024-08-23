@@ -5,7 +5,8 @@ from starlette.responses import HTMLResponse, RedirectResponse
 from app.db import crud_items, crud_sellers, schemas, DB_SESSION
 from app.sec import GET_CURRENT_WEB_CLIENT, TokenData, are_valid_scopes
 from app.utils import get_today
-from app.web import templates
+from app.utils.errors import CustomException
+from app.web import templates, error_page
 
 router = APIRouter()
 
@@ -98,7 +99,12 @@ async def create_seller_item_submit(
     del data["item_id"]
 
     seller_item_create: schemas.SellerItemsCreate = schemas.SellerItemsCreate(**data)
-    seller_item = crud_items.create_seller_item(db=db, item_id=item_id, seller_item_create=seller_item_create)
+
+    try:
+        seller_item = crud_items.create_seller_item(db=db, item_id=item_id, seller_item_create=seller_item_create)
+    except CustomException as exc:
+        return error_page(request, exc)
+
     return RedirectResponse(url=f"../sellers-items/?do_filter=on&tid={seller_item.tid}", status_code=303)
 
 
@@ -110,7 +116,10 @@ def edit_seller_item(
         current_client: TokenData = GET_CURRENT_WEB_CLIENT):
     are_valid_scopes(["app:update", "seller_item:update"], current_client)
 
-    seller_item = crud_items.get_seller_item(db, tid=tid)
+    try:
+        seller_item = crud_items.get_seller_item(db, tid=tid)
+    except CustomException as exc:
+        return error_page(request, exc)
 
     items = crud_items.get_items_list(db, search_text="")
     sellers = crud_sellers.get_sellers_list(db, search_text="")
@@ -139,6 +148,10 @@ async def update_seller_item(
 
     seller_item_update: schemas.SellerItemsUpdate = schemas.SellerItemsUpdate(**data)
 
-    db_seller_item = crud_items.get_seller_item(db, tid=tid)
-    _ = crud_items.update_seller_item(db, db_seller_item=db_seller_item, seller_item_update=seller_item_update)
+    try:
+        db_seller_item = crud_items.get_seller_item(db, tid=tid)
+        _ = crud_items.update_seller_item(db, db_seller_item=db_seller_item, seller_item_update=seller_item_update)
+    except CustomException as exc:
+        return error_page(request, exc)
+
     return RedirectResponse(url=f"../../sellers-items/?do_filter=on&tid={tid}", status_code=303)
