@@ -17,6 +17,18 @@ fi
 
 if [ "$1" == "update" ] && [ -n "$(docker images -q cecc:latest)" ]; then
   echo ">>> Removing cecc image"
+
+  PID=$(ps -ef | grep "uvicorn app.main" | grep -v grep | awk '{print $2}')
+  if [ -z "$PID" ]; then
+    echo "    - 'uvicorn app.main' not running."
+  else
+    sudo kill -9 $PID
+    echo "    - 'uvicorn app.main' with PID $PID has been killed."
+  fi
+
+  git pull
+
+  docker rm -f cecc
   docker rmi cecc || { echo "Failed to remove app image"; exit 1; }
 fi
 
@@ -32,5 +44,5 @@ fi
 if has_docker_compose; then
   docker-compose run --rm --service-ports app
 else
-  docker run --rm -p 8443:443 -v ./data:/cecc/data cecc
+  nohup docker run --rm -p 8443:443 -v ./data:/cecc/data cecc &
 fi
