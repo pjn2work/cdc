@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Request
+from pydantic_core import ValidationError
 from sqlalchemy.orm import Session
 from starlette.responses import HTMLResponse, RedirectResponse
 
@@ -90,8 +91,13 @@ async def create_member_item_submit(
     item_id = int(data["item_id"])
     del data["item_id"]
 
-    member_item_create: schemas.MemberItemsCreate = schemas.MemberItemsCreate(**data)
-    member_item = crud_items.create_member_item(db=db, item_id=item_id, member_item_create=member_item_create)
+    try:
+        member_item_create: schemas.MemberItemsCreate = schemas.MemberItemsCreate(**data)
+
+        member_item = crud_items.create_member_item(db=db, item_id=item_id, member_item_create=member_item_create)
+    except (CustomException, ValidationError) as exc:
+        return error_page(request, exc)
+
     return RedirectResponse(url=f"../members-items/?do_filter=on&tid={member_item.tid}", status_code=303)
 
 
@@ -131,12 +137,12 @@ async def update_member_item(
     if "is_cash" not in data:
         data["is_cash"] = False
 
-    member_item_update: schemas.MemberItemsUpdate = schemas.MemberItemsUpdate(**data)
-
     try:
+        member_item_update: schemas.MemberItemsUpdate = schemas.MemberItemsUpdate(**data)
+
         db_member_item = crud_items.get_member_item(db, tid=tid)
         _ = crud_items.update_member_item(db, db_member_item=db_member_item, member_item_update=member_item_update)
-    except CustomException as exc:
+    except (CustomException, ValidationError) as exc:
         return error_page(request, exc)
 
     return RedirectResponse(url=f"../../members-items/?do_filter=on&tid={tid}", status_code=303)

@@ -18,10 +18,18 @@ for handler in logging.getLogger().handlers:
     handler.addFilter(NoTracebackFilter())
 
 
+def get_prev_function(level: int = 1):
+    # remove this function (level 0)
+    code = inspect.currentframe().f_back
+    for _ in range(level):
+        code = code.f_back
+    return code.f_code
+
+
 def logit(msg: str, level: int = logging.INFO, func = None):
     # Get the previous frame in the stack
     if func is None:
-        func = inspect.currentframe().f_back.f_code
+        func = get_prev_function()
 
     msg = f"[{func.co_name}] - {msg}"
     log.log(level=level, msg=msg)
@@ -36,4 +44,4 @@ def log_traffic(status_code: int, start_time: datetime, method: str, url: str, c
         "process_time": process_time,
         "client": client
     }
-    logit(str(log_params), level=logging.DEBUG, func=inspect.currentframe().f_back.f_code)
+    logit(str(log_params), level=logging.DEBUG, func=get_prev_function())

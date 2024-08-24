@@ -1,5 +1,5 @@
 class CustomException(Exception):
-    status_code = 444
+    status_code = 400
 
 class NotFound404(CustomException):
     status_code = 404

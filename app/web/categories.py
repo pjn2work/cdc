@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Request
+from pydantic_core import ValidationError
 from sqlalchemy.orm import Session
 from starlette.responses import HTMLResponse, RedirectResponse
 
@@ -51,9 +52,14 @@ async def create_category_submit(
     are_valid_scopes(["app:create", "category:create"], current_client)
 
     data = await request.form()
-    category_create: schemas.CategoryCreate = schemas.CategoryCreate(**data)
 
-    category = crud_items.create_category(db=db, category_create=category_create)
+    try:
+        category_create: schemas.CategoryCreate = schemas.CategoryCreate(**data)
+
+        category = crud_items.create_category(db=db, category_create=category_create)
+    except (CustomException, ValidationError) as exc:
+        return error_page(request, exc)
+
     return RedirectResponse(url=f"{category.category_id}/show", status_code=303)
 
 
@@ -105,12 +111,13 @@ async def update_category(
     are_valid_scopes(["app:update", "category:update"], current_client)
 
     data = await request.form()
-    category_update: schemas.CategoryUpdate = schemas.CategoryUpdate(**data)
 
     try:
+        category_update: schemas.CategoryUpdate = schemas.CategoryUpdate(**data)
+
         db_category = crud_items.get_category_by_id(db, category_id=category_id)
         _ = crud_items.update_category(db, db_category=db_category, category_update=category_update)
-    except CustomException as exc:
+    except (CustomException, ValidationError) as exc:
         return error_page(request, exc)
 
     return RedirectResponse(url=f"show", status_code=303)

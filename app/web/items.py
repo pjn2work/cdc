@@ -1,6 +1,7 @@
 from typing import Optional
 
 from fastapi import APIRouter, Request
+from pydantic_core import ValidationError
 from sqlalchemy.orm import Session
 from starlette.responses import HTMLResponse, RedirectResponse
 
@@ -66,11 +67,12 @@ async def create_item_submit(
     are_valid_scopes(["app:create", "item:create"], current_client)
 
     data = await request.form()
-    item_create: schemas.ItemCreate = schemas.ItemCreate(**data)
 
     try:
+        item_create: schemas.ItemCreate = schemas.ItemCreate(**data)
+
         item = crud_items.create_item(db=db, item_create=item_create)
-    except CustomException as exc:
+    except (CustomException, ValidationError) as exc:
         return error_page(request, exc)
 
     return RedirectResponse(url=f"{item.item_id}/show", status_code=303)
@@ -126,12 +128,13 @@ async def update_item(
     are_valid_scopes(["app:update", "item:update"], current_client)
 
     data = await request.form()
-    item_update: schemas.ItemUpdate = schemas.ItemUpdate(**data)
 
     try:
+        item_update: schemas.ItemUpdate = schemas.ItemUpdate(**data)
+
         db_item = crud_items.get_item_by_id(db, item_id=item_id)
         _ = crud_items.update_item(db, db_item=db_item, item_update=item_update)
-    except CustomException as exc:
+    except (CustomException, ValidationError) as exc:
         return error_page(request, exc)
 
     return RedirectResponse(url=f"show", status_code=303)

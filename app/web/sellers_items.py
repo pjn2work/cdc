@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Request
+from pydantic_core import ValidationError
 from sqlalchemy.orm import Session
 from starlette.responses import HTMLResponse, RedirectResponse
 
@@ -98,11 +99,11 @@ async def create_seller_item_submit(
     item_id = int(data["item_id"])
     del data["item_id"]
 
-    seller_item_create: schemas.SellerItemsCreate = schemas.SellerItemsCreate(**data)
-
     try:
+        seller_item_create: schemas.SellerItemsCreate = schemas.SellerItemsCreate(**data)
+
         seller_item = crud_items.create_seller_item(db=db, item_id=item_id, seller_item_create=seller_item_create)
-    except CustomException as exc:
+    except (CustomException, ValidationError) as exc:
         return error_page(request, exc)
 
     return RedirectResponse(url=f"../sellers-items/?do_filter=on&tid={seller_item.tid}", status_code=303)
@@ -146,12 +147,12 @@ async def update_seller_item(
     if "is_cash" not in data:
         data["is_cash"] = False
 
-    seller_item_update: schemas.SellerItemsUpdate = schemas.SellerItemsUpdate(**data)
-
     try:
+        seller_item_update: schemas.SellerItemsUpdate = schemas.SellerItemsUpdate(**data)
+
         db_seller_item = crud_items.get_seller_item(db, tid=tid)
         _ = crud_items.update_seller_item(db, db_seller_item=db_seller_item, seller_item_update=seller_item_update)
-    except CustomException as exc:
+    except (CustomException, ValidationError) as exc:
         return error_page(request, exc)
 
     return RedirectResponse(url=f"../../sellers-items/?do_filter=on&tid={tid}", status_code=303)

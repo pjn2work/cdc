@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Request
+from pydantic_core import ValidationError
 from sqlalchemy.orm import Session
 from starlette.responses import HTMLResponse, RedirectResponse
 
@@ -48,11 +49,12 @@ async def create_expense_account_submit(
     are_valid_scopes(["app:create", "expense_account:create"], current_client)
 
     data = await request.form()
-    expense_account_create: schemas.ExpenseAccountCreate = schemas.ExpenseAccountCreate(**data)
 
     try:
+        expense_account_create: schemas.ExpenseAccountCreate = schemas.ExpenseAccountCreate(**data)
+
         expense_account = crud_sellers.create_expense_account(db=db, expense_account_create=expense_account_create)
-    except CustomException as exc:
+    except (CustomException, ValidationError) as exc:
         return error_page(request, exc)
 
     return RedirectResponse(url=f"{expense_account.ea_id}/show", status_code=303)
@@ -106,12 +108,13 @@ async def update_expense_account(
     are_valid_scopes(["app:update", "expense_account:update"], current_client)
 
     data = await request.form()
-    expense_account_update: schemas.ExpenseAccountUpdate = schemas.ExpenseAccountUpdate(**data)
 
     try:
+        expense_account_update: schemas.ExpenseAccountUpdate = schemas.ExpenseAccountUpdate(**data)
+
         db_expense_account = crud_sellers.get_expense_account_by_id(db, ea_id=ea_id)
         _ = crud_sellers.update_expense_account(db, db_expense_account=db_expense_account, expense_account_update=expense_account_update)
-    except CustomException as exc:
+    except (CustomException, ValidationError) as exc:
         return error_page(request, exc)
 
     return RedirectResponse(url=f"show", status_code=303)

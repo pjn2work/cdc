@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Request
+from pydantic_core import ValidationError
 from sqlalchemy.orm import Session
 from starlette.responses import HTMLResponse, RedirectResponse
 
@@ -61,11 +62,12 @@ async def create_due_payment_submit(
     are_valid_scopes(["app:create", "due_payment:create"], current_client)
 
     data = await request.form()
-    dues_payment_create: schemas.DuesPaymentCreate = schemas.DuesPaymentCreate(**data)
 
     try:
+        dues_payment_create: schemas.DuesPaymentCreate = schemas.DuesPaymentCreate(**data)
+
         dp = crud_dues_payments.create_dues_payment_year_month(db=db, dues_payment_create=dues_payment_create)
-    except CustomException as exc:
+    except (CustomException, ValidationError) as exc:
         return error_page(request, exc)
 
     return RedirectResponse(url=f"{dp.id_year_month}/show", status_code=303)
