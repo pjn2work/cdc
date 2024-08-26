@@ -52,6 +52,7 @@ async def main_log_traffic(request: Request, call_next):
     }
     try:
         response = await call_next(request)
+        response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains; preload"
         log_traffic(status_code=response.status_code, **kwargs)
     except Exception:
         log_traffic(status_code=501, **kwargs)
