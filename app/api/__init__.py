@@ -1,6 +1,6 @@
 from fastapi.responses import JSONResponse
 
-from app import logit, logging, get_prev_function
+from app import logit, logging, get_prev_function, unified_response
 from app.utils.errors import CustomException
 
 
@@ -9,4 +9,6 @@ def error_json(exc: Exception):
 
     logit(msg=f"api.{status_code=} - {exc}", level=logging.INFO, func=get_prev_function())
 
-    return JSONResponse(status_code=status_code, content={"detail": str(exc)})
+    response = JSONResponse(status_code=status_code, content={"detail": str(exc)})
+
+    return unified_response(response)

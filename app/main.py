@@ -4,7 +4,7 @@ from datetime import datetime
 from fastapi import FastAPI, Request
 from starlette.staticfiles import StaticFiles
 
-from app import logit, logging, log_traffic
+from app import logit, logging, log_traffic, unified_response
 from app.api import error_json
 from app.api.dues_payments import router as dues_payments_router
 from app.api.items import router as items_router
@@ -52,13 +52,11 @@ async def main_log_traffic(request: Request, call_next):
     }
     try:
         response = await call_next(request)
-        response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains; preload"
         log_traffic(status_code=response.status_code, **kwargs)
+        return unified_response(response)
     except Exception:
         log_traffic(status_code=501, **kwargs)
         raise
-
-    return response
 
 
 @app.get(path="/health")
@@ -67,13 +65,13 @@ def health():
 
 
 @app.exception_handler(Exception)
-async def custom_exception_handler(request: Request, exc: Exception):
+async def uncaught_exception_handler(request: Request, exc: Exception):
     if request.url.path.startswith("/web/"):
         return error_page(request, exc)
     return error_json(exc)
 
 
-# Security
+# Authentication & Authorization
 app.include_router(sec_router, prefix="/oauth", tags=["/oauth"])
 
 # APIs

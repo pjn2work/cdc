@@ -2,6 +2,7 @@ import inspect
 import logging
 from datetime import datetime
 
+from starlette.responses import Response
 
 log = logging.getLogger("CECC")
 
@@ -44,4 +45,9 @@ def log_traffic(status_code: int, start_time: datetime, method: str, url: str, c
         "process_time": process_time,
         "client": client
     }
-    logit(str(log_params), level=logging.DEBUG, func=get_prev_function())
+    logit(str(log_params), level=logging.INFO, func=get_prev_function())
+
+
+def unified_response(response: Response) -> Response:
+    response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains; preload"
+    return response
