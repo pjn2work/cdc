@@ -11,6 +11,7 @@ from app.sec.security import (
     get_current_web_client,
     TokenData
 )
+from app.sec.status_code_ip_block import IPFiltering
 
 GET_CURRENT_API_CLIENT = Depends(get_current_api_client)
 GET_CURRENT_WEB_CLIENT = Depends(get_current_web_client)

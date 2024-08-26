@@ -13,7 +13,8 @@ from app.api.members import router as members_router
 from app.api.sellers import router as sellers_router
 from app.api.tests import router as tests_router
 from app.db import init_db, get_db
-from app.sec import router as sec_router
+from app.sec import router as sec_router, IPFiltering
+from app.utils.errors import CustomException
 from app.web import error_page
 from app.web.admin import router as admin_router
 from app.web.categories import router as web_items_categories_router
@@ -39,6 +40,7 @@ async def lifespan(_: FastAPI):
 
 
 app = FastAPI(lifespan=lifespan, debug=False)
+ip_filtering = IPFiltering()
 VERSION = "v0.11"
 
 
@@ -51,26 +53,38 @@ async def main_log_traffic(request: Request, call_next):
         "client": request.client.host
     }
     try:
+        ip_filtering.validate(**kwargs)
         response = await call_next(request)
+        ip_filtering.update(response.status_code, **kwargs)
+
         log_traffic(status_code=response.status_code, **kwargs)
         return unified_response(response)
     except Exception as exc:
-        exc.status_code = 501
-        log_traffic(status_code=501, **kwargs)
+        exc.status_code = getattr(exc, "status_code", 501)
+        log_traffic(status_code=exc.status_code, **kwargs)
+
+        if isinstance(exc, CustomException):
+            return _error_response(request, exc)
+
         # will be caught on function uncaught_exception_handler
         raise
 
 
-@app.get(path="/health")
-def health():
-    return f"I'm alive, running {VERSION}"
-
-
 @app.exception_handler(Exception)
 async def uncaught_exception_handler(request: Request, exc: Exception):
+    return _error_response(request, exc)
+
+
+def _error_response(request: Request, exc: Exception):
     if request.url.path.startswith("/web/"):
         return error_page(request, exc)
     return error_json(exc)
+
+
+# Health end-point
+@app.get(path="/health")
+def health():
+    return f"I'm alive, running {VERSION}"
 
 
 # Authentication & Authorization
