@@ -53,7 +53,7 @@ class IPFiltering:
             return
 
         if status_code not in THRESHOLDS:
-            return
+            THRESHOLDS[status_code] = 10
 
         if client not in self._client_thresholds:
             # don't grow above the limit of clients, remove older
