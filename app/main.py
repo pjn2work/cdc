@@ -54,8 +54,10 @@ async def main_log_traffic(request: Request, call_next):
         response = await call_next(request)
         log_traffic(status_code=response.status_code, **kwargs)
         return unified_response(response)
-    except Exception:
+    except Exception as exc:
+        exc.status_code = 501
         log_traffic(status_code=501, **kwargs)
+        # will be caught on function uncaught_exception_handler
         raise
 
 

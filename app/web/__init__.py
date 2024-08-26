@@ -8,7 +8,7 @@ templates = Jinja2Templates(directory="app/web/templates")
 
 
 def error_page(request: Request, exc: Exception):
-    status_code = exc.status_code if isinstance(exc, CustomException) else CustomException.status_code
+    status_code = exc.status_code if isinstance(exc, CustomException) else getattr(exc, "status_code", CustomException.status_code)
 
     logit(msg=f"web.{status_code=} - {exc}", level=logging.INFO, func=get_prev_function())
 
