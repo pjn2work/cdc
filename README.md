@@ -89,6 +89,11 @@ The CECC application is a Python-based project that can be run either in a Docke
 ### Logging
 
 The application uses a logging configuration specified in app/log.ini. Adjust the logging settings as needed for your environment.
+
+### Security
+- To Disable TCP Timestamps, because of _Strict-Transport-Security Header Not Set_, edit your **/etc/sysctl.conf** file and add: `sysctl -w net.ipv4.tcp_timestamps=0`.
   
+  Then execute the following command: `sudo sysctl -p`
+
 ### License
 This project is licensed under the Apache License - see the LICENSE.md file for details.
