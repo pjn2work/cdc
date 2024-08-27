@@ -22,8 +22,7 @@ def list_sellers(
 
     sellers = crud_sellers.get_sellers_list(db, search_text=search_text)
 
-    return templates.TemplateResponse("sellers/sellers_list.html", {
-        "request": request,
+    return templates.TemplateResponse(request=request, name="sellers/sellers_list.html", context={
         "sellers": sellers,
         "total_results": len(sellers)
     })
@@ -35,10 +34,7 @@ def create_seller(
         current_client: TokenData = GET_CURRENT_WEB_CLIENT):
     are_valid_scopes(["app:create", "seller:create"], current_client)
 
-    return templates.TemplateResponse("sellers/sellers_create.html", {
-        "request": request,
-        "today": str(get_today())
-    })
+    return templates.TemplateResponse(request=request, name="sellers/sellers_create.html", context={"today": str(get_today())})
 
 
 @router.post("/create", response_class=HTMLResponse)
@@ -73,8 +69,7 @@ def show_seller(
     except CustomException as exc:
         return error_page(request, exc)
 
-    return templates.TemplateResponse("sellers/sellers_show.html", {
-        "request": request,
+    return templates.TemplateResponse(request=request, name="sellers/sellers_show.html", context={
         "seller": seller,
         "today": get_today()
     })
@@ -93,10 +88,7 @@ def edit_seller(
     except CustomException as exc:
         return error_page(request, exc)
 
-    return templates.TemplateResponse("sellers/sellers_edit.html", {
-        "request": request,
-        "seller": seller
-    })
+    return templates.TemplateResponse(request=request, name="sellers/sellers_edit.html", context={"seller": seller})
 
 
 @router.post("/{seller_id}/update", response_class=HTMLResponse)

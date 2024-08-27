@@ -25,8 +25,7 @@ def list_categories(
     except CustomException as exc:
         return error_page(request, exc)
 
-    return templates.TemplateResponse("categories/categories_list.html", {
-        "request": request,
+    return templates.TemplateResponse(request=request, name="categories/categories_list.html", context={
         "categories": categories,
         "total_results": len(categories)
     })
@@ -38,10 +37,7 @@ def create_category(
         current_client: TokenData = GET_CURRENT_WEB_CLIENT):
     are_valid_scopes(["app:create", "category:create"], current_client)
 
-    return templates.TemplateResponse("categories/categories_create.html", {
-        "request": request,
-        "today": str(get_today())
-    })
+    return templates.TemplateResponse(request=request, name="categories/categories_create.html", context={"today": str(get_today())})
 
 
 @router.post("/create", response_class=HTMLResponse)
@@ -76,8 +72,7 @@ def show_category(
     except CustomException as exc:
         return error_page(request, exc)
 
-    return templates.TemplateResponse("categories/categories_show.html", {
-        "request": request,
+    return templates.TemplateResponse(request=request, name="categories/categories_show.html", context={
         "category": category,
         "today": get_today()
     })
@@ -96,10 +91,7 @@ def edit_category(
     except CustomException as exc:
         return error_page(request, exc)
 
-    return templates.TemplateResponse("categories/categories_edit.html", {
-        "request": request,
-        "category": category
-    })
+    return templates.TemplateResponse(request=request, name="categories/categories_edit.html", context={"category": category})
 
 
 @router.post("/{category_id}/update", response_class=HTMLResponse)

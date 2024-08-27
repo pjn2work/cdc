@@ -12,8 +12,7 @@ def error_page(request: Request, exc: Exception, level=logging.INFO):
 
     logit(msg=f"web.{status_code=} - {exc}", level=level, func=get_prev_function())
 
-    response = templates.TemplateResponse("error.html", {
-        "request": request,
+    response = templates.TemplateResponse(request=request, name="error.html", context={
         "error_message": str(exc),
         "status_code": status_code
     }, status_code=status_code)

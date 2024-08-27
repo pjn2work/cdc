@@ -28,8 +28,7 @@ def list_members(
     else:
         members = []
 
-    return templates.TemplateResponse("members/members_list.html", {
-        "request": request,
+    return templates.TemplateResponse(request=request, name="members/members_list.html", context={
         "members": members,
         "total_results": len(members)
     })
@@ -41,10 +40,7 @@ def create_member(
         current_client: TokenData = GET_CURRENT_WEB_CLIENT):
     are_valid_scopes(["app:create", "member:create"], current_client)
 
-    return templates.TemplateResponse("members/members_create.html", {
-        "request": request,
-        "today": str(get_today())
-    })
+    return templates.TemplateResponse(request=request, name="members/members_create.html", context={"today": str(get_today())})
 
 
 @router.post("/create", response_class=HTMLResponse)
@@ -79,8 +75,7 @@ def show_member(
     except CustomException as exc:
         return error_page(request, exc)
 
-    return templates.TemplateResponse("members/members_show.html", {
-        "request": request,
+    return templates.TemplateResponse(request=request, name="members/members_show.html", context={
         "member": member,
         "this_month": get_today_year_month_str(),
         "today": get_today()
@@ -142,10 +137,7 @@ def edit_member(
     except CustomException as exc:
         return error_page(request, exc)
 
-    return templates.TemplateResponse("members/members_edit.html", {
-        "request": request,
-        "member": member
-    })
+    return templates.TemplateResponse(request=request, name="members/members_edit.html", context={"member": member})
 
 
 @router.post("/{member_id}/update", response_class=HTMLResponse)
@@ -208,8 +200,7 @@ async def list_members_donations(
     else:
         md_list = []
 
-    return templates.TemplateResponse("due_payments/member_donations_list.html", {
-        "request": request,
+    return templates.TemplateResponse(request=request, name="due_payments/member_donations_list.html", context={
         "md_list": md_list,
         "total": len(md_list),
     })

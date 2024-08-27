@@ -53,8 +53,7 @@ def admin_clients(
 
     clients = cred.admin_get_all_clients()
 
-    return templates.TemplateResponse("admin/admin_clients.html", {
-        "request": request,
+    return templates.TemplateResponse(request=request, name="admin/admin_clients.html", context={
         "clients": clients,
         "possible_scopes": possible_scopes,
     })

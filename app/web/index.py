@@ -12,4 +12,4 @@ def index(
         request: Request,
         current_client: TokenData = GET_CURRENT_WEB_CLIENT):
     are_valid_scopes(["app:read", "index:read"], current_client)
-    return templates.TemplateResponse("index.html", {"request": request, "username": current_client.name})
+    return templates.TemplateResponse(request=request, name="index.html", context={"username": current_client.name})

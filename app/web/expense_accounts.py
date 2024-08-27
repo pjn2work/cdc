@@ -22,8 +22,7 @@ def list_expense_accounts(
 
     expense_accounts = crud_sellers.get_expense_accounts_list(db, search_text=search_text)
 
-    return templates.TemplateResponse("expense_accounts/expense_accounts_list.html", {
-        "request": request,
+    return templates.TemplateResponse(request=request, name="expense_accounts/expense_accounts_list.html", context={
         "expense_accounts": expense_accounts,
         "total_results": len(expense_accounts)
     })
@@ -35,10 +34,7 @@ def create_expense_account(
         current_client: TokenData = GET_CURRENT_WEB_CLIENT):
     are_valid_scopes(["app:create", "expense_account:create"], current_client)
 
-    return templates.TemplateResponse("expense_accounts/expense_accounts_create.html", {
-        "request": request,
-        "today": str(get_today())
-    })
+    return templates.TemplateResponse(request=request, name="expense_accounts/expense_accounts_create.html", context={"today": str(get_today())})
 
 
 @router.post("/create", response_class=HTMLResponse)
@@ -73,8 +69,7 @@ def show_expense_account(
     except CustomException as exc:
         return error_page(request, exc)
 
-    return templates.TemplateResponse("expense_accounts/expense_accounts_show.html", {
-        "request": request,
+    return templates.TemplateResponse(request=request, name="expense_accounts/expense_accounts_show.html", context={
         "expense_account": expense_account,
         "today": get_today()
     })
@@ -93,10 +88,7 @@ def edit_expense_account(
     except CustomException as exc:
         return error_page(request, exc)
 
-    return templates.TemplateResponse("expense_accounts/expense_accounts_edit.html", {
-        "request": request,
-        "expense_account": expense_account
-    })
+    return templates.TemplateResponse(request=request, name="expense_accounts/expense_accounts_edit.html", context={"expense_account": expense_account})
 
 
 @router.post("/{ea_id}/update", response_class=HTMLResponse)

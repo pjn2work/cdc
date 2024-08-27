@@ -39,7 +39,7 @@ def list_members_items(
     items = crud_items.get_items_list(db, search_text="")
     members = crud_member.get_members_list(db, search_text="")
 
-    return templates.TemplateResponse("items/member_item_list.html", {
+    return templates.TemplateResponse(request=request, name="items/member_item_list.html", context={
         "request": request,
         "categories": categories,
         "items": items,
@@ -68,8 +68,7 @@ def create_member_item(
     items = crud_items.get_items_list(db, search_text="")
     members = crud_member.get_members_list(db, search_text="")
 
-    return templates.TemplateResponse("items/member_item_create.html", {
-        "request": request,
+    return templates.TemplateResponse(request=request, name="items/member_item_create.html", context={
         "item_id": item_id,
         "member_id": member_id,
         "item_base_price": item_base_price,
@@ -117,8 +116,7 @@ def edit_member_item(
     items = crud_items.get_items_list(db, search_text="")
     members = crud_member.get_members_list(db, search_text="")
 
-    return templates.TemplateResponse("items/member_item_edit.html", {
-        "request": request,
+    return templates.TemplateResponse(request=request, name="items/member_item_edit.html", context={
         "member_item": member_item,
         "items": items,
         "members": members,

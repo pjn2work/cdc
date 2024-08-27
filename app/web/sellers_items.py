@@ -41,8 +41,7 @@ def list_sellers_items(
     sellers = crud_sellers.get_sellers_list(db, search_text="")
     expense_accounts = crud_sellers.get_expense_accounts_list(db, search_text="")
 
-    return templates.TemplateResponse("items/seller_item_list.html", {
-        "request": request,
+    return templates.TemplateResponse(request=request, name="items/seller_item_list.html", context={
         "categories": categories,
         "items": items,
         "sellers": sellers,
@@ -74,8 +73,7 @@ def create_seller_item(
     sellers = crud_sellers.get_sellers_list(db, search_text="")
     expense_accounts = crud_sellers.get_expense_accounts_list(db, search_text="")
 
-    return templates.TemplateResponse("items/seller_item_create.html", {
-        "request": request,
+    return templates.TemplateResponse(request=request, name="items/seller_item_create.html", context={
         "item_id": item_id,
         "seller_id": seller_id,
         "ea_id": ea_id,
@@ -126,8 +124,7 @@ def edit_seller_item(
     sellers = crud_sellers.get_sellers_list(db, search_text="")
     expense_accounts = crud_sellers.get_expense_accounts_list(db, search_text="")
 
-    return templates.TemplateResponse("items/seller_item_edit.html", {
-        "request": request,
+    return templates.TemplateResponse(request=request, name="items/seller_item_edit.html", context={
         "seller_item": seller_item,
         "items": items,
         "sellers": sellers,

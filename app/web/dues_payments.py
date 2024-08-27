@@ -25,8 +25,7 @@ def list_dues_payments(
     except CustomException as exc:
         return error_page(request, exc)
 
-    return templates.TemplateResponse("due_payments/dues_payments_list.html", {
-        "request": request,
+    return templates.TemplateResponse(request=request, name="due_payments/dues_payments_list.html", context={
         "dues_payments_list": dp_list,
         "total_results": len(dp_list),
         "since": since, "until": until,
@@ -47,8 +46,7 @@ def get_due_payment(
     except CustomException as exc:
         return error_page(request, exc)
 
-    return templates.TemplateResponse("due_payments/dues_payments_show.html", {
-        "request": request,
+    return templates.TemplateResponse(request=request, name="due_payments/dues_payments_show.html", context={
         "dp": dp,
         "today": get_today()
     })

@@ -33,8 +33,7 @@ def list_items(
     except CustomException as exc:
         return error_page(request, exc)
 
-    return templates.TemplateResponse("items/items_list.html", {
-        "request": request,
+    return templates.TemplateResponse(request=request, name="items/items_list.html", context={
         "items": items,
         "categories": categories,
         "category_id": category_id,
@@ -51,8 +50,7 @@ def create_item(
         current_client: TokenData = GET_CURRENT_WEB_CLIENT):
     are_valid_scopes(["app:create", "item:create"], current_client)
 
-    return templates.TemplateResponse("items/items_create.html", {
-        "request": request,
+    return templates.TemplateResponse(request=request, name="items/items_create.html", context={
         "category_id": category_id,
         "category_name": category_name,
         "today": str(get_today())
@@ -91,8 +89,7 @@ def show_item(
     except CustomException as exc:
         return error_page(request, exc)
 
-    return templates.TemplateResponse("items/items_show.html", {
-        "request": request,
+    return templates.TemplateResponse(request=request, name="items/items_show.html", context={
         "item": item,
         "today": get_today()
     })
@@ -112,8 +109,7 @@ def edit_item(
     except CustomException as exc:
         return error_page(request, exc)
 
-    return templates.TemplateResponse("items/items_edit.html", {
-        "request": request,
+    return templates.TemplateResponse(request=request, name="items/items_edit.html", context={
         "categories": categories,
         "item": item
     })
