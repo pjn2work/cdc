@@ -13,7 +13,7 @@ from app.api.members import router as members_router
 from app.api.sellers import router as sellers_router
 from app.api.tests import router as tests_router
 from app.db import init_db, get_db
-from app.sec import router as sec_router, IPFiltering
+from app.sec import router as sec_router, ip_filtering
 from app.utils.errors import CustomException
 from app.web import error_page
 from app.web.admin import router as admin_router
@@ -40,7 +40,6 @@ async def lifespan(_app: FastAPI):
 
 
 app = FastAPI(lifespan=lifespan, debug=False)
-ip_filtering = IPFiltering()
 VERSION = "v0.11"
 
 

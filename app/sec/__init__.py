@@ -1,6 +1,6 @@
 from fastapi import Depends
 
-from app.sec.block_traffic import IPFiltering
+from app.sec.block_traffic import ip_filtering
 from app.sec.security import (
     router,
     cred,

@@ -1,7 +1,14 @@
 from fastapi import APIRouter, Request, status, Form
 from starlette.responses import HTMLResponse, RedirectResponse
 
-from app.sec import GET_CURRENT_WEB_CLIENT, TokenData, are_valid_scopes, cred, hash_password
+from app.sec import (
+    are_valid_scopes,
+    cred,
+    GET_CURRENT_WEB_CLIENT,
+    ip_filtering,
+    hash_password,
+    TokenData,
+)
 from app.web import templates
 
 router = APIRouter()
@@ -92,3 +99,29 @@ def admin_update_client(
     cred.admin_update_client(client_original_id, client_new_id, data)
 
     return RedirectResponse(url="/web/admin/", status_code=status.HTTP_302_FOUND)
+
+
+@router.get("/access_list", response_class=HTMLResponse)
+def admin_access_list(
+        request: Request,
+        current_client: TokenData = GET_CURRENT_WEB_CLIENT):
+    are_valid_scopes(["app:admin"], current_client)
+
+    return templates.TemplateResponse(
+        request=request,
+        name="admin/admin_access_list.html",
+        context={"blocked_clients": ip_filtering.get_blocked_clients()}
+    )
+
+
+@router.post("/unblock", response_class=HTMLResponse)
+def admin_unblock_client(
+        request: Request,
+        client: str = Form(),
+        current_client: TokenData = GET_CURRENT_WEB_CLIENT):
+    are_valid_scopes(["app:admin"], current_client)
+
+    ip_filtering.unblock_client(client)
+
+    return RedirectResponse(url=f"access_list", status_code=303)
+
