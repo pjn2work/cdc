@@ -15,6 +15,10 @@ def get_now() -> datetime:
     return datetime.now(TZ).replace(microsecond=0)
 
 
+def get_now_as_str() -> str:
+    return get_now().strftime("%Y-%m-%d %H:%M:%S")
+
+
 def get_today() -> date:
     return get_now().date()
 
