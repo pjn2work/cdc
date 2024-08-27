@@ -31,7 +31,7 @@ from app.web.sellers_items import router as web_sellers_items_router
 
 
 @asynccontextmanager
-async def lifespan(_: FastAPI):
+async def lifespan(_app: FastAPI):
     init_db()
     logit("--- CECC Ready! ---", level=logging.WARNING)
     yield
@@ -44,8 +44,30 @@ ip_filtering = IPFiltering()
 VERSION = "v0.11"
 
 
+@app.middleware("http")
+async def log_http_traffic(request: Request, call_next):
+    kwargs = {
+        "start_time": datetime.now(),
+        "method": request.method,
+        "url": str(request.url),
+        "client": request.client.host,
+        "status_code": 501
+    }
+    ip_filtering.validate(**kwargs)
+    ip_filtering.update(**kwargs)
+
+    log_traffic(**kwargs, level=logging.WARNING)
+
+    exc = CustomException("HTTP not allowed.")
+    exc.status_code = 501
+
+    if request.url.path.startswith("/web/"):
+        return error_page(request, exc)
+    return error_json(exc)
+
+
 @app.middleware("https")
-async def main_log_traffic(request: Request, call_next):
+async def log_https_traffic(request: Request, call_next):
     kwargs = {
         "start_time": datetime.now(),
         "method": request.method,
