@@ -1,16 +1,22 @@
+import os
 from collections import OrderedDict
 
+from app import filename_from_root
 from app.utils import read_json_file, save_json_file
 from app.utils.errors import TooManyRequests429
 
-IGNORE_TEXT = (
+IGNORE_TEXT = [
+    "/docs",
+    "/redoc",
+    "/openapi.json",
+
     "/health",
-    "/favicon.ico",
-    "/app.css",
-    "/app_logo.jpg",
-    "/green.png",
-    "/red.png",
-)
+    "/oauth/hash",
+    "/web/login/",
+]
+# "/favicon.ico", "/app.css", etc...
+for filename in os.listdir(filename_from_root("app/web/static")):
+    IGNORE_TEXT.append(f"/{filename}")
 
 THRESHOLDS = {
     400: 10,
@@ -21,7 +27,7 @@ THRESHOLDS = {
     501: 10
 }
 
-BLOCKED_CLIENTS_FILENAME = "../../data/access_list.json"
+BLOCKED_CLIENTS_FILENAME = filename_from_root("data/access_list.json")
 
 
 class IPFiltering:
@@ -45,8 +51,8 @@ class IPFiltering:
                 self._block_client(client)
                 raise TooManyRequests429(f"Client {client} will be blocked due to too many {status_code} requests.")
 
-    def update(self, status_code: int, url: str, client: str, **kwargs):
-        if _ignore_request(url):
+    def update(self, status_code: int, path: str, client: str, **kwargs):
+        if _ignore_request(path):
             return
 
         if 200 <= status_code <= 309:
@@ -73,15 +79,12 @@ class IPFiltering:
 
     def _save_blocked_ips(self):
         data = {"blocked_ips": list(self._blocked_clients)}
-        save_json_file(BLOCKED_CLIENTS_FILENAME, data, same_as=__file__)
+        save_json_file(BLOCKED_CLIENTS_FILENAME, data)
 
     def _load_blocked_ips(self):
-        _blocked_ips = read_json_file(BLOCKED_CLIENTS_FILENAME, same_as=__file__)
+        _blocked_ips = read_json_file(BLOCKED_CLIENTS_FILENAME)
         self._blocked_clients = set(_blocked_ips["blocked_ips"])
 
 
-def _ignore_request(url: str) -> bool:
-    for text in IGNORE_TEXT:
-        if text in url:
-            return True
-    return False
+def _ignore_request(path: str) -> bool:
+    return path in IGNORE_TEXT

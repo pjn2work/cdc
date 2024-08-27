@@ -1,5 +1,4 @@
 import json
-import os.path
 from base64 import urlsafe_b64encode, urlsafe_b64decode
 from dataclasses import dataclass
 from datetime import datetime, date
@@ -42,18 +41,12 @@ def str2date(s: str) -> date:
     return datetime.strptime(s, "%Y-%m-%d").date()
 
 
-def read_json_file(file_name: str, same_as: str = "") -> dict:
-    if same_as:
-        file_name = os.path.join(os.path.dirname(same_as), file_name)
-
+def read_json_file(file_name: str) -> dict:
     with open(file_name, "r") as file:
         return json.load(file)
 
 
-def save_json_file(file_name: str, data: dict, same_as: str = ""):
-    if same_as:
-        file_name = os.path.join(os.path.dirname(same_as), file_name)
-
+def save_json_file(file_name: str, data: dict):
     with open(file_name, "w") as file:
         json.dump(data, file, indent=3)
 

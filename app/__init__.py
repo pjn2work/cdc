@@ -1,10 +1,13 @@
 import inspect
 import logging
+import os
 from datetime import datetime
 
 from starlette.responses import Response
 
 log = logging.getLogger("CECC")
+
+ROOT_FOLDER = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
 class NoTracebackFilter(logging.Filter):
@@ -36,7 +39,7 @@ def logit(msg: str, level: int = logging.INFO, func = None):
     log.log(level=level, msg=msg)
 
 
-def log_traffic(status_code: int, start_time: datetime, method: str, url: str, client: str, level: int = logging.INFO):
+def log_traffic(status_code: int, start_time: datetime, method: str, url: str, client: str, level: int = logging.INFO, **kwargs):
     process_time = (datetime.now() - start_time).total_seconds()
     log_params = {
         "method": method,
@@ -51,3 +54,7 @@ def log_traffic(status_code: int, start_time: datetime, method: str, url: str, c
 def unified_response(response: Response) -> Response:
     response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains; preload"
     return response
+
+
+def filename_from_root(filename: str) -> str:
+    return os.path.join(ROOT_FOLDER, filename)
