@@ -4,6 +4,7 @@ from app.utils import read_json_file, save_json_file
 from app.utils.errors import TooManyRequests429
 
 IGNORE_TEXT = (
+    "/health",
     "/favicon.ico",
     "/app.css",
     "/app_logo.jpg",
@@ -52,19 +53,16 @@ class IPFiltering:
             self._reset_client(client)
             return
 
-        if status_code not in THRESHOLDS:
-            THRESHOLDS[status_code] = 10
-
         if client not in self._client_thresholds:
             # don't grow above the limit of clients, remove older
             if len(self._client_thresholds) >= self._max_entries:
                 self._client_thresholds.popitem(last=False)
             self._client_thresholds[client] = {**THRESHOLDS}
 
-        if status_code not in self._client_thresholds[client]:
-            self._client_thresholds[client][status_code] = THRESHOLDS[status_code]
-        else:
+        if status_code in self._client_thresholds[client]:
             self._client_thresholds[client][status_code] -= 1
+        else:
+            self._client_thresholds[client][status_code] = 9
 
     def _reset_client(self, client: str):
         self._client_thresholds.pop(client, default=None)
