@@ -42,11 +42,11 @@ def logit(msg: str, level: int = logging.INFO, func = None):
 def log_traffic(status_code: int, start_time: datetime, method: str, url: str, client: str, level: int = logging.INFO, **kwargs):
     process_time = (datetime.now() - start_time).total_seconds()
     log_params = {
+        "client": client,
+        "status": status_code,
+        "process_time": f"{process_time:.3f}",
         "method": method,
         "url": url,
-        "status": status_code,
-        "process_time": process_time,
-        "client": client
     }
     logit(str(log_params), level=level, func=get_prev_function())
 
