@@ -1,7 +1,7 @@
 from contextlib import asynccontextmanager
 from datetime import datetime
 
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, HTTPException
 from starlette.staticfiles import StaticFiles
 
 from app import logit, logging, log_traffic, unified_response
@@ -33,10 +33,10 @@ from app.web.sellers_items import router as web_sellers_items_router
 @asynccontextmanager
 async def lifespan(_app: FastAPI):
     init_db()
-    logit("--- CECC Ready! ---", level=logging.WARNING)
+    logit("--- CECC Ready! ---")
     yield
     get_db().close()
-    logit("--- CECC Closed! ---", level=logging.WARNING)
+    logit("--- CECC Closed! ---")
 
 
 app = FastAPI(lifespan=lifespan, debug=False)
@@ -46,24 +46,7 @@ VERSION = "v0.11"
 
 @app.middleware("http")
 async def log_http_traffic(request: Request, call_next):
-    kwargs = {
-        "start_time": datetime.now(),
-        "method": request.method,
-        "url": str(request.url),
-        "client": request.client.host,
-        "status_code": 501
-    }
-    ip_filtering.validate(**kwargs)
-    ip_filtering.update(**kwargs)
-
-    log_traffic(**kwargs, level=logging.WARNING)
-
-    exc = CustomException("HTTP not allowed.")
-    exc.status_code = 501
-
-    if request.url.path.startswith("/web/"):
-        return error_page(request, exc)
-    return error_json(exc)
+    raise HTTPException(status_code=501, detail="HTTP not allowed.")
 
 
 @app.middleware("https")
@@ -80,6 +63,7 @@ async def log_https_traffic(request: Request, call_next):
         ip_filtering.update(response.status_code, **kwargs)
 
         log_traffic(status_code=response.status_code, **kwargs)
+
         return unified_response(response)
     except Exception as exc:
         exc.status_code = getattr(exc, "status_code", 501)
@@ -89,8 +73,8 @@ async def log_https_traffic(request: Request, call_next):
         ip_filtering.update(exc.status_code, **kwargs)
 
         if request.url.path.startswith("/web/"):
-            return error_page(request, exc)
-        return error_json(exc)
+            return error_page(request, exc, level=level)
+        return error_json(exc, level=level)
 
 
 @app.exception_handler(Exception)
@@ -103,16 +87,17 @@ async def uncaught_exception_handler(request: Request, exc: Exception):
         "client": request.client.host,
         "status_code": exc.status_code,
     }
+    level = logging.ERROR
 
     try:
-        log_traffic(**kwargs, level=logging.ERROR)
+        log_traffic(**kwargs, level=level)
         ip_filtering.update(**kwargs)
     except Exception as ex:
-        logit(str(ex), level=logging.ERROR)
+        logit(str(ex), level=level)
 
     if request.url.path.startswith("/web/"):
-        return error_page(request, exc)
-    return error_json(exc)
+        return error_page(request, exc, level=level)
+    return error_json(exc, level=level)
 
 
 # Health end-point
