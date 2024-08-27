@@ -61,21 +61,33 @@ async def main_log_traffic(request: Request, call_next):
         return unified_response(response)
     except Exception as exc:
         exc.status_code = getattr(exc, "status_code", 501)
-        log_traffic(status_code=exc.status_code, **kwargs)
+        level = logging.INFO if isinstance(exc, CustomException) else logging.WARNING
 
-        if isinstance(exc, CustomException):
-            return _error_response(request, exc)
+        log_traffic(status_code=exc.status_code, **kwargs, level=level)
+        ip_filtering.update(exc.status_code, **kwargs)
 
-        # will be caught on function uncaught_exception_handler
-        raise
+        if request.url.path.startswith("/web/"):
+            return error_page(request, exc)
+        return error_json(exc)
 
 
 @app.exception_handler(Exception)
 async def uncaught_exception_handler(request: Request, exc: Exception):
-    return _error_response(request, exc)
+    exc.status_code = getattr(exc, "status_code", 501)
+    kwargs = {
+        "start_time": datetime.now(),
+        "method": request.method,
+        "url": str(request.url),
+        "client": request.client.host,
+        "status_code": exc.status_code,
+    }
 
+    try:
+        log_traffic(**kwargs, level=logging.ERROR)
+        ip_filtering.update(**kwargs)
+    except Exception as ex:
+        logit(str(ex), level=logging.ERROR)
 
-def _error_response(request: Request, exc: Exception):
     if request.url.path.startswith("/web/"):
         return error_page(request, exc)
     return error_json(exc)

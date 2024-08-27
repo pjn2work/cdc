@@ -20,7 +20,7 @@ THRESHOLDS = {
     501: 10
 }
 
-BLOCKED_CLIENTS_FILENAME = "../../data/blocked_ips.json"
+BLOCKED_CLIENTS_FILENAME = "../../data/access_list.json"
 
 
 class IPFiltering:
@@ -61,7 +61,10 @@ class IPFiltering:
                 self._client_thresholds.popitem(last=False)
             self._client_thresholds[client] = {**THRESHOLDS}
 
-        self._client_thresholds[client][status_code] -= 1
+        if status_code not in self._client_thresholds[client]:
+            self._client_thresholds[client][status_code] = THRESHOLDS[status_code]
+        else:
+            self._client_thresholds[client][status_code] -= 1
 
     def _reset_client(self, client: str):
         self._client_thresholds.pop(client, default=None)

@@ -36,7 +36,7 @@ def logit(msg: str, level: int = logging.INFO, func = None):
     log.log(level=level, msg=msg)
 
 
-def log_traffic(status_code: int, start_time: datetime, method: str, url: str, client: str):
+def log_traffic(status_code: int, start_time: datetime, method: str, url: str, client: str, level: int = logging.INFO):
     process_time = (datetime.now() - start_time).total_seconds()
     log_params = {
         "method": method,
@@ -45,7 +45,7 @@ def log_traffic(status_code: int, start_time: datetime, method: str, url: str, c
         "process_time": process_time,
         "client": client
     }
-    logit(str(log_params), level=logging.INFO, func=get_prev_function())
+    logit(str(log_params), level=level, func=get_prev_function())
 
 
 def unified_response(response: Response) -> Response:
