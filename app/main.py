@@ -1,7 +1,7 @@
 from contextlib import asynccontextmanager
 from datetime import datetime
 
-from fastapi import FastAPI, Request, HTTPException
+from fastapi import FastAPI, Request
 from starlette.staticfiles import StaticFiles
 
 from app import logit, logging, log_traffic, unified_response
@@ -42,11 +42,6 @@ async def lifespan(_app: FastAPI):
 app = FastAPI(lifespan=lifespan, debug=False)
 ip_filtering = IPFiltering()
 VERSION = "v0.11"
-
-
-@app.middleware("http")
-async def log_http_traffic(request: Request, call_next):
-    raise HTTPException(status_code=501, detail="HTTP not allowed.")
 
 
 @app.middleware("https")
