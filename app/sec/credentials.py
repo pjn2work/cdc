@@ -3,10 +3,10 @@ from typing import List
 
 from pydantic import BaseModel
 
-from app import logit, logging
+from app import logit, logging, filename_from_root
 from app.utils import read_json_file, save_json_file
 
-CRED_FILENAME = "../../data/credentials.json"
+CRED_FILENAME = filename_from_root("data/credentials.json")
 
 
 class Client(BaseModel):
@@ -48,10 +48,10 @@ class ManageCredentials:
         self._load_credentials()
 
     def _save_credentials(self):
-        save_json_file(CRED_FILENAME, self.cred.to_dict(), same_as=__file__)
+        save_json_file(CRED_FILENAME, self.cred.to_dict())
 
     def _load_credentials(self):
-        cred_dict = read_json_file(CRED_FILENAME, same_as=__file__)
+        cred_dict = read_json_file(CRED_FILENAME)
         self.cred.from_dict(cred_dict)
 
     def get_salt(self) -> str:

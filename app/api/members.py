@@ -4,8 +4,10 @@ from fastapi import APIRouter
 from sqlalchemy.orm import Session
 from starlette import status
 
+from app.api import error_json
 from app.db import crud_member, schemas, DB_SESSION
 from app.sec import GET_CURRENT_API_CLIENT, TokenData, are_valid_scopes
+from app.utils.errors import CustomException
 
 router = APIRouter()
 
@@ -62,7 +64,11 @@ def get_member(
         db: Session = DB_SESSION,
         current_client: TokenData = GET_CURRENT_API_CLIENT):
     are_valid_scopes(["app:read", "member:read"], current_client)
-    return crud_member.get_member(db, member_id=member_id)
+
+    try:
+        return crud_member.get_member(db, member_id=member_id)
+    except CustomException as exc:
+        return error_json(exc)
 
 
 @router.put(
@@ -91,8 +97,12 @@ def update_member_active(
         db: Session = DB_SESSION,
         current_client: TokenData = GET_CURRENT_API_CLIENT):
     are_valid_scopes(["app:update", "member:update"], current_client)
-    db_member = crud_member.get_member_by_id(db, member_id=member_id)
-    return crud_member.update_member_active(db, db_member=db_member, member_update=member_update)
+
+    try:
+        db_member = crud_member.get_member_by_id(db, member_id=member_id)
+        return crud_member.update_member_active(db, db_member=db_member, member_update=member_update)
+    except CustomException as exc:
+        return error_json(exc)
 
 
 @router.put(
@@ -106,8 +116,12 @@ def update_member_amount(
         db: Session = DB_SESSION,
         current_client: TokenData = GET_CURRENT_API_CLIENT):
     are_valid_scopes(["app:update", "member:update"], current_client)
-    db_member = crud_member.get_member_by_id(db, member_id=member_id)
-    return crud_member.update_member_amount(db, db_member=db_member, member_update=member_update)
+
+    try:
+        db_member = crud_member.get_member_by_id(db, member_id=member_id)
+        return crud_member.update_member_amount(db, db_member=db_member, member_update=member_update)
+    except CustomException as exc:
+        return error_json(exc)
 
 
 @router.post(

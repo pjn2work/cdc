@@ -1,10 +1,12 @@
 from fastapi import APIRouter, Request
+from pydantic_core import ValidationError
 from sqlalchemy.orm import Session
 from starlette.responses import HTMLResponse, RedirectResponse
 
 from app.db import crud_dues_payments, schemas, DB_SESSION
 from app.sec import GET_CURRENT_WEB_CLIENT, TokenData, are_valid_scopes
-from app.web import templates
+from app.utils.errors import CustomException
+from app.web import templates, error_page
 
 router = APIRouter()
 
@@ -28,8 +30,7 @@ async def list_member_dues_payments_order_by_pay_date(
     else:
         mdp_list = []
 
-    return templates.TemplateResponse("due_payments/member_due_payment_list.html", {
-        "request": request,
+    return templates.TemplateResponse(request=request, name="due_payments/member_due_payment_list.html", context={
         "mdp_list": mdp_list,
         "total": len(mdp_list),
     })
@@ -44,9 +45,14 @@ async def pay_member_due_payment(
     are_valid_scopes(["app:create", "member_due_payment:create"], current_client)
 
     data = await request.form()
-    mdpc: schemas.MemberDuesPaymentCreate = schemas.MemberDuesPaymentCreate(**data)
 
-    mdp = crud_dues_payments.pay_member_due_payment(db, tid=tid, mdpc=mdpc)
+    try:
+        mdpc: schemas.MemberDuesPaymentCreate = schemas.MemberDuesPaymentCreate(**data)
+
+        mdp = crud_dues_payments.pay_member_due_payment(db, tid=tid, mdpc=mdpc)
+    except (CustomException, ValidationError) as exc:
+        return error_page(request, exc)
+
     return RedirectResponse(url=f"../members/{mdp.member_id}/show", status_code=303)
 
 
@@ -79,8 +85,7 @@ def table_dues_paid_for_all_members(
         df_paid, df_missing = [{}], [{}]
         columns = []
 
-    return templates.TemplateResponse("due_payments/member_due_payment_pivot.html", {
-        "request": request,
+    return templates.TemplateResponse(request=request, name="due_payments/member_due_payment_pivot.html", context={
         "columns": columns,
         "df_paid": df_paid,
         "df_missing": df_missing

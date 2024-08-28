@@ -1,11 +1,13 @@
 from fastapi import APIRouter, Request
+from pydantic_core import ValidationError
 from sqlalchemy.orm import Session
 from starlette.responses import HTMLResponse, RedirectResponse
 
 from app.db import crud_sellers, schemas, DB_SESSION
 from app.sec import GET_CURRENT_WEB_CLIENT, TokenData, are_valid_scopes
 from app.utils import get_today
-from app.web import templates
+from app.utils.errors import CustomException
+from app.web import templates, error_page
 
 router = APIRouter()
 
@@ -20,8 +22,7 @@ def list_sellers(
 
     sellers = crud_sellers.get_sellers_list(db, search_text=search_text)
 
-    return templates.TemplateResponse("sellers/sellers_list.html", {
-        "request": request,
+    return templates.TemplateResponse(request=request, name="sellers/sellers_list.html", context={
         "sellers": sellers,
         "total_results": len(sellers)
     })
@@ -33,10 +34,7 @@ def create_seller(
         current_client: TokenData = GET_CURRENT_WEB_CLIENT):
     are_valid_scopes(["app:create", "seller:create"], current_client)
 
-    return templates.TemplateResponse("sellers/sellers_create.html", {
-        "request": request,
-        "today": str(get_today())
-    })
+    return templates.TemplateResponse(request=request, name="sellers/sellers_create.html", context={"today": str(get_today())})
 
 
 @router.post("/create", response_class=HTMLResponse)
@@ -47,9 +45,14 @@ async def create_seller_submit(
     are_valid_scopes(["app:create", "seller:create"], current_client)
 
     data = await request.form()
-    seller_create: schemas.SellerCreate = schemas.SellerCreate(**data)
 
-    seller = crud_sellers.create_seller(db=db, seller_create=seller_create)
+    try:
+        seller_create: schemas.SellerCreate = schemas.SellerCreate(**data)
+
+        seller = crud_sellers.create_seller(db=db, seller_create=seller_create)
+    except (CustomException, ValidationError) as exc:
+        return error_page(request, exc)
+
     return RedirectResponse(url=f"{seller.seller_id}/show", status_code=303)
 
 
@@ -61,9 +64,12 @@ def show_seller(
         current_client: TokenData = GET_CURRENT_WEB_CLIENT):
     are_valid_scopes(["app:read", "seller:read"], current_client)
 
-    seller = crud_sellers.get_seller(db, seller_id=seller_id)
-    return templates.TemplateResponse("sellers/sellers_show.html", {
-        "request": request,
+    try:
+        seller = crud_sellers.get_seller(db, seller_id=seller_id)
+    except CustomException as exc:
+        return error_page(request, exc)
+
+    return templates.TemplateResponse(request=request, name="sellers/sellers_show.html", context={
         "seller": seller,
         "today": get_today()
     })
@@ -77,11 +83,12 @@ def edit_seller(
         current_client: TokenData = GET_CURRENT_WEB_CLIENT):
     are_valid_scopes(["app:update", "seller:update"], current_client)
 
-    seller = crud_sellers.get_seller(db, seller_id=seller_id)
-    return templates.TemplateResponse("sellers/sellers_edit.html", {
-        "request": request,
-        "seller": seller
-    })
+    try:
+        seller = crud_sellers.get_seller(db, seller_id=seller_id)
+    except CustomException as exc:
+        return error_page(request, exc)
+
+    return templates.TemplateResponse(request=request, name="sellers/sellers_edit.html", context={"seller": seller})
 
 
 @router.post("/{seller_id}/update", response_class=HTMLResponse)
@@ -93,8 +100,13 @@ async def update_seller(
     are_valid_scopes(["app:update", "seller:update"], current_client)
 
     data = await request.form()
-    seller_update: schemas.SellerUpdate = schemas.SellerUpdate(**data)
 
-    db_seller = crud_sellers.get_seller_by_id(db, seller_id=seller_id)
-    _ = crud_sellers.update_seller(db, db_seller=db_seller, seller_update=seller_update)
+    try:
+        seller_update: schemas.SellerUpdate = schemas.SellerUpdate(**data)
+
+        db_seller = crud_sellers.get_seller_by_id(db, seller_id=seller_id)
+        _ = crud_sellers.update_seller(db, db_seller=db_seller, seller_update=seller_update)
+    except (CustomException, ValidationError) as exc:
+        return error_page(request, exc)
+
     return RedirectResponse(url=f"show", status_code=303)

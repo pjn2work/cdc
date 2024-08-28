@@ -1,10 +1,11 @@
 from contextlib import asynccontextmanager
+from datetime import datetime
 
 from fastapi import FastAPI, Request
-from fastapi.responses import JSONResponse
 from starlette.staticfiles import StaticFiles
 
-from app import logit, logging
+from app import logit, logging, log_traffic, unified_response
+from app.api import error_json
 from app.api.dues_payments import router as dues_payments_router
 from app.api.items import router as items_router
 from app.api.member_due_payment import router as member_due_payment_router
@@ -12,9 +13,9 @@ from app.api.members import router as members_router
 from app.api.sellers import router as sellers_router
 from app.api.tests import router as tests_router
 from app.db import init_db, get_db
-from app.sec import router as sec_router
-from app.utils.errors import NotFound404, Conflict409
-from app.web import templates
+from app.sec import router as sec_router, ip_filtering
+from app.utils.errors import CustomException
+from app.web import error_page
 from app.web.admin import router as admin_router
 from app.web.categories import router as web_items_categories_router
 from app.web.dues_payments import router as web_dues_payments_router
@@ -30,42 +31,78 @@ from app.web.sellers_items import router as web_sellers_items_router
 
 
 @asynccontextmanager
-async def lifespan(_: FastAPI):
+async def lifespan(_app: FastAPI):
     init_db()
-    logit("--- CECC Ready! ---", level=logging.WARNING)
+    logit("--- CECC Ready! ---")
     yield
     get_db().close()
-    logit("--- CECC Closed! ---", level=logging.WARNING)
+    logit("--- CECC Closed! ---")
 
 
 app = FastAPI(lifespan=lifespan, debug=False)
-VERSION = "v0.10"
+VERSION = "v0.11"
 
+
+@app.middleware("https")
+async def log_https_traffic(request: Request, call_next):
+    kwargs = {
+        "start_time": datetime.now(),
+        "method": request.method,
+        "url": str(request.url),
+        "client": request.client.host,
+        "path": str(request.url.path),
+    }
+    try:
+        ip_filtering.validate(**kwargs)
+        response = await call_next(request)
+        ip_filtering.update(response.status_code, **kwargs)
+
+        log_traffic(status_code=response.status_code, **kwargs)
+
+        return unified_response(response)
+    except Exception as exc:
+        exc.status_code = getattr(exc, "status_code", 501)
+        level = logging.INFO if isinstance(exc, CustomException) else logging.WARNING
+
+        log_traffic(status_code=exc.status_code, **kwargs, level=level)
+        ip_filtering.update(exc.status_code, **kwargs)
+
+        if request.url.path.startswith("/web/"):
+            return error_page(request, exc, level=level)
+        return error_json(exc, level=level)
+
+
+@app.exception_handler(Exception)
+async def uncaught_exception_handler(request: Request, exc: Exception):
+    exc.status_code = getattr(exc, "status_code", 501)
+    kwargs = {
+        "start_time": datetime.now(),
+        "method": request.method,
+        "url": str(request.url),
+        "client": request.client.host,
+        "status_code": exc.status_code,
+        "path": str(request.url.path),
+    }
+    level = logging.ERROR
+
+    try:
+        log_traffic(**kwargs, level=level)
+        ip_filtering.update(**kwargs)
+    except Exception as ex:
+        logit(str(ex), level=level)
+
+    if request.url.path.startswith("/web/"):
+        return error_page(request, exc, level=level)
+    return error_json(exc, level=level)
+
+
+# Health end-point
 @app.get(path="/health")
 def health():
     return f"I'm alive, running {VERSION}"
 
 
-@app.exception_handler(Exception)
-async def custom_exception_handler(request: Request, exc: Exception):
-    #tb = traceback.format_exc()
-    if isinstance(exc, NotFound404):
-        status_code = 404
-    elif isinstance(exc, Conflict409):
-        status_code = 409
-    else:
-        status_code = 400
-
-    if request.url.path.startswith("/web/"):
-        return templates.TemplateResponse("error.html", {
-            "request": request,
-            "error_message": str(exc),
-            "status_code": status_code
-        })
-    return JSONResponse(status_code=status_code, content={"detail": str(exc)})
-
-
-# Security
+# Authentication & Authorization
 app.include_router(sec_router, prefix="/oauth", tags=["/oauth"])
 
 # APIs

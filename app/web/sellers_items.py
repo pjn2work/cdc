@@ -1,11 +1,13 @@
 from fastapi import APIRouter, Request
+from pydantic_core import ValidationError
 from sqlalchemy.orm import Session
 from starlette.responses import HTMLResponse, RedirectResponse
 
 from app.db import crud_items, crud_sellers, schemas, DB_SESSION
 from app.sec import GET_CURRENT_WEB_CLIENT, TokenData, are_valid_scopes
 from app.utils import get_today
-from app.web import templates
+from app.utils.errors import CustomException
+from app.web import templates, error_page
 
 router = APIRouter()
 
@@ -39,8 +41,7 @@ def list_sellers_items(
     sellers = crud_sellers.get_sellers_list(db, search_text="")
     expense_accounts = crud_sellers.get_expense_accounts_list(db, search_text="")
 
-    return templates.TemplateResponse("items/seller_item_list.html", {
-        "request": request,
+    return templates.TemplateResponse(request=request, name="items/seller_item_list.html", context={
         "categories": categories,
         "items": items,
         "sellers": sellers,
@@ -72,8 +73,7 @@ def create_seller_item(
     sellers = crud_sellers.get_sellers_list(db, search_text="")
     expense_accounts = crud_sellers.get_expense_accounts_list(db, search_text="")
 
-    return templates.TemplateResponse("items/seller_item_create.html", {
-        "request": request,
+    return templates.TemplateResponse(request=request, name="items/seller_item_create.html", context={
         "item_id": item_id,
         "seller_id": seller_id,
         "ea_id": ea_id,
@@ -97,8 +97,13 @@ async def create_seller_item_submit(
     item_id = int(data["item_id"])
     del data["item_id"]
 
-    seller_item_create: schemas.SellerItemsCreate = schemas.SellerItemsCreate(**data)
-    seller_item = crud_items.create_seller_item(db=db, item_id=item_id, seller_item_create=seller_item_create)
+    try:
+        seller_item_create: schemas.SellerItemsCreate = schemas.SellerItemsCreate(**data)
+
+        seller_item = crud_items.create_seller_item(db=db, item_id=item_id, seller_item_create=seller_item_create)
+    except (CustomException, ValidationError) as exc:
+        return error_page(request, exc)
+
     return RedirectResponse(url=f"../sellers-items/?do_filter=on&tid={seller_item.tid}", status_code=303)
 
 
@@ -110,14 +115,16 @@ def edit_seller_item(
         current_client: TokenData = GET_CURRENT_WEB_CLIENT):
     are_valid_scopes(["app:update", "seller_item:update"], current_client)
 
-    seller_item = crud_items.get_seller_item(db, tid=tid)
+    try:
+        seller_item = crud_items.get_seller_item(db, tid=tid)
+    except CustomException as exc:
+        return error_page(request, exc)
 
     items = crud_items.get_items_list(db, search_text="")
     sellers = crud_sellers.get_sellers_list(db, search_text="")
     expense_accounts = crud_sellers.get_expense_accounts_list(db, search_text="")
 
-    return templates.TemplateResponse("items/seller_item_edit.html", {
-        "request": request,
+    return templates.TemplateResponse(request=request, name="items/seller_item_edit.html", context={
         "seller_item": seller_item,
         "items": items,
         "sellers": sellers,
@@ -137,8 +144,12 @@ async def update_seller_item(
     if "is_cash" not in data:
         data["is_cash"] = False
 
-    seller_item_update: schemas.SellerItemsUpdate = schemas.SellerItemsUpdate(**data)
+    try:
+        seller_item_update: schemas.SellerItemsUpdate = schemas.SellerItemsUpdate(**data)
 
-    db_seller_item = crud_items.get_seller_item(db, tid=tid)
-    _ = crud_items.update_seller_item(db, db_seller_item=db_seller_item, seller_item_update=seller_item_update)
+        db_seller_item = crud_items.get_seller_item(db, tid=tid)
+        _ = crud_items.update_seller_item(db, db_seller_item=db_seller_item, seller_item_update=seller_item_update)
+    except (CustomException, ValidationError) as exc:
+        return error_page(request, exc)
+
     return RedirectResponse(url=f"../../sellers-items/?do_filter=on&tid={tid}", status_code=303)

@@ -4,8 +4,10 @@ from fastapi import APIRouter
 from sqlalchemy.orm import Session
 from starlette import status
 
+from app.api import error_json
 from app.db import crud_items, schemas, DB_SESSION
 from app.sec import GET_CURRENT_API_CLIENT, TokenData, are_valid_scopes
+from app.utils.errors import CustomException
 
 router = APIRouter()
 
@@ -34,7 +36,11 @@ def list_categories(
         db: Session = DB_SESSION,
         current_client: TokenData = GET_CURRENT_API_CLIENT):
     are_valid_scopes(["app:read", "category:read"], current_client)
-    return crud_items.get_categories_list(db, skip=skip, limit=limit, search_text=search_text)
+
+    try:
+        return crud_items.get_categories_list(db, skip=skip, limit=limit, search_text=search_text)
+    except CustomException as exc:
+        return error_json(exc)
 
 
 @router.get(
@@ -47,7 +53,11 @@ def get_category(
         db: Session = DB_SESSION,
         current_client: TokenData = GET_CURRENT_API_CLIENT):
     are_valid_scopes(["app:read", "category:read"], current_client)
-    return crud_items.get_category(db, category_id=category_id)
+
+    try:
+        return crud_items.get_category(db, category_id=category_id)
+    except CustomException as exc:
+        return error_json(exc)
 
 
 @router.put(
@@ -61,8 +71,12 @@ def update_category(
         db: Session = DB_SESSION,
         current_client: TokenData = GET_CURRENT_API_CLIENT):
     are_valid_scopes(["app:update", "category:update"], current_client)
-    db_category = crud_items.get_category_by_id(db, category_id=category_id)
-    return crud_items.update_category(db, db_category=db_category, category_update=category_update)
+
+    try:
+        db_category = crud_items.get_category_by_id(db, category_id=category_id)
+        return crud_items.update_category(db, db_category=db_category, category_update=category_update)
+    except CustomException as exc:
+        return error_json(exc)
 
 
 # ----------------------------------------------------------
@@ -106,7 +120,11 @@ def get_item(
         db: Session = DB_SESSION,
         current_client: TokenData = GET_CURRENT_API_CLIENT):
     are_valid_scopes(["app:read", "item:read"], current_client)
-    return crud_items.get_item(db, item_id=item_id)
+
+    try:
+        return crud_items.get_item(db, item_id=item_id)
+    except CustomException as exc:
+        return error_json(exc)
 
 
 @router.put(
@@ -120,8 +138,12 @@ def update_item(
         db: Session = DB_SESSION,
         current_client: TokenData = GET_CURRENT_API_CLIENT):
     are_valid_scopes(["app:update", "item:update"], current_client)
-    db_item = crud_items.get_item_by_id(db, item_id=item_id)
-    return crud_items.update_item(db, db_item=db_item, item_update=item_update)
+
+    try:
+        db_item = crud_items.get_item_by_id(db, item_id=item_id)
+        return crud_items.update_item(db, db_item=db_item, item_update=item_update)
+    except CustomException as exc:
+        return error_json(exc)
 
 
 # ----------------------------------------------------------
@@ -166,7 +188,11 @@ def get_item_seller(
         db: Session = DB_SESSION,
         current_client: TokenData = GET_CURRENT_API_CLIENT):
     are_valid_scopes(["app:read", "seller_item:read"], current_client)
-    return crud_items.get_seller_item(db, tid=tid)
+
+    try:
+        return crud_items.get_seller_item(db, tid=tid)
+    except CustomException as exc:
+        return error_json(exc)
 
 
 @router.put(
@@ -180,8 +206,12 @@ def update_item_seller(
         db: Session = DB_SESSION,
         current_client: TokenData = GET_CURRENT_API_CLIENT):
     are_valid_scopes(["app:update", "seller_item:update"], current_client)
-    db_seller_item = crud_items.get_seller_item_by_id(db, tid=tid)
-    return crud_items.update_seller_item(db, db_seller_item=db_seller_item, seller_item_update=seller_item_update)
+
+    try:
+        db_seller_item = crud_items.get_seller_item_by_id(db, tid=tid)
+        return crud_items.update_seller_item(db, db_seller_item=db_seller_item, seller_item_update=seller_item_update)
+    except CustomException as exc:
+        return error_json(exc)
 
 
 # ----------------------------------------------------------
@@ -213,7 +243,11 @@ def list_item_members(
         db: Session = DB_SESSION,
         current_client: TokenData = GET_CURRENT_API_CLIENT):
     are_valid_scopes(["app:read", "member_item:read"], current_client)
-    return crud_items.get_item_members_list(db, item_id=item_id, skip=skip, limit=limit, search_text=search_text)
+
+    try:
+        return crud_items.get_item_members_list(db, item_id=item_id, skip=skip, limit=limit, search_text=search_text)
+    except CustomException as exc:
+        return error_json(exc)
 
 
 @router.get(
@@ -226,7 +260,11 @@ def get_item_member(
         db: Session = DB_SESSION,
         current_client: TokenData = GET_CURRENT_API_CLIENT):
     are_valid_scopes(["app:read", "member_item:read"], current_client)
-    return crud_items.get_member_item(db, tid=tid)
+
+    try:
+        return crud_items.get_member_item(db, tid=tid)
+    except CustomException as exc:
+        return error_json(exc)
 
 
 @router.put(
@@ -240,5 +278,9 @@ def update_item_member(
         db: Session = DB_SESSION,
         current_client: TokenData = GET_CURRENT_API_CLIENT):
     are_valid_scopes(["app:update", "member_item:update"], current_client)
-    db_member_item = crud_items.get_member_item_by_id(db, tid=tid)
-    return crud_items.update_member_item(db, db_member_item=db_member_item, member_item_update=member_item_update)
+
+    try:
+        db_member_item = crud_items.get_member_item_by_id(db, tid=tid)
+        return crud_items.update_member_item(db, db_member_item=db_member_item, member_item_update=member_item_update)
+    except CustomException as exc:
+        return error_json(exc)

@@ -1,13 +1,15 @@
 from typing import Optional
 
 from fastapi import APIRouter, Request
+from pydantic_core import ValidationError
 from sqlalchemy.orm import Session
 from starlette.responses import HTMLResponse, RedirectResponse
 
 from app.db import crud_items, schemas, DB_SESSION
 from app.sec import GET_CURRENT_WEB_CLIENT, TokenData, are_valid_scopes
 from app.utils import get_today
-from app.web import templates
+from app.utils.errors import CustomException
+from app.web import templates, error_page
 
 router = APIRouter()
 
@@ -22,14 +24,16 @@ def list_items(
         current_client: TokenData = GET_CURRENT_WEB_CLIENT):
     are_valid_scopes(["app:read", "item:read"], current_client)
 
-    categories = crud_items.get_categories_list(db, search_text="")
-    if do_filter:
-        items = crud_items.get_items_list(db, search_text=search_text, category_id=category_id)
-    else:
-        items = []
+    try:
+        categories = crud_items.get_categories_list(db, search_text="")
+        if do_filter:
+            items = crud_items.get_items_list(db, search_text=search_text, category_id=category_id)
+        else:
+            items = []
+    except CustomException as exc:
+        return error_page(request, exc)
 
-    return templates.TemplateResponse("items/items_list.html", {
-        "request": request,
+    return templates.TemplateResponse(request=request, name="items/items_list.html", context={
         "items": items,
         "categories": categories,
         "category_id": category_id,
@@ -46,8 +50,7 @@ def create_item(
         current_client: TokenData = GET_CURRENT_WEB_CLIENT):
     are_valid_scopes(["app:create", "item:create"], current_client)
 
-    return templates.TemplateResponse("items/items_create.html", {
-        "request": request,
+    return templates.TemplateResponse(request=request, name="items/items_create.html", context={
         "category_id": category_id,
         "category_name": category_name,
         "today": str(get_today())
@@ -62,9 +65,14 @@ async def create_item_submit(
     are_valid_scopes(["app:create", "item:create"], current_client)
 
     data = await request.form()
-    item_create: schemas.ItemCreate = schemas.ItemCreate(**data)
 
-    item = crud_items.create_item(db=db, item_create=item_create)
+    try:
+        item_create: schemas.ItemCreate = schemas.ItemCreate(**data)
+
+        item = crud_items.create_item(db=db, item_create=item_create)
+    except (CustomException, ValidationError) as exc:
+        return error_page(request, exc)
+
     return RedirectResponse(url=f"{item.item_id}/show", status_code=303)
 
 
@@ -76,9 +84,12 @@ def show_item(
         current_client: TokenData = GET_CURRENT_WEB_CLIENT):
     are_valid_scopes(["app:read", "item:read"], current_client)
 
-    item = crud_items.get_item(db, item_id=item_id)
-    return templates.TemplateResponse("items/items_show.html", {
-        "request": request,
+    try:
+        item = crud_items.get_item(db, item_id=item_id)
+    except CustomException as exc:
+        return error_page(request, exc)
+
+    return templates.TemplateResponse(request=request, name="items/items_show.html", context={
         "item": item,
         "today": get_today()
     })
@@ -92,11 +103,13 @@ def edit_item(
         current_client: TokenData = GET_CURRENT_WEB_CLIENT):
     are_valid_scopes(["app:update", "item:update"], current_client)
 
-    categories = crud_items.get_categories_list(db, search_text="")
-    item = crud_items.get_item(db, item_id=item_id)
+    try:
+        categories = crud_items.get_categories_list(db, search_text="")
+        item = crud_items.get_item(db, item_id=item_id)
+    except CustomException as exc:
+        return error_page(request, exc)
 
-    return templates.TemplateResponse("items/items_edit.html", {
-        "request": request,
+    return templates.TemplateResponse(request=request, name="items/items_edit.html", context={
         "categories": categories,
         "item": item
     })
@@ -111,8 +124,13 @@ async def update_item(
     are_valid_scopes(["app:update", "item:update"], current_client)
 
     data = await request.form()
-    item_update: schemas.ItemUpdate = schemas.ItemUpdate(**data)
 
-    db_item = crud_items.get_item_by_id(db, item_id=item_id)
-    _ = crud_items.update_item(db, db_item=db_item, item_update=item_update)
+    try:
+        item_update: schemas.ItemUpdate = schemas.ItemUpdate(**data)
+
+        db_item = crud_items.get_item_by_id(db, item_id=item_id)
+        _ = crud_items.update_item(db, db_item=db_item, item_update=item_update)
+    except (CustomException, ValidationError) as exc:
+        return error_page(request, exc)
+
     return RedirectResponse(url=f"show", status_code=303)

@@ -9,10 +9,10 @@ router = APIRouter()
 
 @router.get("/", response_class=HTMLResponse)
 async def login_page(request: Request):
-    return templates.TemplateResponse("login.html", {"request": request})
+    return templates.TemplateResponse(request=request, name="login.html")
 
 
-@router.post("/", response_class=HTMLResponse)
+@router.post("/submit", response_class=HTMLResponse)
 async def login(request: Request):
     data = await request.form()
     client_id = data.get("client_id")
@@ -24,7 +24,7 @@ async def login(request: Request):
         response.set_cookie(key="access_token", value=token_response.access_token, httponly=True)
         return response
     except HTTPException as e:
-        return templates.TemplateResponse("login.html", {"request": request, "error": e.detail})
+        return templates.TemplateResponse(request=request, name="login.html", context={"error": e.detail}, status_code=401)
 
 
 @router.post("/change_password", response_class=HTMLResponse)
@@ -39,4 +39,4 @@ async def login(request: Request):
         response = RedirectResponse(url="/web/", status_code=status.HTTP_302_FOUND)
         return response
     except HTTPException as e:
-        return templates.TemplateResponse("login.html", {"request": request, "error": e.detail})
+        return templates.TemplateResponse(request=request, name="login.html", context={"error": e.detail}, status_code=401)
