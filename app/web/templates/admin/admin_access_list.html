@@ -3,6 +3,22 @@
 {% block page_header %}Gestão de Acessos{% endblock %}
 {% block content_in_div %}
     <br>
+    <h2>Thresholds</h2>
+    <table class="table table-striped table-bordered">
+        <thead class="table-light">
+            <tr>
+                <th class="align_center">Status code</th>
+                <th class="align_center">Max</th>
+            </tr>
+        </thead>
+    {% for status_code, total in thresholds.items() %}
+        <tr>
+            <td class="align_center">{{ status_code }}</td>
+            <td class="align_center">{{ total }}</td>
+        </tr>
+    {% endfor %}
+    </table>
+    <br>
     <h2>Clientes bloqueados</h2>
     <table class="table table-striped table-bordered">
         <thead class="table-warning">

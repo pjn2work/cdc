@@ -110,7 +110,10 @@ def admin_access_list(
     return templates.TemplateResponse(
         request=request,
         name="admin/admin_access_list.html",
-        context={"blocked_clients": ip_filtering.get_blocked_clients()}
+        context={
+            "thresholds": ip_filtering.get_thresholds(),
+            "blocked_clients": ip_filtering.get_blocked_clients()
+        }
     )
 
 

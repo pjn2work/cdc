@@ -5,6 +5,7 @@ from app import filename_from_root
 from app.utils import read_json_file, save_json_file, get_now_as_str
 from app.utils.errors import TooManyRequests429
 
+_BLOCKED_CLIENTS_FILENAME = filename_from_root("data/access_list.json")
 _IGNORE_TEXT = [
     "/docs",
     "/redoc",
@@ -18,23 +19,13 @@ _IGNORE_TEXT = [
 for filename in os.listdir(filename_from_root("app/web/static")):
     _IGNORE_TEXT.append(f"/{filename}")
 
-_THRESHOLDS = {
-    400: 8,
-    401: 8,
-    403: 8,
-    404: 8,
-    501: 8
-}
-
-_BLOCKED_CLIENTS_FILENAME = filename_from_root("data/access_list.json")
-
 
 class IPFiltering:
 
     def __init__(self, max_entries: int = 5_000):
         self.__max_entries = max_entries
         self.__access_list: dict = {}
-        self.__client_thresholds: OrderedDict[str, dict[int, int]] = OrderedDict()
+        self.__client_thresholds: OrderedDict[str, dict[str, int]] = OrderedDict()
         self._load_access_list()
 
     def validate(self, client: str, url: str, **kwargs):
@@ -51,30 +42,36 @@ class IPFiltering:
                 raise TooManyRequests429(f"Client {client} will be blocked due to too many {status_code} requests.")
 
     def update(self, status_code: int, path: str, client: str, **kwargs):
+        status_code = str(status_code)
+        thresholds = self.get_thresholds()
+
         if _ignore_request(path):
             return
 
-        if 200 <= status_code <= 309:
+        if 200 <= int(status_code) <= 309:
             self._reset_client(client)
             return
+
+        if status_code not in thresholds:
+            thresholds[status_code] = thresholds["default"]
 
         if client not in self.__client_thresholds:
             # don't grow above the limit of clients, remove older
             if len(self.__client_thresholds) >= self.__max_entries:
                 self.__client_thresholds.popitem(last=False)
-            self.__client_thresholds[client] = {**_THRESHOLDS}
+            self.__client_thresholds[client] = {**thresholds}
 
         if status_code in self.__client_thresholds[client]:
             self.__client_thresholds[client][status_code] -= 1
         else:
-            self.__client_thresholds[client][status_code] = 5
+            self.__client_thresholds[client][status_code] = thresholds["default"] - 1
 
     def _reset_client(self, client: str):
         self.__client_thresholds.pop(client, default=None)
 
-    def _block_client(self, client: str, status_code: int, url: str):
+    def _block_client(self, client: str, status_code: str, url: str):
         self.get_blocked_clients()[client] = {
-            "status_code": status_code,
+            "status_code": int(status_code),
             "url": url,
             "when": get_now_as_str(),
         }
@@ -88,6 +85,9 @@ class IPFiltering:
 
     def get_blocked_clients(self) -> dict:
         return self.__access_list["blocked_clients"]
+
+    def get_thresholds(self) -> dict:
+        return self.__access_list["thresholds"]
 
     def unblock_client(self, client: str):
         if client in self.__access_list["blocked_clients"]:
