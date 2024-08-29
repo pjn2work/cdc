@@ -10,7 +10,7 @@ from pydantic import BaseModel
 
 from app import logit
 from app.sec.credentials import ManageCredentials, Client
-from app.utils import b64decode_str
+from app.utils import b64decode_str, now_plus_timedelta_as_str
 
 ALGORITHM = "HS256"
 MAX_ACCESS_TOKEN_EXPIRE = 24
@@ -78,7 +78,7 @@ def get_access_token(client_id: str, client_secret: str) -> Token:
         },
         expire_hours=client.expire_after
     )
-    logit(f"Client Successful login: {client.client_name} - expire after {client.expire_after}h")
+    logit(f"Client successful login: {client.client_name} - expire after {client.expire_after}h at {now_plus_timedelta_as_str(hours=client.expire_after)}")
 
     return Token(access_token=access_token, token_type="bearer")
 

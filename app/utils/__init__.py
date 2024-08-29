@@ -1,7 +1,7 @@
 import json
 from base64 import urlsafe_b64encode, urlsafe_b64decode
 from dataclasses import dataclass
-from datetime import datetime, date
+from datetime import datetime, date, timedelta
 from io import BytesIO
 
 import pandas as pd
@@ -17,6 +17,11 @@ def get_now() -> datetime:
 
 def get_now_as_str() -> str:
     return get_now().strftime("%Y-%m-%d %H:%M:%S")
+
+
+def now_plus_timedelta_as_str(**kwargs) -> str:
+    _dt = get_now() + timedelta(**kwargs)
+    return _dt.strftime("%Y-%m-%d %H:%M:%S")
 
 
 def get_today() -> date:

@@ -4,7 +4,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.base
-    image: cecc-base:latest
+    image: gqcv-base:latest
 
   app:
     build:
@@ -14,7 +14,7 @@ services:
     ports:
       - "8443:443"
     volumes:
-      - ./data:/cecc/data
+      - ./data:/gqcv/data
     depends_on:
       - base
     environment:

@@ -5,9 +5,11 @@ from datetime import datetime
 
 from starlette.responses import Response
 
-log = logging.getLogger("CECC")
-
+VERSION = "v0.11"
+NAME = "CECC"
 ROOT_FOLDER = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+log = logging.getLogger(NAME)
 
 
 class NoTracebackFilter(logging.Filter):

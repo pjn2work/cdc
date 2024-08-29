@@ -6,7 +6,7 @@ import pandas as pd
 from sqlalchemy import func, and_, case as case_
 from sqlalchemy.orm import Session
 
-from app import logit
+from app import logit, NAME
 from app.db import models, schemas
 from app.utils import get_now, get_today_year_month_str, format_year_month, str2date, save_to_excel_sheets, \
     DataframeSheet, StreamingResponse
@@ -271,7 +271,7 @@ def pivot_table_dues_paid_for_all_members(
     df_missing = get_df_pivot_table_dues_paid_for_all_members(db, months=months, month_cases=month_cases, is_paid=False)
 
     if just_download:
-        filename = f"CECC Pivot Associados Quotas de {since or months[0]} a {until or months[-1]}.xlsx"
+        filename = f"{NAME} Pivot Associados Quotas de {since or months[0]} a {until or months[-1]}.xlsx"
         xls = save_to_excel_sheets(
             DataframeSheet(df_paid, "Quotas pagas"),
             DataframeSheet(df_missing, "Quotas em atraso"),
@@ -329,7 +329,7 @@ def list_member_dues_payments_order_by_pay_date(
         until = until or _df['Quota'].max()
 
         # Create file
-        filename = f"CECC Lista de pagamento de Quotas de {since} a {until}.xlsx"
+        filename = f"{NAME} Lista de pagamento de Quotas de {since} a {until}.xlsx"
         xls = save_to_excel_sheets(
             DataframeSheet(_df, "Quotas pagas"),
             filename=filename

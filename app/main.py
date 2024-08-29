@@ -4,7 +4,7 @@ from datetime import datetime
 from fastapi import FastAPI, Request
 from starlette.staticfiles import StaticFiles
 
-from app import logit, logging, log_traffic, unified_response
+from app import NAME, VERSION, logit, logging, log_traffic, unified_response
 from app.api import error_json
 from app.api.dues_payments import router as dues_payments_router
 from app.api.items import router as items_router
@@ -33,14 +33,13 @@ from app.web.sellers_items import router as web_sellers_items_router
 @asynccontextmanager
 async def lifespan(_app: FastAPI):
     init_db()
-    logit("--- CECC Ready! ---")
+    logit(f"--- {NAME} {VERSION} Ready! ---")
     yield
     get_db().close()
-    logit("--- CECC Closed! ---")
+    logit(f"--- {NAME} {VERSION} Closed! ---")
 
 
 app = FastAPI(lifespan=lifespan, debug=False)
-VERSION = "v0.11"
 
 
 @app.middleware("https")
