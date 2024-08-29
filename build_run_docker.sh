@@ -11,7 +11,7 @@ function has_docker_compose() {
 }
 
 function get_running_pid() {
-  PID=$(ps -ef | grep "--header App:${APP_NAME}" | grep -v grep | awk '{print $2}')
+  PID=$(ps -ef | grep "header App:${APP_NAME}" | grep -v grep | awk '{print $2}')
 }
 
 function stop() {
