@@ -48,7 +48,7 @@ async def log_https_traffic(request: Request, call_next):
         "start_time": datetime.now(),
         "method": request.method,
         "url": str(request.url),
-        "client": request.client.host,
+        "client": request.headers.get("x-forwarded-for", request.client.host),
         "path": str(request.url.path),
     }
     try:
@@ -78,7 +78,7 @@ async def uncaught_exception_handler(request: Request, exc: Exception):
         "start_time": datetime.now(),
         "method": request.method,
         "url": str(request.url),
-        "client": request.client.host,
+        "client": request.headers.get("x-forwarded-for", request.client.host),
         "status_code": exc.status_code,
         "path": str(request.url.path),
     }

@@ -1,7 +1,7 @@
 APP_NAME="CDC"
+APP_PORT=8443
 IMG_NAME="${APP_NAME,,}"
 CONTAINER_NAME="${IMG_NAME}-container"
-APP_PORT=8443
 
 function has_docker_compose() {
   if command -v docker-compose &> /dev/null; then
