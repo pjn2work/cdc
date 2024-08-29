@@ -12,7 +12,7 @@ services:
       dockerfile: Dockerfile
     image: cecc:latest
     ports:
-      - "5443:443"
+      - "7443:443"
     volumes:
       - ./data:/gqcv/data
     depends_on:
