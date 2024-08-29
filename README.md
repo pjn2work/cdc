@@ -34,7 +34,7 @@ The CECC application is a Python-based project that can be run either in a Docke
    After building the image, run the container:
   
    ```sh
-   docker run --rm -p 8443:443 -v ./data:/gqcv/data --name cecc-container cecc
+   docker run --rm -p 7443:443 -v ./data:/gqcv/data --name cecc-container cecc
    ```
 
 ### Running Locally
@@ -61,7 +61,7 @@ The CECC application is a Python-based project that can be run either in a Docke
    Start the application using uvicorn:
   
    ```sh
-   uvicorn app.main:app --host 0.0.0.0 --port 8443 --log-config app/log.ini --reload --ssl-keyfile data/privkey.pem --ssl-certfile data/fullchain.pem
+   uvicorn app.main:app --host 0.0.0.0 --port 7443 --log-config app/log.ini --reload --ssl-keyfile data/privkey.pem --ssl-certfile data/fullchain.pem
    ```
 
 ### File Structure
