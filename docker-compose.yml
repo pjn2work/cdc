@@ -10,7 +10,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    image: cdc:latest
+    image: cecc:latest
     ports:
       - "8443:443"
     volumes:
@@ -18,5 +18,5 @@ services:
     depends_on:
       - base
     environment:
-      - NAME=CDC
+      - NAME=CECC
     restart: "no"

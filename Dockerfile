@@ -15,7 +15,7 @@ COPY app /gqcv/app
 EXPOSE 443
 
 # Define environment variable
-ENV NAME=CDC
+ENV NAME=CECC
 
 # Run app.py when the container launches
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "443", "--log-config", "app/log.ini", "--ssl-keyfile", "data/privkey.pem", "--ssl-certfile", "data/fullchain.pem", "--header", "App:CDC"]
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "443", "--log-config", "app/log.ini", "--ssl-keyfile", "data/privkey.pem", "--ssl-certfile", "data/fullchain.pem", "--header", "App:CECC"]

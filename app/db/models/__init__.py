@@ -14,7 +14,7 @@ from app.db.models.sellers import Seller
 
 
 def clear_db() -> None:
-    if os.getenv("CDC_MODE") == "TEST":
+    if os.getenv("CECC_MODE") == "TEST":
         _db = next(get_db())
         try:
             _db.query(MemberDonation).delete()
