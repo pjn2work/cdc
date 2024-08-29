@@ -30,8 +30,8 @@ class Credentials:
     app_clients: dict[str, Client]
 
     def from_dict(self, data: dict):
-        self.salt = data.get("salt", os.getenv("CECC_SALT", "_def#salt"))
-        self.app_secret_key = data.get("app_secret_key", os.getenv("CECC_SECRET_KEY", "_def#app_secret_key"))
+        self.salt = data.get("salt", os.getenv("CDC_SALT", "_def#salt"))
+        self.app_secret_key = data.get("app_secret_key", os.getenv("CDC_SECRET_KEY", "_def#app_secret_key"))
         self.app_clients = {k: Client(**v) for k, v in data["app_clients"].items()}
 
     def to_dict(self) -> dict:
