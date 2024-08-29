@@ -1,7 +1,7 @@
 APP_NAME="CECC"
 IMG_NAME="${APP_NAME,,}"
 CONTAINER_NAME="${IMG_NAME}-container"
-APP_PORT=8443
+APP_PORT=7443
 
 function has_docker_compose() {
   if command -v docker-compose &> /dev/null; then
