@@ -1,5 +1,6 @@
 APP_NAME="CECC"
 IMG_NAME="${APP_NAME,,}"
+CONTAINER_NAME="${IMG_NAME}-container"
 APP_PORT=8443
 
 function has_docker_compose() {
@@ -46,7 +47,7 @@ else
 
     git pull
 
-    docker rm -f ${IMG_NAME} || { echo "Failed to remove container, may not exist.";}
+    docker rm -f ${IMG_NAME}
     docker rmi ${IMG_NAME} || { echo "Failed to remove app image"; exit 1; }
   fi
 
@@ -64,9 +65,9 @@ else
   get_running_pid
   if [ -z "$PID" ]; then
     if has_docker_compose; then
-      docker-compose run --rm --service-ports app
+      docker-compose run --rm --service-ports app --name "${CONTAINER_NAME}"
     else
-      nohup docker run --rm -p ${APP_PORT}:443 -v ./data:/gqcv/data ${IMG_NAME} &
+      nohup docker run --rm -p ${APP_PORT}:443 -v ./data:/gqcv/data --name "${CONTAINER_NAME}" "${IMG_NAME}" &
     fi
   fi
 
