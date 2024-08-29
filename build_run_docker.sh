@@ -72,7 +72,7 @@ else
   fi
 
   # Show running version
-  VERSION=$(curl --silent --insecure https://127.0.0.1:${APP_PORT}/health)
+  VERSION=$(curl --silent --insecure http://127.0.0.1:${APP_PORT}/health)
   echo $VERSION on port $APP_PORT
 
 fi
