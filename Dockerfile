@@ -18,4 +18,4 @@ EXPOSE 443
 ENV NAME=CECC
 
 # Run app.py when the container launches
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "443", "--log-config", "app/log.ini", "--ssl-keyfile", "data/privkey.pem", "--ssl-certfile", "data/fullchain.pem"]
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "443", "--log-config", "app/log.ini", "--ssl-keyfile", "data/privkey.pem", "--ssl-certfile", "data/fullchain.pem", "--header", "App:CECC"]
