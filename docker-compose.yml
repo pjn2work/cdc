@@ -12,7 +12,7 @@ services:
       dockerfile: Dockerfile
     image: cdc:latest
     ports:
-      - "8443:443"
+      - "5443:443"
     volumes:
       - ./data:/gqcv/data
     depends_on:
