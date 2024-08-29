@@ -4,6 +4,7 @@ import pandas as pd
 from sqlalchemy import or_, desc
 from sqlalchemy.orm import Session
 
+from app import NAME
 from app.db import models, schemas
 from app.db.crud_member import update_member_stats, get_member_by_id
 from app.db.crud_sellers import update_expense_account_stats, update_seller_stats, get_seller_by_id, \
@@ -318,7 +319,7 @@ def get_sellers_items_list(
         until = until or _df['Data Pagamento'].max()
 
         # Create file
-        filename = f"CECC Lista de compras a vendedores de {since} a {until}.xlsx"
+        filename = f"{NAME} Lista de compras a vendedores de {since} a {until}.xlsx"
         xls = save_to_excel_sheets(
             DataframeSheet(_df, "Compras"),
             filename=filename
@@ -471,7 +472,7 @@ def get_members_items_list(
         until = until or _df['Data Pagamento'].max()
 
         # Create file
-        filename = f"CECC Lista de vendas a associados de {since} a {until}.xlsx"
+        filename = f"{NAME} Lista de vendas a associados de {since} a {until}.xlsx"
         xls = save_to_excel_sheets(
             DataframeSheet(_df, "Vendas"),
             filename=filename

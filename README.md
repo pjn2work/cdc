@@ -26,7 +26,7 @@ The CECC application is a Python-based project that can be run either in a Docke
    Navigate to the root of your project directory and build the Docker image:
   
    ```sh
-   docker build -t cecc-app .
+   docker build -t gqcv-base .
    ```
 
 3. **Run the Docker container:**
@@ -34,7 +34,7 @@ The CECC application is a Python-based project that can be run either in a Docke
    After building the image, run the container:
   
    ```sh
-   docker run --rm -p 8080:80 -v ./data:/cecc/data cecc
+   docker run --rm -p 8443:443 -v ./data:/gqcv/data cecc
    ```
 
 ### Running Locally
@@ -80,7 +80,7 @@ The CECC application is a Python-based project that can be run either in a Docke
 ```
 
 ### Environment Variables
-  - NAME: Sets the environment variable for the application name. In the Dockerfile, it's set as CECC.
+  - NAME: Sets the environment variable for the application name.
 ### Additional Notes
   - The application exposes port 80 by default in the Docker container.
   - When running locally, the application will be available on port 8080 unless otherwise specified.

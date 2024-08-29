@@ -4,6 +4,7 @@ import pandas as pd
 from sqlalchemy import or_
 from sqlalchemy.orm import Session
 
+from app import NAME
 from app.db import models, schemas
 from app.db.crud_dues_payments import get_member_due_payment_missing_stats, make_due_payment_for_new_member
 from app.utils import get_now, get_today_year_month_str, str2date, save_to_excel_sheets, DataframeSheet, \
@@ -292,7 +293,7 @@ def list_member_donations_order_by_pay_date(
         until = until or _df['Data Pagamento'].max()
 
         # Create file
-        filename = f"CECC Lista de donativos de {since} a {until}.xlsx"
+        filename = f"{NAME} Lista de donativos de {since} a {until}.xlsx"
         xls = save_to_excel_sheets(
             DataframeSheet(_df, "Donativos"),
             filename=filename

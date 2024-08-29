@@ -1,15 +1,15 @@
 # Use an official Python runtime as a parent image
-FROM cecc-base
+FROM gqcv-base
 
 # Set the working directory
-WORKDIR /cecc
+WORKDIR /gqcv
 
 # Create database and log directory
 RUN mkdir -p data/
 
-# Copy the current directory contents into the container at /cecc
-COPY data/credentials.json /cecc/data/
-COPY app /cecc/app
+# Copy the current directory contents into the container at /gqcv
+COPY data/credentials.json /gqcv/data/
+COPY app /gqcv/app
 
 # Make port 443 available to the world outside this container
 EXPOSE 443
@@ -18,4 +18,4 @@ EXPOSE 443
 ENV NAME=CECC
 
 # Run app.py when the container launches
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "443", "--log-config", "app/log.ini", "--ssl-keyfile", "data/privkey.pem", "--ssl-certfile", "data/fullchain.pem"]
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "443", "--log-config", "app/log.ini", "--ssl-keyfile", "data/privkey.pem", "--ssl-certfile", "data/fullchain.pem", "--header", "App:CECC"]
