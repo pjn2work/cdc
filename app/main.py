@@ -132,4 +132,4 @@ app.include_router(web_members_items_router, prefix="/web/members-items", tags=[
 # static files folder
 app.mount("/", StaticFiles(directory="app/web/static"), name="static")
 
-# uvicorn app.main:app --host 0.0.0.0 --port 8080 --log-config app/log.ini --reload
+# uvicorn app.main:app --host 0.0.0.0 --port 8080 --log-config app/log.ini --reload --header App:CDC

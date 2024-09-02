@@ -35,7 +35,9 @@ MANIFEST
 # PyCharm
 .idea
 
-# DB
+# Data
 data.*
 *.spsql
 *.log
+access_list.json
+credentials.json
