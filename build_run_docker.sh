@@ -1,7 +1,7 @@
 APP_NAME="CDC"
+APP_PORT=5443
 IMG_NAME="${APP_NAME,,}"
 CONTAINER_NAME="${IMG_NAME}-container"
-APP_PORT=8443
 
 function has_docker_compose() {
   if command -v docker-compose &> /dev/null; then
@@ -72,7 +72,7 @@ else
   fi
 
   # Show running version
-  VERSION=$(curl --silent --insecure https://127.0.0.1:${APP_PORT}/health)
-  echo $VERSION
+  VERSION=$(curl --silent --insecure http://127.0.0.1:${APP_PORT}/health)
+  echo $VERSION on port $APP_PORT
 
 fi
