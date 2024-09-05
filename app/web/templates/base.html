@@ -51,46 +51,41 @@
 
         function setup_tristate_toggle(name) {
             const toggleArea = document.getElementById(name);
-            const toggleButtons = document.getElementsByName(name);
-            const buttons = [...toggleButtons];
+            const toggleButtons = [...document.getElementsByName(name)];
 
-            // Check default button
+            // Helper function to update the UI based on the index
+            function updateState(index) {
+                toggleButtons.forEach((button, idx) => {
+                    button.style.opacity = (idx === index) ? "1" : "0";
+                    button.checked = (idx === index) & (index !== 1);
+                });
+
+                // Update the toggleArea class based on the index
+                toggleArea.classList.remove("tristate-toggle-false", "tristate-toggle-true");
+                if (index === 0) {
+                    toggleArea.classList.add("tristate-toggle-false");
+                } else if (index === 2) {
+                    toggleArea.classList.add("tristate-toggle-true");
+                }
+            }
+
+            // Apply click function for the 3 input buttons
+            toggleButtons.forEach((button, index) => {
+                button.addEventListener("click", () => updateState(index));
+            });
+
+            // Define initial state for default/selected button based on URL params
             const urlParams = new URLSearchParams(window.location.search);
             switch(urlParams.get(name)) {
                 case "false":
-                    toggleArea.classList.add("tristate-toggle-false");
-                    buttons[0].style.opacity = "1";
-                    buttons[0].checked = true;
+                    updateState(0);
                     break;
                 case "true":
-                    toggleArea.classList.add("tristate-toggle-true");
-                    buttons[2].style.opacity = "1";
-                    buttons[2].checked = true;
+                    updateState(2);
                     break;
                 default:
-                    buttons[1].style.opacity = "1";
+                    updateState(1);
             }
-
-            // Apply click function for the 3 inputs
-            buttons.forEach((element, index) => {
-                element.addEventListener("click", () => {
-                    // Reset all buttons opacity
-                    buttons.forEach((item, idx) => {
-                        item.style.opacity = (item === element) ? "1" : "0";
-                        item.checked = false;
-                    });
-
-                    // Apply the specific class based on index
-                    toggleArea.classList.remove("tristate-toggle-false", "tristate-toggle-true");
-                    if (index === 0) {
-                        toggleArea.classList.add("tristate-toggle-false");
-                        element.checked = true;
-                    } else if (index === 2) {
-                        toggleArea.classList.add("tristate-toggle-true");
-                        element.checked = true;
-                    }
-                });
-            });
         }
     </script>
 </head>
