@@ -2,6 +2,7 @@
 
 cd /home/cdc/apps/cdc || exit 1
 
+git reset --hard
 git pull
 
 source .venv/bin/activate
