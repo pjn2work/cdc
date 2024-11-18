@@ -31,6 +31,7 @@
                 <th>Inicio</th>
                 <th class="align_center">Activo</th>
                 <th>Nome</th>
+                <th class="align_right">Quota</th>
                 <th class="align_right">Meses em dívida</th>
                 <th class="align_right">Valor em dívida</th>
                 <th class="align_right">Meses pagos</th>
@@ -44,6 +45,7 @@
                     <td>{{ member.start_date }}</td>
                     <td class="align_center">{{ show_boolean(member.is_active) }}</td>
                     <td>{{ member.name }}</td>
+                    <td class="align_right">{{ member.amount }} €</td>
                     <td class="align_right">{{ member.total_months_missing }}</td>
                     <td class="align_right">{{ member.total_amount_missing }} €</td>
                     <td class="align_right">{{ member.total_months_paid }}</td>
