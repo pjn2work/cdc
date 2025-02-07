@@ -79,6 +79,23 @@ def update_category(
         return error_json(exc)
 
 
+@router.delete(
+    path="/categories/{category_id}",
+    response_model=None,
+    status_code=status.HTTP_200_OK
+)
+def delete_category(
+        category_id: int,
+        db: Session = DB_SESSION,
+        current_client: TokenData = GET_CURRENT_API_CLIENT):
+    are_valid_scopes(["app:delete", "category:delete"], current_client)
+
+    try:
+        return crud_items.delete_category_by_id(db, category_id=category_id)
+    except CustomException as exc:
+        return error_json(exc)
+
+
 # ----------------------------------------------------------
 
 
