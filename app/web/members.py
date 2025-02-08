@@ -178,7 +178,9 @@ async def post_member_donation(
     except (CustomException, ValidationError) as exc:
         return error_page(request, exc)
 
-    return RedirectResponse(url=f"show", status_code=status.HTTP_303_SEE_OTHER)
+    #return RedirectResponse(url=f"show", status_code=status.HTTP_303_SEE_OTHER)
+    referer = request.headers.get("Referer")
+    return RedirectResponse(url=referer, status_code=303)
 
 
 @router.get("/donations", response_class=HTMLResponse)
