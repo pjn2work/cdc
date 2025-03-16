@@ -53,7 +53,9 @@ async def pay_member_due_payment(
     except (CustomException, ValidationError) as exc:
         return error_page(request, exc)
 
-    return RedirectResponse(url=f"../members/{mdp.member_id}/show", status_code=303)
+    #return RedirectResponse(url=f"../members/{mdp.member_id}/show", status_code=303)
+    referer = request.headers.get("Referer")
+    return RedirectResponse(url=referer, status_code=303)
 
 
 @router.get("/pivot_table", response_class=HTMLResponse)
