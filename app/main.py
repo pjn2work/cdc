@@ -42,7 +42,7 @@ async def lifespan(_app: FastAPI):
 app = FastAPI(lifespan=lifespan, debug=False)
 
 
-@app.middleware("https")
+@app.middleware("http")
 async def log_https_traffic(request: Request, call_next):
     kwargs = {
         "start_time": datetime.now(),
