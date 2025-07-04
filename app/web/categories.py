@@ -7,7 +7,7 @@ from app.db import crud_items, schemas, DB_SESSION
 from app.sec import GET_CURRENT_WEB_CLIENT, TokenData, are_valid_scopes
 from app.utils import get_today
 from app.utils.errors import CustomException
-from app.web import templates, error_page
+from app.web import templates, error_page, flash
 
 router = APIRouter()
 
@@ -53,6 +53,7 @@ async def create_category_submit(
         category_create: schemas.CategoryCreate = schemas.CategoryCreate(**data)
 
         category = crud_items.create_category(db=db, category_create=category_create)
+        flash(request, f"Categoria {category.name} criada com sucesso.", "success")
     except (CustomException, ValidationError) as exc:
         return error_page(request, exc)
 
@@ -109,6 +110,7 @@ async def update_category(
 
         db_category = crud_items.get_category_by_id(db, category_id=category_id)
         _ = crud_items.update_category(db, db_category=db_category, category_update=category_update)
+        flash(request, f"Categoria {db_category.name} atualizada com sucesso.", "success")
     except (CustomException, ValidationError) as exc:
         return error_page(request, exc)
 

@@ -7,7 +7,7 @@ from app.db import crud_member, schemas, DB_SESSION
 from app.sec import GET_CURRENT_WEB_CLIENT, TokenData, are_valid_scopes
 from app.utils import get_today_year_month_str, get_today
 from app.utils.errors import CustomException
-from app.web import templates, error_page
+from app.web import templates, error_page, flash
 
 router = APIRouter()
 
@@ -56,6 +56,7 @@ async def create_member_submit(
         member_create: schemas.MemberCreate = schemas.MemberCreate(**data)
 
         member = crud_member.create_member(db=db, member_create=member_create)
+        flash(request, f"Associado {member.name} criado com sucesso.", "success")
     except (CustomException, ValidationError) as exc:
         return error_page(request, exc)
 
@@ -97,6 +98,7 @@ async def change_member_active(
 
         db_member = crud_member.get_member_by_id(db, member_id=member_id)
         _ = crud_member.update_member_active(db, db_member=db_member, member_update=member_update)
+        flash(request, f"Estado do associado {db_member.name} alterado com sucesso.", "success")
     except (CustomException, ValidationError) as exc:
         return error_page(request, exc)
 
@@ -118,6 +120,7 @@ async def change_member_due_payment_amount(
 
         db_member = crud_member.get_member_by_id(db, member_id=member_id)
         _ = crud_member.update_member_amount(db, db_member=db_member, member_update=member_update)
+        flash(request, f"Valor da quota do associado {db_member.name} alterado com sucesso.", "success")
     except (CustomException, ValidationError) as exc:
         return error_page(request, exc)
 
@@ -155,6 +158,7 @@ async def update_member(
 
         db_member = crud_member.get_member_by_id(db, member_id=member_id)
         _ = crud_member.update_member(db, db_member=db_member, member_update=member_update)
+        flash(request, f"Associado {db_member.name} atualizado com sucesso.", "success")
     except (CustomException, ValidationError) as exc:
         return error_page(request, exc)
 
@@ -175,6 +179,7 @@ async def post_member_donation(
         member_donation_create: schemas.MemberDonationCreate = schemas.MemberDonationCreate(**data)
 
         _ = crud_member.post_member_donation(db, member_id=member_id, member_donation_create=member_donation_create)
+        flash(request, f"Doação de {member_donation_create.amount}€ registada com sucesso.", "success")
     except (CustomException, ValidationError) as exc:
         return error_page(request, exc)
 

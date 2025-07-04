@@ -7,7 +7,7 @@ from app.db import crud_sellers, schemas, DB_SESSION
 from app.sec import GET_CURRENT_WEB_CLIENT, TokenData, are_valid_scopes
 from app.utils import get_today
 from app.utils.errors import CustomException
-from app.web import templates, error_page
+from app.web import templates, error_page, flash
 
 router = APIRouter()
 
@@ -50,6 +50,7 @@ async def create_expense_account_submit(
         expense_account_create: schemas.ExpenseAccountCreate = schemas.ExpenseAccountCreate(**data)
 
         expense_account = crud_sellers.create_expense_account(db=db, expense_account_create=expense_account_create)
+        flash(request, f"Rúbrica {expense_account.name} criada com sucesso.", "success")
     except (CustomException, ValidationError) as exc:
         return error_page(request, exc)
 
@@ -106,6 +107,7 @@ async def update_expense_account(
 
         db_expense_account = crud_sellers.get_expense_account_by_id(db, ea_id=ea_id)
         _ = crud_sellers.update_expense_account(db, db_expense_account=db_expense_account, expense_account_update=expense_account_update)
+        flash(request, f"Conta de despesa {db_expense_account.name} atualizada com sucesso.", "success")
     except (CustomException, ValidationError) as exc:
         return error_page(request, exc)
 

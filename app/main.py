@@ -1,7 +1,11 @@
+import os
 from contextlib import asynccontextmanager
 from datetime import datetime
 
 from fastapi import FastAPI, Request
+from starlette.middleware import Middleware
+from starlette.middleware.sessions import SessionMiddleware
+from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.staticfiles import StaticFiles
 
 from app import NAME, VERSION, logit, logging, log_traffic, unified_response
@@ -15,7 +19,7 @@ from app.api.tests import router as tests_router
 from app.db import init_db, get_db
 from app.sec import router as sec_router, ip_filtering
 from app.utils.errors import CustomException
-from app.web import error_page
+from app.web import error_page, flash
 from app.web.admin import router as admin_router
 from app.web.categories import router as web_items_categories_router
 from app.web.dues_payments import router as web_dues_payments_router
@@ -39,36 +43,43 @@ async def lifespan(_app: FastAPI):
     logit(f"--- {NAME} {VERSION} Closed! ---")
 
 
-app = FastAPI(lifespan=lifespan, debug=False)
+SECRET_KEY = os.getenv("CECC_SECRET_KEY", "_def#app_secret_key")
 
+class LogHTTPSMiddleware(BaseHTTPMiddleware):
+    async def dispatch(self, request: Request, call_next):
+        kwargs = {
+            "start_time": datetime.now(),
+            "method": request.method,
+            "url": str(request.url),
+            "client": request.headers.get("x-forwarded-for", request.client.host),
+            "path": str(request.url.path),
+        }
+        try:
+            ip_filtering.validate(**kwargs)
+            response = await call_next(request)
+            ip_filtering.update(response.status_code, **kwargs)
 
-@app.middleware("http")
-async def log_https_traffic(request: Request, call_next):
-    kwargs = {
-        "start_time": datetime.now(),
-        "method": request.method,
-        "url": str(request.url),
-        "client": request.headers.get("x-forwarded-for", request.client.host),
-        "path": str(request.url.path),
-    }
-    try:
-        ip_filtering.validate(**kwargs)
-        response = await call_next(request)
-        ip_filtering.update(response.status_code, **kwargs)
+            log_traffic(status_code=response.status_code, **kwargs)
 
-        log_traffic(status_code=response.status_code, **kwargs)
+            return unified_response(response)
+        except Exception as exc:
+            exc.status_code = getattr(exc, "status_code", 501)
+            level = logging.INFO if isinstance(exc, CustomException) else logging.WARNING
 
-        return unified_response(response)
-    except Exception as exc:
-        exc.status_code = getattr(exc, "status_code", 501)
-        level = logging.INFO if isinstance(exc, CustomException) else logging.WARNING
+            log_traffic(status_code=exc.status_code, **kwargs, level=level)
+            ip_filtering.update(exc.status_code, **kwargs)
 
-        log_traffic(status_code=exc.status_code, **kwargs, level=level)
-        ip_filtering.update(exc.status_code, **kwargs)
+            if request.url.path.startswith("/web/"):
+                flash(request, f"Erro inesperado {exc.status_code}", "danger")
+                return error_page(request, exc, level=level)
+            return error_json(exc, level=level)
 
-        if request.url.path.startswith("/web/"):
-            return error_page(request, exc, level=level)
-        return error_json(exc, level=level)
+middleware = [
+    Middleware(SessionMiddleware, secret_key=SECRET_KEY),
+    Middleware(LogHTTPSMiddleware)
+]
+
+app = FastAPI(lifespan=lifespan, debug=False, middleware=middleware)
 
 
 @app.exception_handler(Exception)
@@ -91,6 +102,7 @@ async def uncaught_exception_handler(request: Request, exc: Exception):
         logit(str(ex), level=level)
 
     if request.url.path.startswith("/web/"):
+        flash(request, f"Unexpected Error {exc.status_code}", "danger")
         return error_page(request, exc, level=level)
     return error_json(exc, level=level)
 
