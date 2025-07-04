@@ -1,8 +1,8 @@
-# CECC Application README
+# CDC Application README
 
 ## Description
 
-The CECC application is a Python-based project that can be run either in a Docker container or directly on your local machine. This document provides instructions on how to set up and run the application using both methods.
+The CDC application is a Python-based project that can be run either in a Docker container or directly on your local machine. This document provides instructions on how to set up and run the application using both methods.
 
 ## Prerequisites
 
@@ -34,7 +34,7 @@ The CECC application is a Python-based project that can be run either in a Docke
    After building the image, run the container:
   
    ```sh
-   docker run --rm -p 7443:443 -v ./data:/gqcv/data --name cecc-container cecc
+   docker run --rm -p 7443:443 -v ./data:/gqcv/data --name cdc-container cdc
    ```
 
 ### Running Locally
