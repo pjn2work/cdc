@@ -68,4 +68,6 @@ async def create_due_payment_submit(
     except (CustomException, ValidationError) as exc:
         return error_page(request, exc)
 
-    return RedirectResponse(url=f"{dp.id_year_month}/show", status_code=303)
+    #return RedirectResponse(url=f"{dp.id_year_month}/show", status_code=303)
+    referer = request.headers.get("Referer")
+    return RedirectResponse(url=referer, status_code=303)

@@ -7,7 +7,7 @@ from app.db import crud_sellers, schemas, DB_SESSION
 from app.sec import GET_CURRENT_WEB_CLIENT, TokenData, are_valid_scopes
 from app.utils import get_today
 from app.utils.errors import CustomException
-from app.web import templates, error_page
+from app.web import templates, error_page, flash
 
 router = APIRouter()
 
@@ -50,6 +50,7 @@ async def create_seller_submit(
         seller_create: schemas.SellerCreate = schemas.SellerCreate(**data)
 
         seller = crud_sellers.create_seller(db=db, seller_create=seller_create)
+        flash(request, f"Vendedor {seller.name} criado com sucesso.", "success")
     except (CustomException, ValidationError) as exc:
         return error_page(request, exc)
 
@@ -106,6 +107,7 @@ async def update_seller(
 
         db_seller = crud_sellers.get_seller_by_id(db, seller_id=seller_id)
         _ = crud_sellers.update_seller(db, db_seller=db_seller, seller_update=seller_update)
+        flash(request, f"Vendedor {db_seller.name} atualizado com sucesso.", "success")
     except (CustomException, ValidationError) as exc:
         return error_page(request, exc)
 

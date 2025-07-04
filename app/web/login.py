@@ -2,7 +2,7 @@ from fastapi import HTTPException, status, APIRouter, Request
 from starlette.responses import HTMLResponse, RedirectResponse
 
 from app.sec import get_access_token, change_client_secret
-from app.web import templates
+from app.web import templates, flash
 
 router = APIRouter()
 
@@ -22,8 +22,10 @@ async def login(request: Request):
         token_response = get_access_token(client_id, client_secret)
         response = RedirectResponse(url="/web/", status_code=status.HTTP_302_FOUND)
         response.set_cookie(key="access_token", value=token_response.access_token, httponly=True)
+        flash(request, "Login efetuado com sucesso.", "success")
         return response
     except HTTPException as e:
+        flash(request, f"Login falhado: {e.detail}", "danger")
         return templates.TemplateResponse(request=request, name="login.html", context={"error": e.detail}, status_code=401)
 
 
@@ -36,7 +38,9 @@ async def login(request: Request):
 
     try:
         change_client_secret(client_id, client_secret, new_client_secret)
+        flash(request, "Password alterada com sucesso.", "success")
         response = RedirectResponse(url="/web/", status_code=status.HTTP_302_FOUND)
         return response
     except HTTPException as e:
+        flash(request, f"Alteração de password falhou: {e.detail}", "danger")
         return templates.TemplateResponse(request=request, name="login.html", context={"error": e.detail}, status_code=401)

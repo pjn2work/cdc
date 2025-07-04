@@ -6,7 +6,7 @@ from datetime import datetime
 from starlette.responses import Response
 
 VERSION = "v0.11"
-NAME = "CDC"
+NAME = "CECC"
 ROOT_FOLDER = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 log = logging.getLogger(NAME)

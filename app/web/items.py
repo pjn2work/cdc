@@ -9,7 +9,7 @@ from app.db import crud_items, schemas, DB_SESSION
 from app.sec import GET_CURRENT_WEB_CLIENT, TokenData, are_valid_scopes
 from app.utils import get_today
 from app.utils.errors import CustomException
-from app.web import templates, error_page
+from app.web import templates, error_page, flash
 
 router = APIRouter()
 
@@ -70,6 +70,7 @@ async def create_item_submit(
         item_create: schemas.ItemCreate = schemas.ItemCreate(**data)
 
         item = crud_items.create_item(db=db, item_create=item_create)
+        flash(request, f"Item {item.name} criado com sucesso.", "success")
     except (CustomException, ValidationError) as exc:
         return error_page(request, exc)
 
@@ -130,6 +131,7 @@ async def update_item(
 
         db_item = crud_items.get_item_by_id(db, item_id=item_id)
         _ = crud_items.update_item(db, db_item=db_item, item_update=item_update)
+        flash(request, f"Item {db_item.name} atualizado com sucesso.", "success")
     except (CustomException, ValidationError) as exc:
         return error_page(request, exc)
 

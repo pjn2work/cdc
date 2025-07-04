@@ -195,6 +195,19 @@ def get_category_by_id(db: Session, category_id: int) -> models.Category:
     return db_category
 
 
+def delete_category_by_id(db: Session, category_id: int) -> None:
+    db_category = db.get(models.Category, category_id)
+    if db_category is None:
+        raise NotFound404(f"Category {category_id} not found")
+    _trans = db.begin(nested=db.in_transaction())
+    try:
+        db.delete(db_category)
+        _trans.session.commit()
+    except:
+        _trans.session.rollback()
+        raise
+
+
 def get_category(db: Session, category_id: int) -> models.Category:
     return get_category_by_id(db, category_id)
 
