@@ -6,7 +6,7 @@ from starlette.responses import HTMLResponse, RedirectResponse
 from app.db import crud_dues_payments, schemas, DB_SESSION
 from app.sec import GET_CURRENT_WEB_CLIENT, TokenData, are_valid_scopes
 from app.utils.errors import CustomException
-from app.web import templates, error_page
+from app.web import templates, error_page, flash
 
 router = APIRouter()
 
@@ -50,10 +50,14 @@ async def pay_member_due_payment(
         mdpc: schemas.MemberDuesPaymentCreate = schemas.MemberDuesPaymentCreate(**data)
 
         mdp = crud_dues_payments.pay_member_due_payment(db, tid=tid, mdpc=mdpc)
+        flash(request, f"Pagamento no valor de {mdp.amount}€ para o mês {mdp.dues_payment.id_year_month} feito com sucesso.", "success")
     except (CustomException, ValidationError) as exc:
+        flash(request, f"Pagamento tid={tid} falhou.", "danger")
         return error_page(request, exc)
 
-    return RedirectResponse(url=f"../members/{mdp.member_id}/show", status_code=303)
+    #return RedirectResponse(url=f"../members/{mdp.member_id}/show", status_code=303)
+    referer = request.headers.get("Referer")
+    return RedirectResponse(url=referer, status_code=303)
 
 
 @router.get("/pivot_table", response_class=HTMLResponse)

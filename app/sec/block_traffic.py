@@ -90,6 +90,7 @@ class IPFiltering:
         return self.__access_list["thresholds"]
 
     def unblock_client(self, client: str):
+        self._reset_client(client)
         if client in self.__access_list["blocked_clients"]:
             del self.__access_list["blocked_clients"][client]
             self._save_access_list()

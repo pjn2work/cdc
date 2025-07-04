@@ -8,14 +8,14 @@
         <label for="category_id">Filtrar por categoria</label>
         {{ selector("category_id", categories, "category_id", "name", category_id|int, "items", nullable=true, order_by="name") }}
         <br>
-        <input class="form-text input_edit" type="text" size="40" id="search_text" name="search_text" value="{{ search_text }}" placeholder="Pesquise por qualquer texto">
+        <input class="form-text input_edit" type="text" size="40" id="search_text" name="search_text" value="{{ search_text }}" placeholder="Pesquise por qualquer texto" onkeyup="filterTable()">
         <button class="btn btn-primary mb-2" type="submit">Pesquisar</button>
     </form>
     </div>
 {% endblock %}
 
 {% block content_out_div %}
-    <table class="table table-striped table-bordered">
+    <table class="table table-striped table-bordered" id="items_table">
         <thead class="table-dark">
             <tr>
                 <th class="align_right">Item ID</th>
@@ -47,4 +47,40 @@
             {% endfor %}
         </tbody>
     </table>
+
+    <script>
+        function filterTable() {
+            // Declare variables
+            var input, filter, table, tr, i;
+            input = document.getElementById("search_text");
+            filter = input.value.toUpperCase();
+            table = document.getElementById("items_table");
+            tr = table.getElementsByTagName("tr");
+
+            // Loop through all table rows, and hide those who don't match the search query
+            for (i = 1; i < tr.length; i++) { // Start at 1 to skip header
+                var display = "none";
+                var tds = tr[i].getElementsByTagName("td");
+                var categoria = tds[1].textContent || tds[1].innerText;
+                var nome = tds[2].textContent || tds[2].innerText;
+                var notas = tds[3].textContent || tds[3].innerText;
+
+                if (categoria.toUpperCase().indexOf(filter) > -1 ||
+                    nome.toUpperCase().indexOf(filter) > -1 ||
+                    notas.toUpperCase().indexOf(filter) > -1) {
+                    display = "";
+                }
+                tr[i].style.display = display;
+            }
+        }
+
+        window.onload = function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const searchText = urlParams.get('search_text');
+            if(searchText) {
+                document.getElementById('search_text').value = searchText;
+                filterTable();
+            }
+        }
+    </script>
 {% endblock %}

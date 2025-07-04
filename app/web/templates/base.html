@@ -9,21 +9,21 @@
 {%- endmacro -%}
 {% macro selector(name, values, field_value, field_description, default=0, show_length="", nullable=false, order_by="", group_category="", group_label="") %}
                     <select name="{{ name }}" id="{{ name }}" class="form-text input_edit">
-                        <option value="{{ 0 if nullable }}"></option>
+                         <option value="{{ 0 if nullable }}"></option>
                         {%- for v in values|sort(attribute=order_by) %}
                             {%-  if group_category and loop.changed(v[group_category]) %}
                                 {%- if not loop.first %}
                        </optgroup>
                                 {%- endif %}
-                                {%- set optgroup_label = v %}
+                                {%- set ns = namespace(optgroup_label = v) %}
                                 {%- for part in group_label.split('.') %}
-                                    {%- set optgroup_label = optgroup_label[part] %}
+                                    {%- set ns.optgroup_label = ns.optgroup_label[part] %}
                                     {%- if loop.last %}
-                       <optgroup label="{{ optgroup_label }}">
+                       <optgroup label="{{ ns.optgroup_label }}">
                                     {%- endif %}
                                 {%- endfor %}
                             {%- endif %}
-                        <option value="{{ v[field_value] }}"{{ " selected" if v[field_value] == default }}>{{ v[field_description] }}{{ " [" + v[show_length]|length|string + "]" if show_length }}</option>
+                         <option value="{{ v[field_value] }}"{{ " selected" if v[field_value] == default }}>{{ v[field_description] }}{{ " [" + v[show_length]|length|string + "]" if show_length }}</option>
                             {%- if group_category and loop.last %}
                        </optgroup>
                             {%- endif %}
@@ -48,11 +48,83 @@
                 }
             }
         }
+
+        function setup_tristate_toggle(name) {
+            const toggleArea = document.getElementById(name);
+            const toggleButtons = [...document.getElementsByName(name)];
+
+            // Helper function to update the UI based on the index
+            function updateState(index) {
+                toggleButtons.forEach((button, idx) => {
+                    button.style.opacity = (idx === index) ? "1" : "0";
+                    button.checked = (idx === index) & (index !== 1);
+                });
+
+                // Update the toggleArea class based on the index
+                toggleArea.classList.remove("tristate-toggle-false", "tristate-toggle-true");
+                if (index === 0) {
+                    toggleArea.classList.add("tristate-toggle-false");
+                } else if (index === 2) {
+                    toggleArea.classList.add("tristate-toggle-true");
+                }
+            }
+
+            // Apply click function for the 3 input buttons
+            toggleButtons.forEach((button, index) => {
+                button.addEventListener("click", () => updateState(index));
+            });
+
+            // Define initial state for default/selected button based on URL params
+            const urlParams = new URLSearchParams(window.location.search);
+            switch(urlParams.get(name)) {
+                case "false":
+                    updateState(0);
+                    break;
+                case "true":
+                    updateState(2);
+                    break;
+                default:
+                    updateState(1);
+            }
+        }
     </script>
 </head>
 <body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/web/">CDC</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/web/members/">Associados</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/web/dues_payments/">Pagamentos de Quotas</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/web/items/">Items</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/web/categories/">Categorias</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
 
     <div class="container">
+        {% with messages = get_flashed_messages(request) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }} mt-3" role="alert">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
         <table class="full_width">
             <tr>
                 <td style="width: 70%">

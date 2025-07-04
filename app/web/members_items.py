@@ -7,7 +7,7 @@ from app.db import crud_items, crud_member, schemas, DB_SESSION
 from app.sec import GET_CURRENT_WEB_CLIENT, TokenData, are_valid_scopes
 from app.utils import get_today
 from app.utils.errors import CustomException
-from app.web import templates, error_page
+from app.web import templates, error_page, flash
 
 router = APIRouter()
 
@@ -94,6 +94,7 @@ async def create_member_item_submit(
         member_item_create: schemas.MemberItemsCreate = schemas.MemberItemsCreate(**data)
 
         member_item = crud_items.create_member_item(db=db, item_id=item_id, member_item_create=member_item_create)
+        flash(request, f"Compra de {member_item.quantity} items de '{member_item.item.name}' no valor de {member_item.total_price}€ ao associado {member_item.member.name} feita com sucesso.", "success")
     except (CustomException, ValidationError) as exc:
         return error_page(request, exc)
 
@@ -139,7 +140,8 @@ async def update_member_item(
         member_item_update: schemas.MemberItemsUpdate = schemas.MemberItemsUpdate(**data)
 
         db_member_item = crud_items.get_member_item(db, tid=tid)
-        _ = crud_items.update_member_item(db, db_member_item=db_member_item, member_item_update=member_item_update)
+        member_item = crud_items.update_member_item(db, db_member_item=db_member_item, member_item_update=member_item_update)
+        flash(request, f"Actualização de compra de {member_item.quantity} items de '{member_item.item.name}' no valor de {member_item.total_price}€ ao associado {member_item.member.name} feita com sucesso.", "success")
     except (CustomException, ValidationError) as exc:
         return error_page(request, exc)
 

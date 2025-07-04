@@ -4,27 +4,34 @@
 {% block content_in_div %}
     <form class="form-inline" method="get">
         <input class="hidden" type="checkbox" id="do_filter" name="do_filter" checked>
-        <div class="form-check form-switch mb-4">
+        <div class="form-check form-switch mb-2">
             <input class="form-check-input" type="checkbox" id="only_due_missing" name="only_due_missing" onclick="toggleOnlyMissing()">
             <label class="form-check-label" for="only_due_missing">Apenas associados com quotas em atraso</label>
         </div>
-        <div class="form-check form-switch mb-4">
-            <input class="form-check-input" type="checkbox" id="only_active_members" name="only_active_members" onclick="toggleOnlyMissing()">
+
+        <div class="display_flex mb-2">
+            <div class="tristate-toggle" id="only_active_members">
+                <input class="tristate-toggle-input" type="radio" name="only_active_members" value="false" />
+                <input class="tristate-toggle-input" type="radio" name="only_active_members" value="none" />
+                <input class="tristate-toggle-input" type="radio" name="only_active_members" value="true" />
+            </div>
             <label class="form-check-label" for="only_active_members">Apenas associados activos</label>
         </div>
-        <input class="form-text input_edit" type="text" size="40" id="search_text" name="search_text" placeholder="Pesquise por qualquer texto">
+
+        <input class="form-text input_edit" type="text" size="40" id="search_text" name="search_text" placeholder="Pesquise por qualquer texto" onkeyup="filterTable()">
         <button class="btn btn-primary mb-2" type="submit">Pesquisar</button>
     </form>
 {% endblock %}
 
 {% block content_out_div %}
-    <table class="table table-striped table-bordered">
+    <table class="table table-striped table-bordered" id="members_table">
         <thead class="table-dark">
             <tr>
                 <th class="align_right">Associado ID</th>
                 <th>Inicio</th>
                 <th class="align_center">Activo</th>
                 <th>Nome</th>
+                <th class="align_right">Quota</th>
                 <th class="align_right">Meses em dívida</th>
                 <th class="align_right">Valor em dívida</th>
                 <th class="align_right">Meses pagos</th>
@@ -38,6 +45,7 @@
                     <td>{{ member.start_date }}</td>
                     <td class="align_center">{{ show_boolean(member.is_active) }}</td>
                     <td>{{ member.name }}</td>
+                    <td class="align_right">{{ member.amount }} €</td>
                     <td class="align_right">{{ member.total_months_missing }}</td>
                     <td class="align_right">{{ member.total_amount_missing }} €</td>
                     <td class="align_right">{{ member.total_months_paid }}</td>
@@ -48,9 +56,30 @@
     </table>
 
     <script>
+        function filterTable() {
+            // Declare variables
+            var input, filter, table, tr, td, i, txtValue;
+            input = document.getElementById("search_text");
+            filter = input.value.toUpperCase();
+            table = document.getElementById("members_table");
+            tr = table.getElementsByTagName("tr");
+
+            // Loop through all table rows, and hide those who don't match the search query
+            for (i = 0; i < tr.length; i++) {
+                td = tr[i].getElementsByTagName("td")[3]; // 3 is the index of the "Nome" column
+                if (td) {
+                    txtValue = td.textContent || td.innerText;
+                    if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                        tr[i].style.display = "";
+                    } else {
+                        tr[i].style.display = "none";
+                    }
+                }
+            }
+        }
+
         function toggleOnlyMissing() {
             const checkbox_due_missing = document.getElementById('only_due_missing');
-            const checkbox_active_members = document.getElementById('only_active_members');
             const searchText = document.getElementById('search_text').value;
             const urlParams = new URLSearchParams(window.location.search);
             urlParams.set('do_filter', 'on');
@@ -59,27 +88,23 @@
             } else {
                 urlParams.delete('only_due_missing');
             }
-            if (checkbox_active_members.checked) {
-                urlParams.set('only_active_members', 'on');
-            } else {
-                urlParams.delete('only_active_members');
-            }
             if (searchText.length > 0) {
                 urlParams.set('search_text', searchText);
             } else {
                 urlParams.delete('search_text');
             }
-            window.location.search = urlParams.toString();
         }
 
         window.onload = function() {
             const urlParams = new URLSearchParams(window.location.search);
             const onlyDueMissing = urlParams.get('only_due_missing') === 'on';
-            const onlyActiveMembers = urlParams.get('only_active_members') === 'on';
             const searchText = urlParams.get('search_text');
             document.getElementById('only_due_missing').checked = (onlyDueMissing) ? 'on' : null;
-            document.getElementById('only_active_members').checked = (onlyActiveMembers) ? 'on' : null;
             document.getElementById('search_text').value = searchText;
+            setup_tristate_toggle("only_active_members");
+            if(searchText) {
+                filterTable();
+            }
         }
     </script>
 {% endblock %}
