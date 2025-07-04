@@ -43,7 +43,7 @@ async def lifespan(_app: FastAPI):
     logit(f"--- {NAME} {VERSION} Closed! ---")
 
 
-SECRET_KEY = os.getenv("CECC_SECRET_KEY", "_def#app_secret_key")
+SECRET_KEY = os.getenv("CDC_SECRET_KEY", "_def#app_secret_key")
 
 class LogHTTPSMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next):
