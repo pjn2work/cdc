@@ -188,6 +188,25 @@ async def post_member_donation(
     return RedirectResponse(url=referer, status_code=303)
 
 
+@router.post("/{member_id}/donation/{tid}/delete", response_class=HTMLResponse)
+async def post_member_donation_delete(
+        request: Request,
+        member_id: int,
+        tid: int,
+        db: Session = DB_SESSION,
+        current_client: TokenData = GET_CURRENT_WEB_CLIENT):
+    are_valid_scopes(["app:delete", "member_donation:delete"], current_client)
+
+    try:
+        _ = crud_member.delete_member_donation(db, member_id=member_id, tid=tid)
+        flash(request, f"Donativo removido com sucesso.", "success")
+    except CustomException as exc:
+        return error_page(request, exc)
+
+    referer = request.headers.get("Referer")
+    return RedirectResponse(url=referer, status_code=303)
+
+
 @router.get("/donations", response_class=HTMLResponse)
 async def list_members_donations(
         request: Request,
