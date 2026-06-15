@@ -5,7 +5,7 @@ from datetime import datetime
 
 from starlette.responses import Response
 
-VERSION = "v0.12"
+VERSION = "v0.13"
 NAME = "CDC"
 ROOT_FOLDER = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
