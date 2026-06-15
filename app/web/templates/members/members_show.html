@@ -146,6 +146,7 @@
                 <th class="align_center">VD</th>
                 <th>Data de pagamento</th>
                 <th>Data de actualização</th>
+                <th class="align_center">Acções</th>
             </tr>
         </thead>
         <tbody>
@@ -156,6 +157,11 @@
                 <td class="align_center">{{ show_boolean(md.is_cash) }}</td>
                 <td>{{ md.pay_date }}</td>
                 <td>{{ md.pay_update_time }}</td>
+                <td class="align_center">
+                    <form method="post" action="donation/{{ md.tid }}/delete" onsubmit="return confirm('Tem a certeza que deseja remover este donativo de {{ md.amount }} euros?');">
+                        <button class="btn btn-sm btn-danger" type="submit">Remover</button>
+                    </form>
+                </td>
             </tr>
         {%- endfor %}
         </tbody>

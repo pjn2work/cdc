@@ -136,3 +136,21 @@ def post_member_donation(
         current_client: TokenData = GET_CURRENT_API_CLIENT):
     are_valid_scopes(["app:create", "member_donation:create"], current_client)
     return crud_member.post_member_donation(db, member_id=member_id, member_donation_create=member_donation_create)
+
+
+@router.delete(
+    path="/{member_id}/donation/{tid}",
+    response_model=schemas.MemberView,
+    status_code = status.HTTP_200_OK
+)
+def delete_member_donation(
+        member_id: int,
+        tid: int,
+        db: Session = DB_SESSION,
+        current_client: TokenData = GET_CURRENT_API_CLIENT):
+    are_valid_scopes(["app:delete", "member_donation:delete"], current_client)
+
+    try:
+        return crud_member.delete_member_donation(db, member_id=member_id, tid=tid)
+    except CustomException as exc:
+        return error_json(exc)
