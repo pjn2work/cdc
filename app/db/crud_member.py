@@ -240,13 +240,41 @@ def post_member_donation(db: Session, member_id: int, member_donation_create: sc
     db_member_donation.pay_update_time = get_now()
     try:
         db.add(db_member_donation)
+
+        # update member stats
+        db_member = get_member_by_id(db, member_id)
+        db_member.total_amount_paid += db_member_donation.amount
+        db.add(db_member)
+
         db.commit()
         db.refresh(db_member_donation)
     except:
         db.rollback()
         raise
 
-    db_member = get_member_by_id(db, member_id)
+    return db_member
+
+
+def delete_member_donation(db: Session, member_id: int, tid: int) -> models.Member:
+    db_member_donation = db.get(models.MemberDonation, tid)
+    if db_member_donation is None:
+        raise NotFound404(f"Donation {tid} not found")
+
+    if db_member_donation.member_id != member_id:
+        raise Conflict409(f"Donation {tid} does not belong to member {member_id}")
+
+    try:
+        # update member stats
+        db_member = get_member_by_id(db, member_id)
+        db_member.total_amount_paid -= db_member_donation.amount
+        db.add(db_member)
+
+        db.delete(db_member_donation)
+        db.commit()
+    except:
+        db.rollback()
+        raise
+
     return db_member
 
 

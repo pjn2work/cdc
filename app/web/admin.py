@@ -39,6 +39,7 @@ possible_scopes = {
     "member:update",
     "member_donation:create",
     "member_donation:read",
+    "member_donation:delete",
     "member_due_payment:create",
     "member_due_payment:read",
     "member_due_payment:update",
