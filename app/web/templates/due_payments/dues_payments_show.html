@@ -33,7 +33,7 @@
                                     <td class="align_center">{{ show_boolean(mdp.is_cash) }} </td>
                                     <td class="align_left">{{ mdp.pay_update_time }}</td>
                                     {%- if is_for_not_paid %}
-                                    <td class="red align_center"><button onclick="pay_member_due({{ mdp.tid }})">Pagar</button></td>
+                                    <td class="red align_center"><button onclick="pay_member_due({{ mdp.tid }}, {{ mdp.amount }})">Pagar</button></td>
                                     {% else %}
                                     <td class="align_left">{{ mdp.pay_date|default("", True) }}</td>
                                     {% endif -%}
