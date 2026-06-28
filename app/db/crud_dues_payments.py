@@ -199,6 +199,51 @@ def pay_member_due_payment(
     return mdp
 
 
+def pay_multiple_member_due_payments(
+        db: Session,
+        tids: List[int],
+        mdpc: schemas.MemberDuesPaymentCreate
+) -> List[models.MemberDuesPayment]:
+    mdps = []
+    try:
+        for tid in tids:
+            mdp: models.MemberDuesPayment = db.get(models.MemberDuesPayment, tid)
+            if mdp is None:
+                raise NotFound404(f"MemberDuesPayment={tid} not found.")
+
+            if mdp.is_paid:
+                raise Conflict409(f"MemberDuesPayment={tid} {mdp.id_year_month} was already paid for member={mdp.member_id} and the amount {mdp.amount}€.")
+
+            if not mdp.is_member_active:
+                raise Conflict409(f"Member={mdp.member_id} is not active for payment at {mdp.id_year_month} MemberDuesPayment={tid}.")
+
+            mdp.is_paid = True
+            mdp.is_cash = mdpc.is_cash
+            mdp.pay_date = mdpc.pay_date
+            mdp.pay_update_time = get_now()
+            db.add(mdp)
+
+            # update member stats
+            member = db.get(models.Member, mdp.member_id)
+            member.total_months_paid += 1
+            member.total_amount_paid += mdp.amount
+            member.total_months_missing -= 1
+            member.total_amount_missing -= mdp.amount
+            db.add(member)
+
+            mdps.append(mdp)
+
+        db.commit()
+    except:
+        db.rollback()
+        raise
+
+    for mdp in mdps:
+        db.refresh(mdp)
+    return mdps
+
+
+
 def get_df_pivot_table_dues_paid_for_all_members(
         db: Session,
         months: List[str],

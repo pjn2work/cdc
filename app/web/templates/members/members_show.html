@@ -103,6 +103,12 @@
             <tr>
                 <th class="align_right">ID</th>
                 <th class="align_center">Mensalidade</th>
+                <th class="align_center">
+                    <div class="d-flex align-items-center justify-content-center" style="gap: 8px;">
+                        <input type="checkbox" id="select_all_dues" onclick="toggle_select_all_dues(this)" title="Selecionar tudo" style="cursor: pointer; width: 18px; height: 18px;">
+                        <button class="btn btn-sm btn-primary" id="btn_pay_selected" onclick="pay_selected_dues()" type="button" disabled style="padding: 2px 8px; font-size: 0.85rem;">Pagar selecionado</button>
+                    </div>
+                </th>
                 <th class="align_center">Pagamento</th>
                 <th class="align_right">Quota</th>
                 <th class="align_center">VD</th>
@@ -116,6 +122,13 @@
             <tr>
                 <td class="align_right">{{ mdp.tid }}</td>
                 <td class="align_center">{{ mdp.id_year_month }}</td>
+                <td class="align_center">
+                    {%- if not mdp.is_paid and mdp.is_member_active %}
+                    <input type="checkbox" class="due-checkbox" data-tid="{{ mdp.tid }}" data-amount="{{ mdp.amount }}" onchange="update_selected_total()" style="cursor: pointer; width: 18px; height: 18px;">
+                    {%- else %}
+                    <input type="checkbox" disabled style="width: 18px; height: 18px; opacity: 0.3;">
+                    {%- endif %}
+                </td>
                 {%- if mdp.is_paid %}
                     {%- if mdp.is_member_active %}
                 <td class="green align_center">pago</td>
@@ -123,7 +136,7 @@
                 <td class="align_center">---</td>
                     {%- endif %}
                 {%- else %}
-                <td class="red align_center"><button onclick="pay_member_due({{ mdp.tid }})">Pagar</button></td>
+                <td class="red align_center"><button onclick="pay_member_due({{ mdp.tid }}, {{ mdp.amount }})">Pagar</button></td>
                 {%- endif %}
                 <td class="align_right">{{ mdp.amount }} €</td>
                 <td class="align_center">{{ show_boolean(mdp.is_cash) }}</td>

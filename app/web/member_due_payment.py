@@ -36,10 +36,10 @@ async def list_member_dues_payments_order_by_pay_date(
     })
 
 
-@router.post("/{tid}", response_class=HTMLResponse)
+@router.post("/{tids}", response_class=HTMLResponse)
 async def pay_member_due_payment(
         request: Request,
-        tid: int,
+        tids: str,
         db: Session = DB_SESSION,
         current_client: TokenData = GET_CURRENT_WEB_CLIENT):
     are_valid_scopes(["app:create", "member_due_payment:create"], current_client)
@@ -49,15 +49,26 @@ async def pay_member_due_payment(
     try:
         mdpc: schemas.MemberDuesPaymentCreate = schemas.MemberDuesPaymentCreate(**data)
 
-        mdp = crud_dues_payments.pay_member_due_payment(db, tid=tid, mdpc=mdpc)
-        flash(request, f"Pagamento no valor de {mdp.amount}€ para o mês {mdp.dues_payment.id_year_month} feito com sucesso.", "success")
+        # Parse comma-separated list of tids
+        tid_list = [int(tid.strip()) for tid in tids.split(",") if tid.strip()]
+        if not tid_list:
+            raise CustomException("Nenhum pagamento selecionado.")
+
+        if len(tid_list) == 1:
+            mdp = crud_dues_payments.pay_member_due_payment(db, tid=tid_list[0], mdpc=mdpc)
+            flash(request, f"Pagamento no valor de {mdp.amount}€ para o mês {mdp.id_year_month} feito com sucesso.", "success")
+        else:
+            mdps = crud_dues_payments.pay_multiple_member_due_payments(db, tids=tid_list, mdpc=mdpc)
+            total_amount = sum(mdp.amount for mdp in mdps)
+            months = ", ".join(mdp.id_year_month for mdp in mdps)
+            flash(request, f"Pagamento no valor total de {total_amount}€ para os meses ({months}) feito com sucesso.", "success")
     except (CustomException, ValidationError) as exc:
-        flash(request, f"Pagamento tid={tid} falhou.", "danger")
+        flash(request, f"Pagamento falhou.", "danger")
         return error_page(request, exc)
 
-    #return RedirectResponse(url=f"../members/{mdp.member_id}/show", status_code=303)
     referer = request.headers.get("Referer")
     return RedirectResponse(url=referer, status_code=303)
+
 
 
 @router.get("/pivot_table", response_class=HTMLResponse)
