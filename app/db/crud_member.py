@@ -355,5 +355,49 @@ def update_member_stats(db: Session, member_id: int) -> models.Member:
     return db_member
 
 
+def recalculate_member_totals(db: Session, member_id: int) -> models.Member:
+    """Recompute all cached totals for a member from scratch using raw DB data.
+
+    total_amount_paid  = sum of paid active quota dues + sum of donations
+    total_months_paid  = count of paid active quota dues
+    total_amount_missing = sum of unpaid active quota dues (up to current month)
+    total_months_missing = count of unpaid active quota dues (up to current month)
+    """
+    db_member = get_member_by_id(db, member_id)
+
+    # --- quota payments ---
+    paid_dues = db.query(models.MemberDuesPayment).filter_by(
+        member_id=member_id, is_paid=True, is_member_active=True
+    ).all()
+    total_months_paid = len(paid_dues)
+    total_quota_paid = sum(mdp.amount for mdp in paid_dues)
+
+    missing_dues = db.query(models.MemberDuesPayment).filter_by(
+        member_id=member_id, is_paid=False, is_member_active=True
+    ).filter(
+        models.MemberDuesPayment.id_year_month <= get_today_year_month_str()
+    ).all()
+    total_months_missing = len(missing_dues)
+    total_amount_missing = sum(mdp.amount for mdp in missing_dues)
+
+    # --- donations (also stored in total_amount_paid) ---
+    donations = db.query(models.MemberDonation).filter_by(member_id=member_id).all()
+    total_donations = sum(d.amount for d in donations)
+
+    try:
+        db_member.total_months_paid = total_months_paid
+        db_member.total_amount_paid = round(total_quota_paid + total_donations, 2)
+        db_member.total_months_missing = total_months_missing
+        db_member.total_amount_missing = round(total_amount_missing, 2)
+        db.add(db_member)
+        db.commit()
+    except:
+        db.rollback()
+        raise
+
+    db.refresh(db_member)
+    return db_member
+
+
 def _get_fields(d: dict) -> dict:
     return {k: v for k, v in d.items() if not k.startswith("_")}

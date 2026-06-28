@@ -52,6 +52,12 @@
                                     <button class="btn btn-primary mb-1" type="submit">Criar nova venda a associado</button>
                                 </p>
                             </form>
+                        </td><td>
+                            <form class="form-inline" method="post" action="recalc" onsubmit="return confirm('Recalcular todos os totais do associado {{ member.name }} a partir dos dados reais?');">
+                                <p class="align_center">
+                                    <button class="btn btn-warning mb-1" type="submit">Recalcular totais</button>
+                                </p>
+                            </form>
                         </td></tr></table>
 
                         <table><tr><td class="padding-15">
