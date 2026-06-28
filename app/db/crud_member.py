@@ -399,5 +399,21 @@ def recalculate_member_totals(db: Session, member_id: int) -> models.Member:
     return db_member
 
 
+def recalculate_all_members_totals(db: Session) -> int:
+    """Recalculate cached totals for every member at startup. Returns the number of members processed."""
+    from app import logit, logging as _logging
+    members = db.query(models.Member).all()
+    count = 0
+    for member in members:
+        try:
+            recalculate_member_totals(db, member_id=member.member_id)
+            count += 1
+        except Exception as exc:
+            logit(f"recalculate_all_members_totals: failed for member_id={member.member_id} - {exc}", _logging.WARNING)
+    logit(f"recalculate_all_members_totals: recalculated totals for {count}/{len(members)} members.")
+    return count
+
+
 def _get_fields(d: dict) -> dict:
     return {k: v for k, v in d.items() if not k.startswith("_")}
+

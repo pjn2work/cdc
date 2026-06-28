@@ -17,6 +17,8 @@ from app.api.members import router as members_router
 from app.api.sellers import router as sellers_router
 from app.api.tests import router as tests_router
 from app.db import init_db, get_db
+from app.db import crud_member
+from app.db.database import SessionLocal
 from app.sec import router as sec_router, ip_filtering
 from app.utils.errors import CustomException
 from app.web import error_page, flash
@@ -37,6 +39,11 @@ from app.web.sellers_items import router as web_sellers_items_router
 @asynccontextmanager
 async def lifespan(_app: FastAPI):
     init_db()
+    _startup_db = SessionLocal()
+    try:
+        crud_member.recalculate_all_members_totals(_startup_db)
+    finally:
+        _startup_db.close()
     logit(f"--- {NAME} {VERSION} Ready! ---")
     yield
     get_db().close()
