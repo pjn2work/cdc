@@ -201,6 +201,7 @@
                 <th class="align_center">V.D.</th>
                 <th class="align_left">Data de pagamento</th>
                 <th class="align_left">Data de actualização</th>
+                <th class="align_center">Acções</th>
             </tr>
         </thead>
         <tbody>
@@ -215,6 +216,11 @@
                 <td class="align_center">{{ show_boolean(md.is_cash) }}</td>
                 <td class="align_left">{{ md.purchase_date }}</td>
                 <td class="align_left">{{ md.row_update_time }}</td>
+                <td class="align_center">
+                    <form method="post" action="../../members-items/{{ md.tid }}/delete" onsubmit="return confirm('Tem a certeza que deseja remover esta venda de {{ md.quantity }} x \'{{ md.item.name }}\' ({{ md.total_price }}€)?');">
+                        <button class="btn btn-sm btn-danger" type="submit">Remover</button>
+                    </form>
+                </td>
             </tr>
         {%- endfor %}
         </tbody>
