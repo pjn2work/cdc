@@ -46,6 +46,7 @@ possible_scopes = {
     "member_item:create",
     "member_item:read",
     "member_item:update",
+    "member_item:delete",
     "seller:create",
     "seller:read",
     "seller:update",
