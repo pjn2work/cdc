@@ -30,13 +30,19 @@ uvicorn app.main:app --host 0.0.0.0 --port 5443 --log-config app/log.ini --reloa
 
 Two-stage Docker build: `Dockerfile.base` (python:3.12-slim + pip deps) produces `gqcv-base`, then `Dockerfile` copies app code on top. The `data/` directory is mounted as a volume at `/gqcv/data`.
 
+## Branching Strategy
+
+- **`main`** — stable/release branch for the default CDC application
+- **`develop`** — integration branch, features are developed here first
+- **`release/*`** — customer-specific branches (e.g., `release/cecc`). These differ only in naming/config (app name, env var prefixes, page titles), not in business logic. New features should be cherry-picked between `develop` and `release/*` branches to keep them in sync.
+
 ## Architecture
 
 **Stack:** Python 3.12, FastAPI, SQLAlchemy 2.0 (SQLite at `data/data.spsql`), Pydantic v2, Jinja2 templates, JWT auth (python-jose).
 
 ### Layer structure (all under `app/`)
 
-- **`main.py`** — FastAPI app, lifespan, middleware (session + request logging + IP filtering), exception handlers, router registration. Static files served from `app/web/static/`.
+- **`main.py`** — FastAPI app, lifespan (DB init + `recalculate_all_members_totals()` on startup), middleware (session + request logging + IP filtering), exception handlers, router registration. Static files served from `app/web/static/`.
 - **`api/`** — JSON REST endpoints under `/api/`. Each file is a router for one domain entity. Auth via `GET_CURRENT_API_CLIENT` (OAuth2 bearer token).
 - **`web/`** — Server-rendered HTML endpoints under `/web/`. Same CRUD ops as API but return Jinja2 templates. Auth via `GET_CURRENT_WEB_CLIENT` (cookie-based token). Flash messages via session.
 - **`db/models/`** — SQLAlchemy ORM models. `MemberAbs` is abstract base for `Member` and `MemberHistory`.
@@ -63,7 +69,8 @@ All requests pass through `LogHTTPSMiddleware` which: validates IP isn't blocked
 - **Adding a new entity:** Create model in `db/models/`, schema in `db/schemas/` (with Create/Update/View variants), CRUD functions in `db/crud_*.py`, API router in `api/`, web router in `web/`, templates in `web/templates/<entity>/`. Register routers in `main.py`. Export schemas/models from their `__init__.py`.
 - **Scope checks:** Always call `are_valid_scopes(["app:<action>", "<entity>:<action>"], current_client)` at the start of every endpoint.
 - **Error handling:** Raise `CustomException` subclasses (`NotFound404`, `Conflict409`, `TooManyRequests429`). The middleware routes errors to JSON or HTML based on whether the path starts with `/web/`.
-- **DB transactions:** Wrap mutations in try/except with `db.rollback()` on failure.
+- **DB transactions:** Wrap mutations in try/except with `db.rollback()` on failure. Nested transactions use `db.begin(nested=db.in_transaction())` for savepoints.
+- **Batch web endpoints:** Some web POST endpoints accept JSON (via `fetch`) instead of form data for batch operations (e.g., selling multiple items at once). These return `JSONResponse` with a redirect URL instead of `RedirectResponse`.
 
 ## Data Files (in `data/`, gitignored)
 
@@ -77,4 +84,8 @@ All requests pass through `LogHTTPSMiddleware` which: validates IP isn't blocked
 - `CDC_SECRET_KEY` — App/JWT secret key (fallback: `_def#app_secret_key`)
 - `CDC_SALT` — Password hashing salt (fallback from credentials.json)
 - `CDC_MODE=TEST` — Enables `clear_db()` function for test cleanup
-- `NAME` — Application name (default: `CDC`)
+- `NAME` — Application name (default: `CDC`, or `CECC` on customer branches)
+
+## Git Configuration
+
+This repo uses SSH commit signing with a local override: `user.signingkey = ~/.ssh/id_rsa.pub` (the global config uses `id_ed25519`, but this repo's remote uses the `github-pjn` SSH host alias which requires `id_rsa`).
