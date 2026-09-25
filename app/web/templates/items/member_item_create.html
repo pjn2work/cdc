@@ -178,7 +178,7 @@ function renderCart() {
         tr.innerHTML =
             '<td>' + esc(item.category_name) + ' - ' + esc(item.name) + '</td>' +
             '<td><input type="number" class="form-control form-control-sm" min="1" value="' + item.quantity + '" id="cart_qty_' + index + '" onchange="onCartQtyChange(' + index + ', this.value)"></td>' +
-            '<td><input type="number" class="form-control form-control-sm" step="0.01" min="0" value="' + item.total_price.toFixed(2) + '" id="cart_price_' + index + '" onchange="onCartPriceChange(' + index + ', this.value)"></td>' +
+            '<td><input type="number" class="form-control form-control-sm" step="1.0" min="0" value="' + item.total_price.toFixed(2) + '" id="cart_price_' + index + '" onchange="onCartPriceChange(' + index + ', this.value)"></td>' +
             '<td><input type="text" class="form-control form-control-sm" value="" id="cart_notes_' + index + '" onchange="onCartNotesChange(' + index + ', this.value)"></td>' +
             '<td class="align_center"><button class="btn btn-sm btn-danger" onclick="removeFromCart(' + index + ')" title="Remover">&times;</button></td>';
         tbody.appendChild(tr);
