@@ -284,6 +284,23 @@ def get_item_member(
         return error_json(exc)
 
 
+@router.delete(
+    path="/members/{tid}",
+    response_model=None,
+    status_code=status.HTTP_200_OK
+)
+def delete_item_member(
+        tid: int,
+        db: Session = DB_SESSION,
+        current_client: TokenData = GET_CURRENT_API_CLIENT):
+    are_valid_scopes(["app:delete", "member_item:delete"], current_client)
+
+    try:
+        return crud_items.delete_member_item(db, tid=tid)
+    except CustomException as exc:
+        return error_json(exc)
+
+
 @router.put(
     path="/members/{tid}",
     response_model=schemas.MemberItems,
