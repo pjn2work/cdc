@@ -151,6 +151,24 @@ def edit_member_item(
     })
 
 
+@router.post("/{tid}/delete", response_class=HTMLResponse)
+async def delete_member_item(
+        request: Request,
+        tid: int,
+        db: Session = DB_SESSION,
+        current_client: TokenData = GET_CURRENT_WEB_CLIENT):
+    are_valid_scopes(["app:delete", "member_item:delete"], current_client)
+
+    try:
+        crud_items.delete_member_item(db, tid=tid)
+        flash(request, f"Venda removida com sucesso.", "success")
+    except CustomException as exc:
+        return error_page(request, exc)
+
+    referer = request.headers.get("Referer")
+    return RedirectResponse(url=referer, status_code=303)
+
+
 @router.post("/{tid}/update", response_class=HTMLResponse)
 async def update_member_item(
         request: Request,
