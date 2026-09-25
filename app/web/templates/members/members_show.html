@@ -26,6 +26,10 @@
                         <p class="form-control-plaintext data-text align_center">{{ member.total_months_paid }}</p>
                         <label class="form-label label-text align_center">Valor pago</label>
                         <p class="form-control-plaintext data-text align_center">{{ member.total_amount_paid }} €</p>
+                        <label class="form-label label-text align_center">Total donativos</label>
+                        <p class="form-control-plaintext data-text align_center">{{ member.member_donations|sum(attribute='amount')|round(2) }} €</p>
+                        <label class="form-label label-text align_center">Total compras</label>
+                        <p class="form-control-plaintext data-text align_center">{{ member.total_amount_bought }} €</p>
                     </div>
                     <div class="col-md-10">
                         <label class="form-label label-text">Nome</label>
