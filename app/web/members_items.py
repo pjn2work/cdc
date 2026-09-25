@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Request
 from pydantic_core import ValidationError
 from sqlalchemy.orm import Session
-from starlette.responses import HTMLResponse, RedirectResponse
+from starlette.responses import HTMLResponse, RedirectResponse, JSONResponse
 
 from app.db import crud_items, crud_member, schemas, DB_SESSION
 from app.sec import GET_CURRENT_WEB_CLIENT, TokenData, are_valid_scopes
@@ -67,38 +67,65 @@ def create_member_item(
 
     items = crud_items.get_items_list(db, search_text="")
     members = crud_member.get_members_list(db, search_text="")
+    categories = crud_items.get_categories_list(db, search_text="")
+
+    items_data = [{
+        "item_id": item.item_id,
+        "name": item.name,
+        "base_price": item.base_price or 0,
+        "category_id": item.category_id,
+        "category_name": item.category.name if item.category else "",
+    } for item in items]
 
     return templates.TemplateResponse(request=request, name="items/member_item_create.html", context={
         "item_id": item_id,
         "member_id": member_id,
-        "item_base_price": item_base_price,
-        "items": items,
+        "items_data": items_data,
         "members": members,
+        "categories": categories,
         "today": str(get_today())
     })
 
 
-@router.post("/create", response_class=HTMLResponse)
+@router.post("/create")
 async def create_member_item_submit(
         request: Request,
         db: Session = DB_SESSION,
         current_client: TokenData = GET_CURRENT_WEB_CLIENT):
     are_valid_scopes(["app:create", "member_item:create"], current_client)
 
-    data = {**await request.form()}
-    data["is_cash"] = data.get("is_cash", False)
-    item_id = int(data["item_id"])
-    del data["item_id"]
-
     try:
-        member_item_create: schemas.MemberItemsCreate = schemas.MemberItemsCreate(**data)
+        data = await request.json()
+        member_id = int(data["member_id"])
+        purchase_date = data["purchase_date"]
+        is_cash = bool(data.get("is_cash", False))
+        cart_items = data["items"]
 
-        member_item = crud_items.create_member_item(db=db, item_id=item_id, member_item_create=member_item_create)
-        flash(request, f"Compra de {member_item.quantity} items de '{member_item.item.name}' no valor de {member_item.total_price}€ ao associado {member_item.member.name} feita com sucesso.", "success")
+        if not cart_items:
+            raise CustomException("Nenhum item no carrinho.")
+
+        created = []
+        for ci in cart_items:
+            mic = schemas.MemberItemsCreate(
+                member_id=member_id,
+                quantity=int(ci["quantity"]),
+                total_price=float(ci["total_price"]),
+                notes=ci.get("notes", ""),
+                purchase_date=purchase_date,
+                is_cash=is_cash,
+            )
+            mi = crud_items.create_member_item(db=db, item_id=int(ci["item_id"]), member_item_create=mic)
+            created.append(mi)
+
+        total_qty = sum(mi.quantity for mi in created)
+        total_price = sum(mi.total_price for mi in created)
+        member_name = created[0].member.name
+        flash(request, f"Venda de {total_qty} items no valor de {total_price:.2f}€ ao associado {member_name} criada com sucesso.", "success")
+
+        return JSONResponse({"redirect": f"../members-items/?do_filter=on&member_id={member_id}"})
+
     except (CustomException, ValidationError) as exc:
-        return error_page(request, exc)
-
-    return RedirectResponse(url=f"../members-items/?do_filter=on&tid={member_item.tid}", status_code=303)
+        return JSONResponse({"error": str(exc)}, status_code=400)
 
 
 @router.get("/{tid}/update", response_class=HTMLResponse)
