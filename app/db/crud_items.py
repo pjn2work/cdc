@@ -506,6 +506,22 @@ def get_member_item(db: Session, tid: int) -> models.MemberItems:
     return get_member_item_by_id(db, tid)
 
 
+def delete_member_item(db: Session, tid: int) -> None:
+    db_member_item = get_member_item_by_id(db, tid)
+    item_id = db_member_item.item_id
+    member_id = db_member_item.member_id
+
+    _trans = db.begin(nested=db.in_transaction())
+    try:
+        db.delete(db_member_item)
+        _update_item_and_category_stats(db, item_id)
+        update_member_stats(db, member_id)
+        _trans.commit()
+    except:
+        _trans.rollback()
+        raise
+
+
 def update_member_item(db: Session, db_member_item: models.MemberItems, member_item_update: schemas.MemberItemsUpdate) -> models.MemberItems:
     _trans = db.begin(nested=db.in_transaction())
     try:
