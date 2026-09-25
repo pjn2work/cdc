@@ -12,7 +12,7 @@
                         <label class="form-label label-text align_center">Data de início</label>
                         <p class="form-control-plaintext data-text align_center">{{ member.start_date }}</p>
                         <label class="form-label label-text align_center">Quota Mensal</label>
-                        <p class="form-control-plaintext data-text align_center">{{ member.amount }} €</p>
+                        <p class="form-control-plaintext data-text align_center">{{ member.amount|round(2) }} €</p>
                         <label class="form-label label-text align_center Main-Text">Meses em atraso</label>
                         <div class="Extra-Text">
                             {%- for mm in member.months_missing %}
@@ -21,15 +21,15 @@
                         </div>
                         <p class="form-control-plaintext data-text align_center">{{ member.total_months_missing }}</p>
                         <label class="form-label label-text align_center">Valor em atraso</label>
-                        <p class="form-control-plaintext data-text align_center">{{ member.total_amount_missing }} €</p>
+                        <p class="form-control-plaintext data-text align_center">{{ member.total_amount_missing|round(2) }} €</p>
                         <label class="form-label label-text align_center">Meses pagos</label>
                         <p class="form-control-plaintext data-text align_center">{{ member.total_months_paid }}</p>
                         <label class="form-label label-text align_center">Valor pago</label>
-                        <p class="form-control-plaintext data-text align_center">{{ member.total_amount_paid }} €</p>
+                        <p class="form-control-plaintext data-text align_center">{{ member.total_amount_paid|round(2) }} €</p>
                         <label class="form-label label-text align_center">Total donativos</label>
                         <p class="form-control-plaintext data-text align_center">{{ member.member_donations|sum(attribute='amount')|round(2) }} €</p>
                         <label class="form-label label-text align_center">Total compras</label>
-                        <p class="form-control-plaintext data-text align_center">{{ member.total_amount_bought }} €</p>
+                        <p class="form-control-plaintext data-text align_center">{{ member.total_amount_bought|round(2) }} €</p>
                     </div>
                     <div class="col-md-10">
                         <label class="form-label label-text">Nome</label>
