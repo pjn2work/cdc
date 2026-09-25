@@ -230,3 +230,21 @@ async def list_members_donations(
         "md_list": md_list,
         "total": len(md_list),
     })
+
+
+@router.post("/{member_id}/recalc", response_class=HTMLResponse)
+async def recalculate_member_totals(
+        request: Request,
+        member_id: int,
+        db: Session = DB_SESSION,
+        current_client: TokenData = GET_CURRENT_WEB_CLIENT):
+    are_valid_scopes(["app:update", "member:update"], current_client)
+
+    try:
+        member = crud_member.recalculate_member_totals(db, member_id=member_id)
+        flash(request, f"Totais do associado {member.name} recalculados com sucesso.", "success")
+    except CustomException as exc:
+        return error_page(request, exc)
+
+    return RedirectResponse(url=f"show", status_code=status.HTTP_303_SEE_OTHER)
+

@@ -4,18 +4,69 @@
             <input type="date" id="pay_date" name="pay_date" value="{{ today }}" required>
             pagamento em dinheiro?
             <input type="checkbox" id="is_cash" name="is_cash">
-            <br><br>
+            <br>
+            <div id="div_payment_total" style="display: none; margin-top: 10px; margin-bottom: 10px;">
+                <strong>Valor total a pagar: </strong><span id="payment_total_val">0.00</span> €
+            </div>
+            <br>
             <button type="submit">Registar pagamento</button>
             <button onclick="cancel_select_extra()" type="button">Cancelar</button>
         </form>
     </div>
     <script>
-        function pay_member_due(tid) {
+        function pay_member_due(tid, amount) {
             document.getElementById('form_select_extra').action = document.getElementById('form_select_extra').action + tid;
+            if (amount !== undefined) {
+                document.getElementById('payment_total_val').innerText = Number(amount).toFixed(2);
+                document.getElementById('div_payment_total').style.display = 'block';
+            } else {
+                document.getElementById('div_payment_total').style.display = 'none';
+            }
             document.getElementById('div_select_extra').style.display = 'block';
        }
        function cancel_select_extra() {
             document.getElementById('form_select_extra').action = "../../member_due_payment/";
+            document.getElementById('div_payment_total').style.display = 'none';
             document.getElementById('div_select_extra').style.display = 'none';
        }
+       function toggle_select_all_dues(selectAllCb) {
+            const checkboxes = document.querySelectorAll('.due-checkbox');
+            checkboxes.forEach(cb => {
+                if (!cb.disabled) {
+                    cb.checked = selectAllCb.checked;
+                }
+            });
+            update_selected_total();
+       }
+       function update_selected_total() {
+            const checkboxes = document.querySelectorAll('.due-checkbox:checked');
+            const btn = document.getElementById('btn_pay_selected');
+            if (btn) {
+                btn.disabled = checkboxes.length === 0;
+            }
+            const allCheckboxes = document.querySelectorAll('.due-checkbox:not(:disabled)');
+            const selectAllCb = document.getElementById('select_all_dues');
+            if (selectAllCb && allCheckboxes.length > 0) {
+                selectAllCb.checked = checkboxes.length === allCheckboxes.length;
+            }
+       }
+       function pay_selected_dues() {
+            const checkboxes = document.querySelectorAll('.due-checkbox:checked');
+            if (checkboxes.length === 0) {
+                alert('Nenhuma quota selecionada.');
+                return;
+            }
+            const tids = [];
+            let total = 0;
+            checkboxes.forEach(cb => {
+                tids.push(cb.getAttribute('data-tid'));
+                total += parseFloat(cb.getAttribute('data-amount'));
+            });
+            
+            document.getElementById('form_select_extra').action = "../../member_due_payment/" + tids.join(',');
+            document.getElementById('payment_total_val').innerText = total.toFixed(2);
+            document.getElementById('div_payment_total').style.display = 'block';
+            document.getElementById('div_select_extra').style.display = 'block';
+       }
     </script>
+

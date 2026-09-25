@@ -12,7 +12,7 @@
                         <label class="form-label label-text align_center">Data de início</label>
                         <p class="form-control-plaintext data-text align_center">{{ member.start_date }}</p>
                         <label class="form-label label-text align_center">Quota Mensal</label>
-                        <p class="form-control-plaintext data-text align_center">{{ member.amount }} €</p>
+                        <p class="form-control-plaintext data-text align_center">{{ member.amount|round(2) }} €</p>
                         <label class="form-label label-text align_center Main-Text">Meses em atraso</label>
                         <div class="Extra-Text">
                             {%- for mm in member.months_missing %}
@@ -21,11 +21,15 @@
                         </div>
                         <p class="form-control-plaintext data-text align_center">{{ member.total_months_missing }}</p>
                         <label class="form-label label-text align_center">Valor em atraso</label>
-                        <p class="form-control-plaintext data-text align_center">{{ member.total_amount_missing }} €</p>
+                        <p class="form-control-plaintext data-text align_center">{{ member.total_amount_missing|round(2) }} €</p>
                         <label class="form-label label-text align_center">Meses pagos</label>
                         <p class="form-control-plaintext data-text align_center">{{ member.total_months_paid }}</p>
                         <label class="form-label label-text align_center">Valor pago</label>
-                        <p class="form-control-plaintext data-text align_center">{{ member.total_amount_paid }} €</p>
+                        <p class="form-control-plaintext data-text align_center">{{ member.total_amount_paid|round(2) }} €</p>
+                        <label class="form-label label-text align_center">Total donativos</label>
+                        <p class="form-control-plaintext data-text align_center">{{ member.member_donations|sum(attribute='amount')|round(2) }} €</p>
+                        <label class="form-label label-text align_center">Total compras</label>
+                        <p class="form-control-plaintext data-text align_center">{{ member.total_amount_bought|round(2) }} €</p>
                     </div>
                     <div class="col-md-10">
                         <label class="form-label label-text">Nome</label>
@@ -50,6 +54,12 @@
                                 <p class="align_center">
                                     <input type="hidden" name="member_id" value="{{ member.member_id }}">
                                     <button class="btn btn-primary mb-1" type="submit">Criar nova venda a associado</button>
+                                </p>
+                            </form>
+                        </td><td>
+                            <form class="form-inline" method="post" action="recalc" onsubmit="return confirm('Recalcular todos os totais do associado {{ member.name }} a partir dos dados reais?');">
+                                <p class="align_center">
+                                    <button class="btn btn-warning mb-1" type="submit">Recalcular totais</button>
                                 </p>
                             </form>
                         </td></tr></table>
@@ -103,6 +113,12 @@
             <tr>
                 <th class="align_right">ID</th>
                 <th class="align_center">Mensalidade</th>
+                <th class="align_center">
+                    <div class="d-flex align-items-center justify-content-center" style="gap: 8px;">
+                        <input type="checkbox" id="select_all_dues" onclick="toggle_select_all_dues(this)" title="Selecionar tudo" style="cursor: pointer; width: 18px; height: 18px;">
+                        <button class="btn btn-sm btn-primary" id="btn_pay_selected" onclick="pay_selected_dues()" type="button" disabled style="padding: 2px 8px; font-size: 0.85rem;">Pagar selecionado</button>
+                    </div>
+                </th>
                 <th class="align_center">Pagamento</th>
                 <th class="align_right">Quota</th>
                 <th class="align_center">VD</th>
@@ -116,6 +132,13 @@
             <tr>
                 <td class="align_right">{{ mdp.tid }}</td>
                 <td class="align_center">{{ mdp.id_year_month }}</td>
+                <td class="align_center">
+                    {%- if not mdp.is_paid and mdp.is_member_active %}
+                    <input type="checkbox" class="due-checkbox" data-tid="{{ mdp.tid }}" data-amount="{{ mdp.amount }}" onchange="update_selected_total()" style="cursor: pointer; width: 18px; height: 18px;">
+                    {%- else %}
+                    <input type="checkbox" disabled style="width: 18px; height: 18px; opacity: 0.3;">
+                    {%- endif %}
+                </td>
                 {%- if mdp.is_paid %}
                     {%- if mdp.is_member_active %}
                 <td class="green align_center">pago</td>
@@ -123,7 +146,7 @@
                 <td class="align_center">---</td>
                     {%- endif %}
                 {%- else %}
-                <td class="red align_center"><button onclick="pay_member_due({{ mdp.tid }})">Pagar</button></td>
+                <td class="red align_center"><button onclick="pay_member_due({{ mdp.tid }}, {{ mdp.amount }})">Pagar</button></td>
                 {%- endif %}
                 <td class="align_right">{{ mdp.amount }} €</td>
                 <td class="align_center">{{ show_boolean(mdp.is_cash) }}</td>
@@ -169,7 +192,7 @@
 
     <br><hr><br>
 
-    <h5 class="card-title">Lista de vendas</h5>
+    <h5 class="card-title">Lista de compras</h5>
     <table class="table table-striped table-bordered">
         <thead class="table-dark">
             <tr>
@@ -182,6 +205,7 @@
                 <th class="align_center">V.D.</th>
                 <th class="align_left">Data de pagamento</th>
                 <th class="align_left">Data de actualização</th>
+                <th class="align_center">Acções</th>
             </tr>
         </thead>
         <tbody>
@@ -196,6 +220,11 @@
                 <td class="align_center">{{ show_boolean(md.is_cash) }}</td>
                 <td class="align_left">{{ md.purchase_date }}</td>
                 <td class="align_left">{{ md.row_update_time }}</td>
+                <td class="align_center">
+                    <form method="post" action="../../members-items/{{ md.tid }}/delete" onsubmit="return confirm('Tem a certeza que deseja remover esta venda de {{ md.quantity }} x \'{{ md.item.name }}\' ({{ md.total_price }}€)?');">
+                        <button class="btn btn-sm btn-danger" type="submit">Remover</button>
+                    </form>
+                </td>
             </tr>
         {%- endfor %}
         </tbody>
